@@ -5,8 +5,9 @@ require_once __DIR__ . '/classes/Mlaphp/Autoloader.php';
 $autoloader = new \Mlaphp\Autoloader();
 spl_autoload_register(array($autoloader, 'load'));
 
-$config = new Config();
+$config = new \Config();
 echo "Prepend.php loaded.";
 echo "<br>" . $config->dbHost;
 
+$mla_database = \Base::getDB($config);
 
