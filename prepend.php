@@ -37,13 +37,15 @@ $da_user = new \Data\User($mla_request, $mla_database);  // da_user is the logge
 $is_logged_in = new \Mlaphp\IsLoggedIn($mla_request);
 
 if(!$is_logged_in->isLoggedIn()){
+    echo "yall aint logged in";
     $page = new \Template($mla_request, $mla_database);
     $page->setTemplate("login/index.tpl.php");
     $page->echoToScreen();
     exit;
 } else {
+    echo "yall logged in";
     $page = new \Template($mla_request, $mla_database);
-    $page->setTemplate("poster/index.tpl.php");
+    $page->setTemplate("index.tpl.php");
     $page->echoToScreen();
     exit;
 }

@@ -38,7 +38,7 @@ class Template{
         ob_start();                    	// Start output buffering
 
         if(!isset($this->template_location)) {
-            return "No template file provided";
+            echo "No template file provided";
         }
 
         include($this->template_location);	// Include the file
