@@ -1,9 +1,9 @@
 <?php
 /**
- * This file is NOT part of "Modernizing Legacy Applications in PHP".
+ * This file tries to simplify knowing if user is logged in.
  *
  */
-namespace Mlaphp;
+namespace Auth;
 
 
 class IsLoggedIn

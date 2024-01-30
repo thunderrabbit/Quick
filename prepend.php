@@ -32,7 +32,7 @@ $mla_database = \Base::getDB($config);
 $prepend_site_handler = new \SiteHandler($config, $mla_database);
 
 $da_user = new \Data\User($mla_request, $mla_database);  // da_user is the logged in user (stands for \Data\User)
-$is_logged_in = new \Mlaphp\IsLoggedIn($mla_request);
+$is_logged_in = new \Auth\IsLoggedIn($mla_request);
 
 if(!$is_logged_in->isLoggedIn()){
     echo "yall aint logged in";
