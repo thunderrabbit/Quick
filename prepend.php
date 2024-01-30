@@ -27,8 +27,6 @@ function print_rob($object, $exit = true)
 }
 
 $config = new \Config();
-// echo "Prepend.php loaded.";
-// echo "<br>" . $config->dbHost;
 
 $mla_database = \Base::getDB($config);
 $prepend_site_handler = new \SiteHandler($config, $mla_database);
@@ -45,7 +43,7 @@ if(!$is_logged_in->isLoggedIn()){
 } else {
     echo "yall logged in";
     $page = new \Template($mla_request, $mla_database);
-    $page->setTemplate("index.tpl.php");
+    $page->setTemplate("poster/index.tpl.php");
     $page->echoToScreen();
     exit;
 }

@@ -14,9 +14,9 @@
 <?php
                 echo "<br>logged in!";
                 echo "<br>Next steps:";
-                echo "<br># Create template after logged in";
                 echo "<br># Log in";
                 echo "<br># See logged in template";
+                echo "<br># Post something and parse it";
 ?>
                 <form action="" id="valid" class="mainForm" method="POST">
                     <fieldset>

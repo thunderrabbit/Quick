@@ -14,11 +14,6 @@
 <?php
                 echo "<br>Not logged in!";
                 echo "<br>Next steps:";
-                echo "<br>O done: clean up login template";
-                echo "<br>O done: Remove old code";
-                echo "<br>O done: Squash foundation";
-                echo "<br># Simulate logged in value";
-                echo "<br># Create template after logged in";
                 echo "<br># Log in";
                 echo "<br># See logged in template";
 ?>
