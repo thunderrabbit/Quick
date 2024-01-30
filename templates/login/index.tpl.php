@@ -14,13 +14,9 @@
 <?php
                 echo "<br>Not logged in!";
                 echo "<br>Next steps:";
-                echo "<br>O done: Create database by grabbing my users record from DB and creating a new database with same structure";
-                echo "<br>O done: work from airport";
-                echo "<br>O done: Add URL to password manager";
-                echo "<br>O done: Create template to log in";
                 echo "<br>O done: clean up login template";
-                echo "<br># Remove old code";
-                echo "<br># Squash foundation";
+                echo "<br>O done: Remove old code";
+                echo "<br>O done: Squash foundation";
                 echo "<br># Simulate logged in value";
                 echo "<br># Create template after logged in";
                 echo "<br># Log in";
