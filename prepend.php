@@ -10,7 +10,7 @@ require_once __DIR__ . '/classes/Mlaphp/Autoloader.php';
 $autoloader = new \Mlaphp\Autoloader();
 spl_autoload_register(array($autoloader, 'load'));
 
-$mla_request = new \Mlaphp\Request($GLOBALS);
+$mla_request = new \Mlaphp\Request();
 
 function print_rob($object, $exit = true)
 {
