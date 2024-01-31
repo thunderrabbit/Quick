@@ -14,7 +14,16 @@
 <?php
                 echo "<br>Not logged in!";
                 echo "<br>Next steps:";
-                echo "<br># Log in";
+                echo "<br># Change email address in DB";
+                echo "<br># Make a password hash";
+                echo "<br># Send password in via form";
+                echo "<br># make sure I can validate the hash";
+                echo "<br># Change password in DB";
+                echo "<br># Confirm valid U/P combo";
+                echo "<br># Create random session variable";
+                echo "<br># Set session variable in DB";
+                echo "<br># Set session variable in cookie";
+                echo "<br># Log time increasing security";
                 echo "<br># See logged in template";
 ?>
                 <form action="" id="valid" class="mainForm" method="POST">
