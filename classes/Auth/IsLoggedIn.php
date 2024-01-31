@@ -28,6 +28,12 @@ class IsLoggedIn
             {
                 $this->killCookie();
             }
+        } elseif(!empty($this->di_mla_request->post['email']) && !empty($this->di_mla_request->post['pass'])) {
+            print_rob("this is seen if PW is sent in POST", false);
+            print_rob($this->di_mla_request->post['email'], false);
+            print_rob($this->di_mla_request->post['pass'], false);
+        } else {
+            print_rob("no cookie, no post", false);
         }
         print_rob($wow_user_id, false);
     }

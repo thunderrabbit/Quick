@@ -17,7 +17,7 @@
                 echo "<br>O done: Check for cookie data in DB";
                 echo "<br>O done: If it exists, log in user";
                 echo "<br>O done: If DNE, erase cookie data";
-                echo "<br># Send password in via form";
+                echo "<br>O done: Send password in via form";
                 echo "<br># Confirm valid U/P combo";
                 echo "<br># Create random session variable";
                 echo "<br># Set session variable in DB";
