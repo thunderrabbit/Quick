@@ -14,11 +14,12 @@
 <?php
                 echo "<br>Not logged in!";
                 echo "<br>Next steps:";
-                echo "<br># Change email address in DB";
-                echo "<br># Make a password hash";
+                echo "<br># Look for cookie data in session";
+                echo "<br># Ensure it stays consistent";
+                echo "<br># Create table to hold cookie data";
+                echo "<br># Check for cookie data in DB";
+                echo "<br># If it exists, log in user";
                 echo "<br># Send password in via form";
-                echo "<br># make sure I can validate the hash";
-                echo "<br># Change password in DB";
                 echo "<br># Confirm valid U/P combo";
                 echo "<br># Create random session variable";
                 echo "<br># Set session variable in DB";
