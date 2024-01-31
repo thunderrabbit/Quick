@@ -31,7 +31,15 @@ $config = new \Config();
 $mla_database = \Base::getDB($config);
 $prepend_site_handler = new \SiteHandler($config, $mla_database);
 
-$is_logged_in = new \Auth\IsLoggedIn($mla_request);
+$is_logged_in = new \Auth\IsLoggedIn($mla_request, $mla_database);
+
+$makes_cookie = new \Auth\UserAuthentication($mla_request, $mla_database, $is_logged_in);
+
+if(!empty($mla_request->cookie['quill']))
+{
+    print_rob($mla_request->cookie['quill'], false);
+    print_rob(strlen($mla_request->cookie['quill']), false);
+}
 
 if(!$is_logged_in->isLoggedIn()){
     echo "yall aint logged in";
