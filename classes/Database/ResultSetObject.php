@@ -22,27 +22,27 @@ abstract class ResultSetObject implements \Iterator {
         }
     }
 
-    public function current() {
+    public function current(): mixed {
         return $this->data;
     }
 
     /* This method is called after Iterator::rewind and Iterator::next to check if the current position is valid. */
-    public function valid() {
+    public function valid(): bool {
         return $this->data != false;
     }
 
     /* Returns the key of the current element. */
-    public function key() {
+    public function key(): mixed {
         return $this->currentRowNum;
     }
 
     /* Moves the current position to the next element.  */
-    public function next() {
+    public function next(): void {
         $this->setRow($this->currentRowNum+1);
     }
 
     /* Rewinds back to the first element of the Iterator.  */
-    public function rewind() {
+    public function rewind(): void {
         $this->setRow(0);
     }
 
