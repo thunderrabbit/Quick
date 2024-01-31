@@ -16,7 +16,6 @@
                 echo "<br>Next steps:";
                 echo "<br># Look for cookie data in session";
                 echo "<br># Ensure it stays consistent";
-                echo "<br># Create table to hold cookie data";
                 echo "<br># Check for cookie data in DB";
                 echo "<br># If it exists, log in user";
                 echo "<br># Send password in via form";
