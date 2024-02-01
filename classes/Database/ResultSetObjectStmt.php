@@ -27,6 +27,7 @@ class ResultSetObjectStmt extends ResultSetObject {
         if (is_object($this->stmt) && $this->numRows() > $rowNum) {
             $this->stmt->data_seek($rowNum);
             $this->currentRowNum = $rowNum;
+            $vars = array();
 
             foreach ($this->fields as $field) {
                 $fieldname = $field->name;
@@ -34,13 +35,14 @@ class ResultSetObjectStmt extends ResultSetObject {
                 $this->data[$fieldname] = & $vars[$fieldname];
             }
 
-            if (!call_user_func_array(array($this->stmt, 'bind_result'), $this->data)) {
+            // PHP 8.1 requires spread operator https://www.phind.com/search?cache=nv6roe91bx0vkkqbt7x0w3uk
+            if (!$this->stmt->bind_result(...array_values($this->data))) {
                 throw new \Database\EDatabaseException("Bind result failed.  Check for duplicate vars in SELECT");
             }
 
             $this->stmt->fetch();
         } else {
-            $this->data = false;
+            $this->data = array();     // must be an array for line 35 above
         }
     }
 
