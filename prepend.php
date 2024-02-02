@@ -34,12 +34,6 @@ $prepend_site_handler = new \SiteHandler($config, $mla_database);
 $is_logged_in = new \Auth\IsLoggedIn($mla_database);
 $is_logged_in->checkLogin($mla_request);
 
-if(!empty($mla_request->cookie['quill']))
-{
-    print_rob($mla_request->cookie['quill'], false);
-    print_rob(strlen($mla_request->cookie['quill']), false);
-}
-
 if(!$is_logged_in->isLoggedIn()){
     echo "yall aint logged in";
     $page = new \Template($mla_request, $mla_database);
@@ -47,7 +41,7 @@ if(!$is_logged_in->isLoggedIn()){
     $page->echoToScreen();
     exit;
 } else {
-    echo "yall logged in";
+    echo "yall logged in with " . $mla_request->cookie['quill'];
     $page = new \Template($mla_request, $mla_database);
     $page->setTemplate("poster/index.tpl.php");
     $page->echoToScreen();

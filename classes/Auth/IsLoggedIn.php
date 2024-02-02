@@ -27,11 +27,11 @@ class IsLoggedIn
     public function checkLogin(\Mlaphp\Request $mla_request): bool
     {
         $this->di_mla_request = $mla_request;
-        $wow_user_id = "nothing.  This is good; there is no cookie in db yet";
+        $found_user_id = "nothing.  This is good; there is no cookie in db yet";
         if(!empty($this->di_mla_request->cookie[$this->cookie_name]))
         {
-            $wow_user_id = $this->getUserIdForCookieInDatabase($this->di_mla_request->cookie[$this->cookie_name]);
-            if(empty($wow_user_id))
+            $found_user_id = $this->getUserIdForCookieInDatabase($this->di_mla_request->cookie[$this->cookie_name]);
+            if(empty($found_user_id))
             {
                 $this->killCookie();
                 return false;
@@ -40,13 +40,13 @@ class IsLoggedIn
                 return true;
             }
         } elseif(!empty($this->di_mla_request->post['email']) && !empty($this->di_mla_request->post['pass'])) {
-            $wow_user_id = $this->checkPHPHashedPassword($this->di_mla_request->post['email'], $this->di_mla_request->post['pass']);
-            if(empty($wow_user_id))
+            $found_user_id = $this->checkPHPHashedPassword($this->di_mla_request->post['email'], $this->di_mla_request->post['pass']);
+            if(empty($found_user_id))
             {
                 // don't killCookie here because an attacker could kill my login by sending a post with bad password
                 return false;
             } else {
-                $this->setAutoLoginCookie($wow_user_id);
+                $this->setAutoLoginCookie($found_user_id);
                 $this->is_logged_in = true;
                 return true;
             }
@@ -55,7 +55,7 @@ class IsLoggedIn
         } else {
             print_rob("no cookie, no post", false);
         }
-        print_rob($wow_user_id, false);
+        print_rob($found_user_id, false);
         return false;
     }
 
@@ -75,8 +75,6 @@ class IsLoggedIn
             'samesite' => 'Strict' // None || Lax  || Strict
         );
         setcookie($this->cookie_name, $cookie, $cookie_options);
-        print_rob($cookie_options, false);
-        print_rob("WE JUST wrote $this->cookie_name to: " . $cookie, false);
     }
 
 

@@ -5,6 +5,15 @@
         <title>Posternator</title>
         <meta name="title" content="Posternator"/>
         <meta name="description" content=""/>
+
+        <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+        <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+        <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
+        <script>
+        $( function() {
+            $( "#datepicker" ).datepicker();
+        } );
+        </script>
     </head>
     <body><!-- Posternator form area -->
         <div class="PosternatorWrapper">
@@ -14,9 +23,12 @@
 <?php
                 echo "<br>logged in!";
                 echo "<br>Next steps:";
-                echo "<br># Log in";
-                echo "<br># See logged in template";
-                echo "<br># Post something and parse it";
+                echo "<br># Post something and show it";
+                echo "<br># Create a class to store posts";
+                echo "<br># Increase size of textarea";
+                echo "<br># Add a time picker    https://api.jqueryui.com/datepicker/";
+                echo "<br># Restore my code that grabbed entries via scp";
+                echo "<br># Move this to server where journal is hosted";
 ?>
                 <form action="" id="valid" class="mainForm" method="POST">
                     <fieldset>
@@ -30,7 +42,7 @@
                         <div class="PosternatorRow noborder">
                             <label for="req2">Date:</label>
                             <div class="PosternatorInput">
-                                <input type="text" name="pass" class="validate[required]" id="req2" /></div>
+                                <input type="text" name="date" id="datepicker"/></div>
                             <div class="fix"></div>
                         </div>
 

@@ -11,20 +11,6 @@
             <div class="loginLogo"><img src="/images/loginLogo.png" alt="" /></div>
             <div class="loginPanel">
                 <div class="head"><h5 class="iUser">Login</h5></div>
-<?php
-                echo "<br>Not logged in!";
-                echo "<br>Next steps:";
-                echo "<br>O done: Check for cookie data in DB";
-                echo "<br>O done: If it exists, log in user";
-                echo "<br>O done: If DNE, erase cookie data";
-                echo "<br>O done: Send password in via form";
-                echo "<br># Confirm valid U/P combo";
-                echo "<br># Create random session variable";
-                echo "<br># Set session variable in DB";
-                echo "<br># Set session variable in cookie";
-                echo "<br># Log time increasing security";
-                echo "<br># See logged in template";
-?>
                 <form action="" id="valid" class="mainForm" method="POST">
                     <fieldset>
                         <div class="loginRow noborder">
