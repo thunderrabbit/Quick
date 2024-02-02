@@ -11,7 +11,9 @@
         <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
         <script>
         $( function() {
-            $( "#datepicker" ).datepicker();
+            $( "#dp" ).datepicker({
+                dateFormat: "DD d MM yy"
+            });
         } );
         </script>
     </head>
@@ -21,35 +23,40 @@
             <div class="PosternatorPanel">
                 <div class="head"><h5 class="iUser">Posternator</h5></div>
 <?php
+                // current time in JST timezone 24 hour format
+                date_default_timezone_set('Asia/Tokyo');
+                $current_time = date("H:i");
+                // current date in "Friday 2 February 2024" format
+                $current_date = date("l j F Y");
+
                 echo "<br>logged in!";
                 echo "<br>Next steps:";
                 echo "<br># Post something and show it";
                 echo "<br># Create a class to store posts";
-                echo "<br># Increase size of textarea";
-                echo "<br># Add a time picker    https://api.jqueryui.com/datepicker/";
                 echo "<br># Restore my code that grabbed entries via scp";
                 echo "<br># Move this to server where journal is hosted";
 ?>
                 <form action="" id="valid" class="mainForm" method="POST">
                     <fieldset>
                         <div class="PosternatorRow noborder">
-                            <label for="req1">Title:</label>
+                            <label for="req2">Date:</label>
                             <div class="PosternatorInput">
-                                <input type="text" name="email" class="validate[required]" id="req1" /></div>
+                                <input type="text" name="time" value="<?php echo $current_time ?>" size="5" />
+                                <input type="text" name="date" value="<?php echo $current_date ?>" size="35" id="dp" /></div>
                             <div class="fix"></div>
                         </div>
 
                         <div class="PosternatorRow noborder">
-                            <label for="req2">Date:</label>
+                            <label for="req1">Title:</label>
                             <div class="PosternatorInput">
-                                <input type="text" name="date" id="datepicker"/></div>
+                                <input type="text" name="email" size="97" /></div>
                             <div class="fix"></div>
                         </div>
 
                         <div class="PosternatorRow noborder">
                             <label for="req2">Content:</label>
                             <div class="PosternatorInput">
-                                <textarea>
+                                <textarea cols="155" rows="33">
                                 </textarea>
                             </div>
                             <div class="fix"></div>
