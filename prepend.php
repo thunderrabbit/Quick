@@ -31,9 +31,8 @@ $config = new \Config();
 $mla_database = \Base::getDB($config);
 $prepend_site_handler = new \SiteHandler($config, $mla_database);
 
-$is_logged_in = new \Auth\IsLoggedIn($mla_request, $mla_database);
-
-$makes_cookie = new \Auth\UserAuthentication($mla_request, $mla_database, $is_logged_in);
+$is_logged_in = new \Auth\IsLoggedIn($mla_database);
+$is_logged_in->checkLogin($mla_request);
 
 if(!empty($mla_request->cookie['quill']))
 {
