@@ -27,7 +27,7 @@ class IsLoggedIn
     public function checkLogin(\Mlaphp\Request $mla_request): bool
     {
         $this->di_mla_request = $mla_request;
-        $found_user_id = "nothing.  This is good; there is no cookie in db yet";
+        $found_user_id = 0;
         if(!empty($this->di_mla_request->cookie[$this->cookie_name]))
         {
             $found_user_id = $this->getUserIdForCookieInDatabase($this->di_mla_request->cookie[$this->cookie_name]);
@@ -37,6 +37,7 @@ class IsLoggedIn
                 return false;
             } else {
                 $this->is_logged_in = true;
+                print_rob("Found user id $found_user_id", false);
                 return true;
             }
         } elseif(!empty($this->di_mla_request->post['email']) && !empty($this->di_mla_request->post['pass'])) {
@@ -48,14 +49,10 @@ class IsLoggedIn
             } else {
                 $this->setAutoLoginCookie($found_user_id);
                 $this->is_logged_in = true;
+                print_rob("Found user id $found_user_id", false);
                 return true;
             }
-
-
-        } else {
-            print_rob("no cookie, no post", false);
         }
-        print_rob($found_user_id, false);
         return false;
     }
 
@@ -117,19 +114,18 @@ class IsLoggedIn
     }
 
 
-    private function getUserIdForCookieInDatabase($cookie)
+    private function getUserIdForCookieInDatabase($cookie): int
     {
         $cookie_result = $this->di_dbase->fetchResults("SELECT `user_id` FROM `cookies`
             WHERE `cookie` = ? LIMIT 1", "s", $cookie);
         if($cookie_result->numRows() > 0)
         {
             $result_as_array = $cookie_result->toArray();
-            $user_id_and_hash_array = array_shift($result_as_array);
-            return $user_id_and_hash_array;
+            return $result_as_array[0]['user_id'];
         }
         else
         {
-            return false;
+            return 0;
         }
     }
     public function isLoggedIn(): bool

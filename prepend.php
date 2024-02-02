@@ -35,15 +35,9 @@ $is_logged_in = new \Auth\IsLoggedIn($mla_database);
 $is_logged_in->checkLogin($mla_request);
 
 if(!$is_logged_in->isLoggedIn()){
-    echo "yall aint logged in";
+    echo "yaint logged in";
     $page = new \Template($mla_request, $mla_database);
     $page->setTemplate("login/index.tpl.php");
-    $page->echoToScreen();
-    exit;
-} else {
-    echo "yall logged in with " . $mla_request->cookie['quill'];
-    $page = new \Template($mla_request, $mla_database);
-    $page->setTemplate("poster/index.tpl.php");
     $page->echoToScreen();
     exit;
 }
