@@ -31,9 +31,16 @@
 
                 echo "<br>logged in! <a href='/logout'>Log out</a>";
                 echo "<br>Next steps:";
-                echo "<br># Create a class to store posts";
-                echo "<br># Restore my code that grabbed entries via scp";
+                echo "<br># Add paths to config";
+                echo "<br># Distinguish type of post .md or .html (default .md)";
+                echo "<br># Add tags to posts";
+                echo "<br># Add author (based on Config)";
                 echo "<br># Move this to server where journal is hosted";
+                echo "<br># Restore my code that grabbed entries via scp";
+                echo "<br># Fix post saver to use correct format:";
+                echo "<br># - frontmatter";
+                echo "<br># - date";
+                echo "<br># - content";
 ?>
                 <form action="/poster/" id="valid" class="mainForm" method="POST">
                     <fieldset>
