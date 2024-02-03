@@ -35,15 +35,20 @@
                 }
                 echo "<br>logged in! <a href='/logout'>Log out</a>";
                 echo "<br>Next steps:";
-                echo "<br># Distinguish type of post .md or .html (default .md)";
-                echo "<br># Add tags to posts";
-                echo "<br># Add author (based on Config)";
                 echo "<br># Move this to server where journal is hosted";
-                echo "<br># Restore my code that grabbed entries via scp";
+                echo "<br># - set quick.robnugen.com to same server";
+                echo "<br># - clone repo there";
+                echo "<br># - copy + setup config there";
+                echo "<br># - point local changes there";
+                echo "<br># - test local changes are saved there";
                 echo "<br># Fix post saver to use correct format:";
                 echo "<br># - frontmatter";
                 echo "<br># - date";
                 echo "<br># - content";
+                echo "<br># Restore my code that grabbed entries via scp";
+                echo "<br># Distinguish type of post .md or .html (default .md)";
+                echo "<br># Add tags to posts";
+                echo "<br># Add author (based on Config)";
 ?>
                 <form action="/poster/" id="valid" class="mainForm" method="POST">
                     <fieldset>
