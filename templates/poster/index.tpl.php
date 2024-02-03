@@ -29,15 +29,18 @@
                 // current date in "Friday 2 February 2024" format
                 $current_date = date("l j F Y");
 
-                echo "<br>logged in!";
+                echo "<br>logged in! <a href='/logout'>Log out</a>";
                 echo "<br>Next steps:";
-                echo "<br># Post something and show it";
                 echo "<br># Create a class to store posts";
                 echo "<br># Restore my code that grabbed entries via scp";
                 echo "<br># Move this to server where journal is hosted";
 ?>
-                <form action="" id="valid" class="mainForm" method="POST">
+                <form action="/poster/" id="valid" class="mainForm" method="POST">
                     <fieldset>
+                        <div class="PosternatorRow noborder">
+                            <input type="submit" value="Save" class="greyishBtn submitForm" />
+                            <div class="fix"></div>
+                        </div>
                         <div class="PosternatorRow noborder">
                             <label for="req2">Date:</label>
                             <div class="PosternatorInput">
@@ -49,20 +52,19 @@
                         <div class="PosternatorRow noborder">
                             <label for="req1">Title:</label>
                             <div class="PosternatorInput">
-                                <input type="text" name="email" size="97" /></div>
+                                <input type="text" name="title" size="97" value="" /></div>
                             <div class="fix"></div>
                         </div>
 
                         <div class="PosternatorRow noborder">
                             <label for="req2">Content:</label>
                             <div class="PosternatorInput">
-                                <textarea cols="155" rows="33">
-                                </textarea>
+                                <textarea name="post_content" cols="155" rows="35"></textarea>
                             </div>
                             <div class="fix"></div>
                         </div>
                         <div class="PosternatorRow noborder">
-                            <input type="submit" value="Log me in" class="greyishBtn submitForm" />
+                            <input type="submit" value="Save" class="greyishBtn submitForm" />
                             <div class="fix"></div>
                         </div>
                     </fieldset>
