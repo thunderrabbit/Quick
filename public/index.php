@@ -13,5 +13,3 @@ if($is_logged_in->isLoggedIn()){
     $page->setTemplate("login/index.tpl.php");
     $page->echoToScreen();
 }
-
-exit;

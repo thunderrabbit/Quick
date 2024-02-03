@@ -37,7 +37,6 @@ class IsLoggedIn
                 return false;
             } else {
                 $this->is_logged_in = true;
-                print_rob("Found user id $found_user_id", false);
                 return true;
             }
         } elseif(!empty($this->di_mla_request->post['email']) && !empty($this->di_mla_request->post['pass'])) {
@@ -49,7 +48,6 @@ class IsLoggedIn
             } else {
                 $this->setAutoLoginCookie($found_user_id);
                 $this->is_logged_in = true;
-                print_rob("Found user id $found_user_id", false);
                 return true;
             }
         }
@@ -131,6 +129,12 @@ class IsLoggedIn
     public function isLoggedIn(): bool
     {
         return $this->is_logged_in;
+    }
+
+    public function logout(): void
+    {
+        $this->is_logged_in = false;
+        $this->killCookie();
     }
 
     private function killCookie(): void

@@ -35,7 +35,6 @@ $is_logged_in = new \Auth\IsLoggedIn($mla_database);
 $is_logged_in->checkLogin($mla_request);
 
 if(!$is_logged_in->isLoggedIn()){
-    echo "yaint logged in";
     $page = new \Template($mla_request, $mla_database);
     $page->setTemplate("login/index.tpl.php");
     $page->echoToScreen();
