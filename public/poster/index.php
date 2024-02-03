@@ -4,7 +4,8 @@
 include_once("/home/quill_dh_plasz3gi/quill.plasticaddy.com/prepend.php");
 
 if ($mla_request->post) {
-    print_rob($mla_request->post, false);
+    $post = new \QuickPoster($mla_database);
+    $post->createPost($mla_request->post);
 }
 
 $page = new \Template($mla_request, $mla_database);
