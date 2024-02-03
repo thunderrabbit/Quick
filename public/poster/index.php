@@ -8,6 +8,6 @@ if ($mla_request->post) {
     $post->createPost($mla_request->post);
 }
 
-$page = new \Template($mla_request, $mla_database);
+$page = new \Template($mla_request, $mla_database, $config);
 $page->setTemplate("poster/index.tpl.php");
 $page->echoToScreen();

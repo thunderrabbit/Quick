@@ -31,7 +31,6 @@
 
                 echo "<br>logged in! <a href='/logout'>Log out</a>";
                 echo "<br>Next steps:";
-                echo "<br># Add paths to config";
                 echo "<br># Distinguish type of post .md or .html (default .md)";
                 echo "<br># Add tags to posts";
                 echo "<br># Add author (based on Config)";

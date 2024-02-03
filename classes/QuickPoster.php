@@ -42,7 +42,7 @@ class QuickPoster{
         $month = $dateObject->format('m');
         $day = $dateObject->format('d');
 
-        $file_path = "/home/quill_dh_plasz3gi/quill.plasticaddy.com/public/journal/$year/$month/$day$url_title.txt";
+        $file_path = "$config->app_path/public/journal/$year/$month/$day$url_title.txt";
 
         // Create file path if it doesn't exist
         $dir = dirname($file_path);

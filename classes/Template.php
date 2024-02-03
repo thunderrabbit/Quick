@@ -8,16 +8,17 @@ class Template{
     protected $mla_request;      // Encapsulates superglobals e.g. $SESSION, $REQUEST, etc (misspelled in this comment to keep searches clean)
     protected $di_dbase;
 
-    public function __construct(\Mlaphp\Request $mla_request, \Database\Database $dbase) {
+    public function __construct(\Mlaphp\Request $mla_request, \Database\Database $dbase, \Config $config) {
 
         $this->mla_request = $mla_request;
         $this->di_dbase = $dbase;
+        $this->template_location = $config->app_path."/templates";
 
         $this->vars = array();
     }
 
     public function setTemplate($template_file) {
-        $this->template_location = "/home/quill_dh_plasz3gi/quill.plasticaddy.com/templates/".$template_file;
+        $this->template_location = $this->template_location."/".$template_file;
     }
 
     /**
