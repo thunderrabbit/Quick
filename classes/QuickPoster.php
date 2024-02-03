@@ -35,8 +35,8 @@ class QuickPoster{
         // remove ^M from the end of the lines of the content
         $content = preg_replace("/\r/", "", $post_array['post_content']);
 
-        // Parse $date = 'Saturday 3 February 2024' to date so we can get numeric year month and day
-        $dateObject = DateTime::createFromFormat('l d F Y', $date);
+        // Parse $date = 'Saturday 3 February 2024 JST' to date so we can get numeric year month and day
+        $dateObject = new DateTime($date);
 
         $year = $dateObject->format('Y');
         $month = $dateObject->format('m');

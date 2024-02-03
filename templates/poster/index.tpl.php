@@ -27,7 +27,7 @@
                 date_default_timezone_set('Asia/Tokyo');
                 $current_time = date("H:i");
                 // current date in "Friday 2 February 2024" format
-                $current_date = date("l j F Y");
+                $current_date = date("l j F Y T");
 
                 echo "<br>logged in! <a href='/logout'>Log out</a>";
                 echo "<br>Next steps:";
