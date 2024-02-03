@@ -29,6 +29,10 @@
                 // current date in "Friday 2 February 2024" format
                 $current_date = date("l j F Y T");
 
+                if(isset($post_path))
+                {
+                    echo "<br>Post saved to <a href='https://quill.plasticaddy.com/$post_path'>$post_path</a>";
+                }
                 echo "<br>logged in! <a href='/logout'>Log out</a>";
                 echo "<br>Next steps:";
                 echo "<br># Distinguish type of post .md or .html (default .md)";

@@ -1,6 +1,7 @@
 <?php
 class QuickPoster{
     protected $di_dbase;
+    public readonly string $post_path;
 
     public function __construct(\Database\Database $dbase)
     {
@@ -10,8 +11,9 @@ class QuickPoster{
     /**
      * Create a post
      * @param array $post_array
+     * @return bool true if post was created
      */
-    public function createPost(array $post_array)
+    public function createPost(\Config $config, array $post_array): bool
     {
         print_rob("inside createPost", false);
         print_rob($post_array, false);
@@ -54,6 +56,11 @@ class QuickPoster{
         fwrite($file, "#### $time $date\n");
         fwrite($file, $content);
         fclose($file);
+
+        // return path after removing the app path
+        $this->post_path = str_replace($config->app_path . "/public", "", $file_path);
+
+        return true;
 
     }
 

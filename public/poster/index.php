@@ -4,10 +4,18 @@
 include_once("/home/quill_dh_plasz3gi/quill.plasticaddy.com/prepend.php");
 
 if ($mla_request->post) {
-    $post = new \QuickPoster($mla_database);
-    $post->createPost($mla_request->post);
+    $postifier = new \QuickPoster($mla_database);
+    $okay = $postifier->createPost($config, $mla_request->post);
+    if($okay)
+    {
+        $post_path = $postifier->post_path;
+    }
 }
 
 $page = new \Template($mla_request, $mla_database, $config);
+if(isset($post_path))
+{
+    $page->set("post_path",$post_path);
+}
 $page->setTemplate("poster/index.tpl.php");
 $page->echoToScreen();
