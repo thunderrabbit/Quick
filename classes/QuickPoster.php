@@ -49,6 +49,7 @@ class QuickPoster{
         $file = fopen($file_path, "w");
         // write time and date at top of the file
         fwrite($file, $frontmatter);
+        fwrite($file, "\n");
         fwrite($file, $content);
         fclose($file);
 
