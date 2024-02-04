@@ -66,7 +66,7 @@ class IsLoggedIn
         $cookie_options = array(
             'expires' => time() + (30 * 24 * 60 * 60),
             'path' => '/',
-            'domain' => "quill.plasticaddy.com",
+            'domain' => "quick.robnugen.com",
             'samesite' => 'Strict' // None || Lax  || Strict
         );
         setcookie($this->cookie_name, $cookie, $cookie_options);
@@ -142,7 +142,7 @@ class IsLoggedIn
         $cookie_options = array (
           'expires' => time()-3600,
           'path' => '/',
-          'domain' => "quill.plasticaddy.com",
+          'domain' => "quick.robnugen.com",
           'samesite' => 'Strict' // None || Lax  || Strict
         );
         setcookie($this->cookie_name, '', $cookie_options);
