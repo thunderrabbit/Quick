@@ -33,10 +33,52 @@ class QuickPoster{
         $date = $post_array['date'];
         $time = $post_array['time'];
         $title = $post_array['title'];
-        $url_title = $this->createUrlTitle($title);
         // remove ^M from the end of the lines of the content
         $content = preg_replace("/\r/", "", $post_array['post_content']);
 
+        $file_path = $this->createFilePath($title, $date, $config);
+
+        $frontmatter = $this->createFrontMatter($title, $date, $time);
+
+        // Create file path if it doesn't exist
+        $dir = dirname($file_path);
+        if (!is_dir($dir)) {
+            mkdir($dir, 0755, true);
+        }
+        $file = fopen($file_path, "w");
+        // write time and date at top of the file
+        fwrite($file, $frontmatter);
+        fwrite($file, $content);
+        fclose($file);
+
+        // return path after removing the app path
+        $this->post_path = str_replace($config->app_path . "/public/", "", $file_path);
+
+        return true;
+
+    }
+
+    private function createFrontMatter(string $title, string $date, string $time): string
+    {
+        $dateObject = new DateTime($date);
+
+        $year = $dateObject->format('Y');
+        $month = $dateObject->format('m');
+        $day = $dateObject->format('d');
+        // date: 2024-01-03T09:14:48+09:00
+        $frontmatter = "---\n";
+        $frontmatter .= "title: $title\n";
+        $frontmatter .= "tags: [ \"$year\" ]\n";
+        $frontmatter .= "author: Rob Nugen\n";
+        $frontmatter .= "date: $year-$month-$day"."T$time+09:00\n";
+        $frontmatter .= "draft: false\n";
+        $frontmatter .= "---\n";
+
+        return $frontmatter;
+    }
+    private function createFilePath(string $title, string $date, \Config $config): string
+    {
+        $url_title = $this->createUrlTitle($title);
         // Parse $date = 'Saturday 3 February 2024 JST' to date so we can get numeric year month and day
         $dateObject = new DateTime($date);
 
@@ -46,22 +88,7 @@ class QuickPoster{
 
         $file_path = "$config->app_path/public/journal/$year/$month/$day$url_title.txt";
 
-        // Create file path if it doesn't exist
-        $dir = dirname($file_path);
-        if (!is_dir($dir)) {
-            mkdir($dir, 0755, true);
-        }
-        $file = fopen($file_path, "w");
-        // write time and date at top of the file
-        fwrite($file, "#### $time $date\n");
-        fwrite($file, $content);
-        fclose($file);
-
-        // return path after removing the app path
-        $this->post_path = str_replace($config->app_path . "/public/", "", $file_path);
-
-        return true;
-
+        return $file_path;
     }
 
     private function createUrlTitle(string $title): string
