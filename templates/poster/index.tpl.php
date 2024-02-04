@@ -35,12 +35,6 @@
                 }
                 echo "<br>logged in! <a href='/logout'>Log out</a>";
                 echo "<br>Next steps:";
-                echo "<br># Fix post saver to use correct format:";
-                echo "<br># - frontmatter";
-                echo "<br># - date";
-                echo "<br># - content";
-                echo "<br># Add tags to posts";
-                echo "<br># Add author (based on Config)";
                 echo "<br># Save journal entries to correct location";
                 echo "<br># - /home/barefoot_rob/barefoot_rob_journal/content/";
                 echo "<br># Restore my code that grabbed entries via scp";
