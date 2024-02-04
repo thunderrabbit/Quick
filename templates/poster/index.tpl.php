@@ -31,7 +31,7 @@
 
                 if(isset($post_path))
                 {
-                    echo "<br>Post saved to <a href='https://quick.robnugen.com/$post_path'>$post_path</a>";
+                    echo "<br>Post saved to <a target='journal' href='https://quick.robnugen.com/$post_path'>$post_path</a>";
                 }
                 echo "<br>logged in! <a href='/logout'>Log out</a>";
                 echo "<br>Next steps:";
