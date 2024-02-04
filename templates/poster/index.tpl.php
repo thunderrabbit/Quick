@@ -63,7 +63,8 @@
                         <div class="PosternatorRow noborder">
                             <label for="req1">Title:</label>
                             <div class="PosternatorInput">
-                                <input type="text" name="title" size="97" value="" /></div>
+                                <input type="text" name="title" size="97" value="" />
+                            </div>
                             <div class="fix"></div>
                         </div>
 
