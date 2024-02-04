@@ -33,12 +33,13 @@ class QuickPoster{
         $date = $post_array['date'];
         $time = $post_array['time'];
         $title = $post_array['title'];
+        $tags = $post_array['tags'];
         // remove ^M from the end of the lines of the content
         $content = preg_replace("/\r/", "", $post_array['post_content']);
 
         $file_path = $this->createFilePath($title, $date, $config);
 
-        $frontmatter = $this->createFrontMatter($title, $date, $time);
+        $frontmatter = $this->createFrontMatter($title, $date, $time, $tags);
 
         // Create file path if it doesn't exist
         $dir = dirname($file_path);
@@ -58,17 +59,19 @@ class QuickPoster{
 
     }
 
-    private function createFrontMatter(string $title, string $date, string $time): string
+    private function createFrontMatter(string $title, string $date, string $time, string $tags): string
     {
         $dateObject = new DateTime($date);
 
         $year = $dateObject->format('Y');
         $month = $dateObject->format('m');
         $day = $dateObject->format('d');
-        // date: 2024-01-03T09:14:48+09:00
+
         $frontmatter = "---\n";
         $frontmatter .= "title: $title\n";
-        $frontmatter .= "tags: [ \"$year\" ]\n";
+        // "life, journal, fun" => ["life", "journal", "fun"]
+        $quoted_tags = '"' . preg_replace("/, /", "\", \"", $tags) . '"';
+        $frontmatter .= "tags: [ \"$year\", $quoted_tags ]\n";
         $frontmatter .= "author: Rob Nugen\n";
         $frontmatter .= "date: $year-$month-$day"."T$time+09:00\n";
         $frontmatter .= "draft: false\n";

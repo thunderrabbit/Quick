@@ -68,6 +68,14 @@
                         </div>
 
                         <div class="PosternatorRow noborder">
+                            <label for="req1">Tags:</label>
+                            <div class="PosternatorInput">
+                                <input type="text" name="tags" size="97" value="" />
+                            </div>
+                            <div class="fix"></div>
+                        </div>
+
+                        <div class="PosternatorRow noborder">
                             <label for="req2">Content:</label>
                             <div class="PosternatorInput">
                                 <textarea name="post_content" cols="155" rows="35"></textarea>
