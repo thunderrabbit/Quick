@@ -35,10 +35,7 @@
                 }
                 echo "<br>logged in! <a href='/logout'>Log out</a>";
                 echo "<br>Next steps:";
-                echo "<br># Save journal entries to correct location";
-                echo "<br># - /home/barefoot_rob/barefoot_rob_journal/content/";
                 echo "<br># Restore my code that grabbed entries via scp";
-                echo "<br># Distinguish type of post .md or .html (default .md)";
 ?>
                 <form action="/poster/" id="valid" class="mainForm" method="POST">
                     <fieldset>

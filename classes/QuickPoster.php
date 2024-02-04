@@ -54,7 +54,7 @@ class QuickPoster{
         fclose($file);
 
         // return path after removing the app path
-        $this->post_path = str_replace($config->app_path . "/public/", "", $file_path);
+        $this->post_path = str_replace($config->post_path_journal, "", $file_path);
 
         return true;
 
@@ -90,7 +90,7 @@ class QuickPoster{
         $month = $dateObject->format('m');
         $day = $dateObject->format('d');
 
-        $file_path = "$config->app_path/public/journal/$year/$month/$day$url_title.txt";
+        $file_path = "$config->post_path_journal/$year/$month/$day$url_title.md";
 
         return $file_path;
     }
