@@ -49,7 +49,7 @@ class QuickPoster{
         // Create file path if it doesn't exist
         $dir = dirname($file_path);
         if (!is_dir($dir)) {
-            mkdir($dir, 0750, true);
+            mkdir($dir, 0755, true);
         }
         $file = fopen($file_path, "w");
         // write time and date at top of the file
@@ -58,7 +58,7 @@ class QuickPoster{
         fclose($file);
 
         // return path after removing the app path
-        $this->post_path = str_replace($config->app_path . "/public", "", $file_path);
+        $this->post_path = str_replace($config->app_path . "/public/", "", $file_path);
 
         return true;
 
