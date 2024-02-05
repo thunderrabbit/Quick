@@ -1,8 +1,6 @@
 <?php
 
 const CONFIG_DATABASE_OUTPUT_ENCODING = "UTF8";
-const CONFIG_DATABASE_ERROR_REPORT = true;
-const CONFIG_DATABASE_QUERY_REPORT = false;
 
 class Base{
     private static $db;
@@ -16,9 +14,7 @@ class Base{
                                             $config->dbUser,
                                             $config->dbPass,
                                             $config->dbName,
-                                            CONFIG_DATABASE_OUTPUT_ENCODING,
-                                            CONFIG_DATABASE_ERROR_REPORT,
-                                            CONFIG_DATABASE_QUERY_REPORT);
+                                            CONFIG_DATABASE_OUTPUT_ENCODING);
         }
         /** END - Database **/
     }

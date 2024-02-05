@@ -6,8 +6,5 @@ interface DbInterface {
     // I just want a bit of a check on class type as I move toward dependency injection
     public function insertFromRecord($tablename, $paramtypes, $record);
     public function fetchResults($sql, $paramtypes = null, $var1 = null);
-    public function startTransaction();
-    public function rollbackTransaction();
-    public function commitTransaction();
     public function executeSQL($sql, $paramtypes = null, $var1 = null);
 }

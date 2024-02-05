@@ -92,6 +92,5 @@ abstract class ResultSetObject implements \Iterator {
 	/* returns the number of rows in this ResultSet*/
     abstract public function numRows();
     abstract public function setRow($rowNum);
-    abstract public function fieldList($var);
     abstract public function close();
 }

@@ -4,11 +4,6 @@ namespace Database;
 class Database implements DbInterface {
 
     private $charEncoding = "UTF8";
-    private $report = false;
-    private $errorReport = true;
-    private $lastQuery = "";
-    private $fields;
-    private $lastQueryHash = null;
     private $dbObj;
     private $host;
     private $username;
@@ -17,14 +12,12 @@ class Database implements DbInterface {
     private $tz_offset = false;
     private $persistant;
     private $affected_rows;
-    private $query_start_time;
 
-    public function __construct($host, $username, $passwd, $dbname = '', $charEncoding = 'UTF8', $errorReport = false, $report = false) {
+    public function __construct($host, $username, $passwd, $dbname = '', $charEncoding = 'UTF8') {
         $this->host = $host;
         $this->username = $username;
         $this->passwd = $passwd;
         $this->dbname = $dbname;
-        $this->report = $report;
         $this->charEncoding = $charEncoding;
         if ($this->dbname && strtolower(substr($this->dbname, 0, 2)) == "p:") {
             $this->persistant = true;
@@ -78,26 +71,6 @@ class Database implements DbInterface {
         $this->dbObj->set_charset($this->charEncoding);
     }
 
-    public function getEncoding() {
-        return $this->charEncoding;
-    }
-
-    public function startTransaction() {
-        $this->connect();
-        $this->dbObj->query("SET autocommit=0");
-        $this->dbObj->query("START TRANSACTION");
-    }
-
-    public function commitTransaction() {
-        $this->dbObj->query("COMMIT;");
-        $this->dbObj->query("SET autocommit=1;");
-    }
-
-    public function rollbackTransaction() {
-        $this->dbObj->query("ROLLBACK;");
-        $this->dbObj->query("SET autocommit=1;");
-    }
-
     public function prepare($sql) {
         $this->connect(); //Connect if we aren't already
 
@@ -106,21 +79,12 @@ class Database implements DbInterface {
         return $stmt;
     }
 
-    private function loadFieldInfo($resultSet) {
-        $metadata = $resultSet->result_metadata();
-        $fields = $metadata->fetch_fields();
-        $metadata->close();
-        return $fields;
-    }
-
     /*
      * Executes an UPDATE, INSERT or DELETE statement on the database.
      * Returns the insert_id or affected_rows, where relevant, or null.
      */
 
     private function executeSimpleSQL($sql) {
-        $this->debugStart($sql);
-
         $this->connect(); //Connect if we aren't already
 
         $this->dbObj->query($sql);
@@ -128,7 +92,6 @@ class Database implements DbInterface {
         $result = ($this->dbObj->insert_id > 0) ? $this->dbObj->insert_id : NULL;
         $this->affected_rows = $this->dbObj->affected_rows;
 
-        $this->debugResult();
         return $result;
     }
 
@@ -139,8 +102,6 @@ class Database implements DbInterface {
 
     private function executePreparedSQL($sql, $paramtypes, $parameters) {
         $bindParam = [];
-        $this->debugStart($sql);
-
         //Connect attempt is made in the prepare function.
         $stmt = $this->prepare($sql);
 
@@ -167,7 +128,6 @@ class Database implements DbInterface {
         $stmt->free_result();
         $stmt->close();
         unset($stmt);
-        $this->debugResult();
         return $result;
     }
 
@@ -193,46 +153,16 @@ class Database implements DbInterface {
         }
     }
 
-    public function affectedRows() {
-        return $this->affected_rows;
-    }
-
-    public function fetchMultiResults($sql) {
-        $this->debugStart($sql);
-
-//Connect if we aren't already
-        $this->connect();
-
-        $results = array();
-        if ($this->dbObj->multi_query($sql)) {
-            do {
-                $result = $this->dbObj->store_result();
-                if ($result) {
-                    $results[] = new ResultSetObjectResult($result);
-                }
-            } while ($this->dbObj->next_result());
-        }
-
-        $this->debugResult();
-        return $results;
-    }
-
     private function fetchSimpleResults($sql) {
-        $this->debugStart($sql);
-
         $this->connect(); //Connect if we aren't already
 
         $result = $this->dbObj->query($sql);
-
-        $this->debugResult();
 
         return new ResultSetObjectResult($result);
     }
 
     private function fetchPreparedResults($sql, $paramtypes, $params) {
         $bindParam = [];
-        $this->debugStart($sql);
-
         //Connect attempt is made in the prepare function.
         $stmt = $this->prepare($sql);
 
@@ -249,8 +179,6 @@ class Database implements DbInterface {
             throw new \Database\EDatabaseException($this->dbObj->error);
         }
         $stmt->store_result();
-
-        $this->debugResult();
 
         return new ResultSetObjectStmt($stmt);
     }
@@ -286,36 +214,6 @@ class Database implements DbInterface {
         }
     }
 
-    public function updateFromRecord($tablename, $paramtypes, $record, $where) {
-        return $this->updateRecord($tablename, false, $paramtypes, $record, $where);
-    }
-
-    public function updateIgnoreFromRecord($tablename, $paramtypes, $record, $where) {
-        return $this->updateRecord($tablename, true, $paramtypes, $record, $where);
-    }
-
-    public function updateRecord($tablename, $ignore_duplicate_keys, $paramtypes, $record, $where) {
-        $keys = NULL;
-
-        if (strlen($paramtypes) != (is_countable($record) ? count($record) : 0)) {
-            throw new \Database\EDatabaseException(__FUNCTION__ . ": Num elements in paramtype string != num of bind variables in record array. " . strlen($paramtypes) . " != " . (is_countable($record) ? count($record) : 0));
-        }
-
-        foreach ($record as $key => $val) {
-            $keys .= "`" . $key . "`" . "=?,";
-        }
-        $keys = rtrim($keys, ", ");
-        if ($ignore_duplicate_keys) {
-            return $this->executeSQL("UPDATE IGNORE `" . trim($tablename, " `") . "` SET {$keys} WHERE {$where}", $paramtypes, $record);
-        } else {
-            return $this->executeSQL("UPDATE `" . trim($tablename, " `") . "` SET {$keys} WHERE {$where}", $paramtypes, $record);
-        }
-    }
-
-    public function insertIgnoreFromRecord($tablename, $paramtypes, $record) {
-        return $this->insertRecord($tablename, true, $paramtypes, $record);
-    }
-
     public function insertFromRecord($tablename, $paramtypes, $record) {
         return $this->insertRecord($tablename, false, $paramtypes, $record);
     }
@@ -339,96 +237,6 @@ class Database implements DbInterface {
             return $this->executeSQL("INSERT IGNORE INTO `" . trim($tablename, " `") . "` ({$vars}) VALUES ({$values}) ", $paramtypes, $record);
         } else {
             return $this->executeSQL("INSERT INTO `" . trim($tablename, " `") . "` ({$vars}) VALUES ({$values}) ", $paramtypes, $record);
-        }
-    }
-
-//This is a quick function for editing record type tables.  Unless the information that you're updating = the insert, you shouldn't use this.
-    public function insertOnDuplicateUpdate($tablename, $paramtypes, $record, $update_paramtypes = null, $update_record = null) {
-        $vars = NULL;
-        $values = NULL;
-        $keys = NULL;
-
-        if (strlen($paramtypes) != (is_countable($record) ? count($record) : 0)) {
-            throw new \Database\EDatabaseException(__FUNCTION__ . ": Num elements in paramtype string != num of bind variables in record array. " . strlen($paramtypes) . " != " . (is_countable($record) ? count($record) : 0));
-        }
-
-        if (isset($update_paramtypes) || isset($update_record)) {
-            if (strlen($update_paramtypes) != (is_countable($update_record) ? count($update_record) : 0)) {
-                throw new \Database\EDatabaseException(__FUNCTION__ . ": Num elements in paramtype string != num of bind variables in record array. " . strlen($update_paramtypes) . " != " . (is_countable($update_record) ? count($update_record) : 0));
-            }
-        }
-
-        foreach ($record as $key => $val) {
-            $vars .= "`" . $key . "`, ";
-            $values .=" ? , ";
-            $keys .= "`" . $key . "`" . "=?,";
-        }
-        $vars = rtrim($vars, ", ");
-        $values = rtrim($values, ", ");
-        $keys = rtrim($keys, ", ");
-
-        if (isset($update_paramtypes) || isset($update_record)) {
-            $keys = "";
-            foreach ($update_record as $key => $val) {
-                $keys .= "`" . $key . "`" . "=?,";
-            }
-            $vars = rtrim($vars, ", ");
-            $keys = rtrim($keys, ", ");
-
-            return $this->executeSQL("INSERT INTO `" . trim($tablename, " `") . "` ({$vars}) VALUES ({$values}) ON DUPLICATE KEY UPDATE {$keys}", $paramtypes . $update_paramtypes, $record, $update_record);
-        } else {
-            return $this->executeSQL("INSERT INTO `" . trim($tablename, " `") . "` ({$vars}) VALUES ({$values}) ON DUPLICATE KEY UPDATE {$keys}", $paramtypes . $paramtypes, $record, $record);
-        }
-    }
-
-    public function close($override = false) {
-        if (!$this->persistant || $override) {
-            if (is_object($this->dbObj)) {
-                $this->dbObj->close();
-            }
-        }
-    }
-
-    private function debugStart($sql) {
-        if ($this->report) {
-            $output = "-----<br/>";
-            if ($sql) {
-                $output .= "<p>QUERY = " . str_replace(array("\n", "\r"), " ", $sql) . "</p>";
-            }
-            echo $output;
-            $this->lastQuery = $sql;
-            $this->query_start_time = microtime(true);
-        }
-    }
-
-    private function debugResult() {
-        if ($this->report || ($this->errorReport && mysqli_errno($this->dbObj))) {
-            $output = "";
-
-            if (!empty($this->dbObj) && mysqli_errno($this->dbObj)) {
-                $message = "MySQL Error Occured";
-                $result = mysqli_errno($this->dbObj) . ": " . mysqli_error($this->dbObj);
-//                trigger_error($message . " " . $result, E_USER_ERROR);
-                throw new \Database\EDatabaseException($this->dbObj->error);
-            } else {
-                $message = "MySQL Query Executed Succesfully.";
-                $result = $this->affected_rows . " Rows Affected";
-                $output = "view logs for details";
-                $runtime = round(microtime(true) - $this->query_start_time, 5);
-
-                $output = "<b>" . $message . "</b>" .
-                        "<span>" . $result . "</span>";
-                if ($this->report) {
-                    if($runtime > 0.005){
-                        $output .= "<br />warning slow<p style='color:red'>" . $runtime . "</p>\n";
-                    }else{
-                        $output .= "<br /><p>" . $runtime . "</p>\n";
-                    }
-                }
-                $output .= "<br/>-----<br/>";
-
-                echo $output;
-            }
         }
     }
 }
