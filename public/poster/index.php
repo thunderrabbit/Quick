@@ -12,10 +12,20 @@ if ($mla_request->post) {
     }
 }
 
+$text = "";
+
+if($mla_request->get)
+{
+    if($mla_request->get['text'])
+    {
+        $text = $mla_request->get['text'];
+    }
+}
 $page = new \Template($mla_request, $mla_database, $config);
 if(isset($post_path))
 {
     $page->set("post_path",$post_path);
 }
 $page->setTemplate("poster/index.tpl.php");
+$page->set("text", $text);
 $page->echoToScreen();

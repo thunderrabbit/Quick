@@ -70,7 +70,7 @@
                         <div class="QuickRow noborder">
                             <label for="req2">Content:</label>
                             <div class="QuickInput">
-                                <textarea name="post_content" cols="155" rows="35"></textarea>
+                                <textarea name="post_content" cols="155" rows="35"><?php echo $text; ?></textarea>
                             </div>
                             <div class="fix"></div>
                         </div>

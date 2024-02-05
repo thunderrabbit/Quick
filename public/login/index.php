@@ -5,6 +5,7 @@ include_once("/home/barefoot_rob/quick.robnugen.com/prepend.php");
 
 if ($is_logged_in->isLoggedIn()) {
     $page = new \Template($mla_request, $mla_database, $config);
+    $page->set("text", "");
     $page->setTemplate("poster/index.tpl.php");
     $page->echoToScreen();
 } else {
