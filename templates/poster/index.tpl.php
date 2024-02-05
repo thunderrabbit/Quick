@@ -35,7 +35,7 @@
                 }
                 echo "<br>logged in! <a href='/logout'>Log out</a>";
                 echo "<br>Next steps:";
-                echo "<br># Restore my code that grabbed entries via scp";
+                echo "<br>1. Make it responsive";
 ?>
                 <form action="/poster/" id="valid" class="mainForm" method="POST">
                     <fieldset>
