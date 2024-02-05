@@ -22,7 +22,7 @@ class QuickPoster{
 (
     [time] => 20:00
     [date] => Friday 2 February 2024
-    [title] => Creating posts with Posternator
+    [title] => Creating posts with Quick
     [post_content] => I'm really glad to have this working. I can now create posts from the web interface.
 
     I just need to create one more class or so to actually save the posts.

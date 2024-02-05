@@ -2,8 +2,8 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-        <title>Posternator</title>
-        <meta name="title" content="Posternator"/>
+        <title>Quick</title>
+        <meta name="title" content="Quick"/>
         <meta name="description" content=""/>
 
         <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
@@ -17,11 +17,11 @@
         } );
         </script>
     </head>
-    <body><!-- Posternator form area -->
-        <div class="PosternatorWrapper">
-            <div class="PosternatorLogo"><img src="/images/PosternatorLogo.png" alt="" /></div>
-            <div class="PosternatorPanel">
-                <div class="head"><h5 class="iUser">Posternator</h5></div>
+    <body><!-- Quick form area -->
+        <div class="QuickWrapper">
+            <div class="QuickLogo"><img src="/images/QuickLogo.png" alt="" /></div>
+            <div class="QuickPanel">
+                <div class="head"><h5 class="iUser">Quick</h5></div>
 <?php
                 // current time in JST timezone 24 hour format
                 date_default_timezone_set('Asia/Tokyo');
@@ -39,42 +39,42 @@
 ?>
                 <form action="/poster/" id="valid" class="mainForm" method="POST">
                     <fieldset>
-                        <div class="PosternatorRow noborder">
+                        <div class="QuickRow noborder">
                             <input type="submit" value="Save" class="greyishBtn submitForm" />
                             <div class="fix"></div>
                         </div>
-                        <div class="PosternatorRow noborder">
+                        <div class="QuickRow noborder">
                             <label for="req2">Date:</label>
-                            <div class="PosternatorInput">
+                            <div class="QuickInput">
                                 <input type="text" name="time" value="<?php echo $current_time ?>" size="5" />
                                 <input type="text" name="date" value="<?php echo $current_date ?>" size="35" id="dp" /></div>
                             <div class="fix"></div>
                         </div>
 
-                        <div class="PosternatorRow noborder">
+                        <div class="QuickRow noborder">
                             <label for="req1">Title:</label>
-                            <div class="PosternatorInput">
+                            <div class="QuickInput">
                                 <input type="text" name="title" size="97" value="" />
                             </div>
                             <div class="fix"></div>
                         </div>
 
-                        <div class="PosternatorRow noborder">
+                        <div class="QuickRow noborder">
                             <label for="req1">Tags:</label>
-                            <div class="PosternatorInput">
+                            <div class="QuickInput">
                                 <input type="text" name="tags" size="97" value="" />
                             </div>
                             <div class="fix"></div>
                         </div>
 
-                        <div class="PosternatorRow noborder">
+                        <div class="QuickRow noborder">
                             <label for="req2">Content:</label>
-                            <div class="PosternatorInput">
+                            <div class="QuickInput">
                                 <textarea name="post_content" cols="155" rows="35"></textarea>
                             </div>
                             <div class="fix"></div>
                         </div>
-                        <div class="PosternatorRow noborder">
+                        <div class="QuickRow noborder">
                             <input type="submit" value="Save" class="greyishBtn submitForm" />
                             <div class="fix"></div>
                         </div>
