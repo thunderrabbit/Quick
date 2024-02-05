@@ -7,4 +7,3 @@ $is_logged_in->logout();
 $page = new \Template($mla_request, $mla_database, $config);
 $page->setTemplate("logout/index.tpl.php");
 $page->echoToScreen();
-print_rob($mla_request,false);
