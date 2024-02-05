@@ -66,29 +66,6 @@ abstract class ResultSetObject implements \Iterator {
         return $this->array_of_data;
     }
 
-    /*  DO WANT
-    public function toIdArray() {
-        if(!is_array($this->array_of_id_data)) {
-            $this->array_of_id_data = array();
-            if($this->numRows()) {
-                $tmpRowNum = ($this->currentRowNum >= 0) ? $this->currentRowNum : 0;
-                $this->rewind();
-
-                while($this->valid()) {
-                    $this->array_of_id_data[$this->data->id] = $this->data;  // Does not work
-                    $this->next();
-                }
-
-                if($tmpRowNum !== false) {
-                    $this->setRow($tmpRowNum);
-                }
-            }
-        }
-        return $this->array_of_id_data;
-    }
-     *
-     */
-
 	/* returns the number of rows in this ResultSet*/
     abstract public function numRows();
     abstract public function setRow($rowNum);
