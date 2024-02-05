@@ -69,12 +69,12 @@ class QuickPoster{
         $day = $dateObject->format('d');
 
         $frontmatter = "---\n";
-        $frontmatter .= "title: $title\n";
+        $frontmatter .= "title: \"$title\"\n";
         // "life, journal, fun" => ["life", "journal", "fun"]
         $quoted_tags = '"' . preg_replace("/, /", "\", \"", $tags) . '"';
         $frontmatter .= "tags: [ \"$year\", $quoted_tags ]\n";
         $frontmatter .= "author: Rob Nugen\n";
-        $frontmatter .= "date: $year-$month-$day"."T$time+09:00\n";
+        $frontmatter .= "date: $year-$month-$day"."T$time:00+09:00\n";      // :00 so Hugo will parse datetime properly
         $frontmatter .= "draft: false\n";
         $frontmatter .= "---\n";
 
@@ -97,8 +97,11 @@ class QuickPoster{
 
     private function createUrlTitle(string $title): string
     {
+        // remove single quotes so I'm and It's don't become I-m and It-s
+        $url_title = preg_replace("/'/", "", $title);
+
         // replace "?' " with "-"
-        $url_title = preg_replace("/[^a-zA-Z0-9\w]/", "-", $title);
+        $url_title = preg_replace("/[^a-zA-Z0-9\w]/", "-", $url_title);
 
         // replace multiple hyphens with a single hyphen
         $url_title = preg_replace("/-+/", "-", $url_title);
