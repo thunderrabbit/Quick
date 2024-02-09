@@ -1,10 +1,12 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Quick</title>
         <meta name="title" content="Quick"/>
         <meta name="description" content=""/>
+        <link rel="stylesheet" href="/css/styles.css">
 
         <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
         <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
@@ -18,9 +20,9 @@
         </script>
     </head>
     <body><!-- Quick form area -->
-        <div class="QuickWrapper">
-            <div class="QuickLogo"><img src="/images/QuickLogo.png" alt="" /></div>
-            <div class="QuickPanel">
+        <div class="PageWrapper">
+            <div class="PageLogo"><img src="/images/QuickLogo.png" alt="" /></div>
+            <div class="PagePanel">
                 <div class="head"><h5 class="iUser">Quick</h5></div>
 <?php
                 // current time in JST timezone 24 hour format
@@ -35,46 +37,45 @@
                 }
                 echo "<br>logged in! <a href='/logout'>Log out</a>";
                 echo "<br>Next steps:";
-                echo "<br>1. Make it responsive";
 ?>
                 <form action="/poster/" id="valid" class="mainForm" method="POST">
                     <fieldset>
-                        <div class="QuickRow noborder">
+                        <div class="PageRow noborder">
                             <input type="submit" value="Save" class="greyishBtn submitForm" />
                             <div class="fix"></div>
                         </div>
-                        <div class="QuickRow noborder">
+                        <div class="PageRow noborder">
                             <label for="req2">Date:</label>
-                            <div class="QuickInput">
+                            <div class="PageInput">
                                 <input type="text" name="time" value="<?php echo $current_time ?>" size="5" />
                                 <input type="text" name="date" value="<?php echo $current_date ?>" size="35" id="dp" /></div>
                             <div class="fix"></div>
                         </div>
 
-                        <div class="QuickRow noborder">
+                        <div class="PageRow noborder">
                             <label for="req1">Title:</label>
-                            <div class="QuickInput">
-                                <input type="text" name="title" size="97" value="" />
+                            <div class="PageInput">
+                                <input type="text" name="title" size="75" value="" />
                             </div>
                             <div class="fix"></div>
                         </div>
 
-                        <div class="QuickRow noborder">
+                        <div class="PageRow noborder">
                             <label for="req1">Tags:</label>
-                            <div class="QuickInput">
-                                <input type="text" name="tags" size="97" value="" />
+                            <div class="PageInput">
+                                <input type="text" name="tags" size="75" value="" />
                             </div>
                             <div class="fix"></div>
                         </div>
 
-                        <div class="QuickRow noborder">
+                        <div class="PageRow noborder">
                             <label for="req2">Content:</label>
-                            <div class="QuickInput">
-                                <textarea name="post_content" cols="155" rows="35"><?php echo $text; ?></textarea>
+                            <div class="PageInput">
+                                <textarea name="post_content" cols="75" rows="35"><?php echo $text; ?></textarea>
                             </div>
                             <div class="fix"></div>
                         </div>
-                        <div class="QuickRow noborder">
+                        <div class="PageRow noborder">
                             <input type="submit" value="Save" class="greyishBtn submitForm" />
                             <div class="fix"></div>
                         </div>

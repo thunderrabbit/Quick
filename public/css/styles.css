@@ -1,0 +1,46 @@
+body {
+    font-family: Arial, sans-serif;
+}
+
+.PageWrapper {
+    max-width: 300px;
+    margin: 0 auto;
+}
+
+.PageLogo img {
+    max-width: 100%;
+    height: auto;
+}
+
+.PagePanel {
+    padding: 20px;
+}
+
+.PageRow {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 10px;
+}
+
+.PageInput {
+    margin-top: 5px;
+}
+
+.greyishBtn {
+    background-color: #ddd;
+    border: none;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+}
+
+@media (max-width: 600px) {
+    .PageWrapper {
+        width: 100%;
+        padding: 0 15px;
+    }
+}
