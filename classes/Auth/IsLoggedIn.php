@@ -135,6 +135,9 @@ class IsLoggedIn
     {
         $this->is_logged_in = false;
         $this->killCookie();
+        session_destroy();
+        session_start();
+        session_regenerate_id();
     }
 
     private function killCookie(): void
