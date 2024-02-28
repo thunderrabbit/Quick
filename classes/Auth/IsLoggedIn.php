@@ -112,7 +112,7 @@ class IsLoggedIn
     }
 
 
-    private function getUserIdForCookieInDatabase($cookie): int
+    private function getUserIdForCookieInDatabase(string $cookie): int
     {
         $cookie_result = $this->di_dbase->fetchResults("SELECT `user_id` FROM `cookies`
             WHERE `cookie` = ? LIMIT 1", "s", $cookie);
