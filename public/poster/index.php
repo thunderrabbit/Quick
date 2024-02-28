@@ -18,6 +18,7 @@ if($mla_request->get)
 {
     if($mla_request->get['text'])
     {
+        // used by badmin.robnugen.com
         $text = $mla_request->get['text'];
     }
 }

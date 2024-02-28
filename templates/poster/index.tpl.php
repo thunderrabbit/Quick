@@ -71,7 +71,7 @@
                         <div class="PageRow noborder">
                             <label for="req2">Content:</label>
                             <div class="PageInput">
-                                <textarea name="post_content" cols="75" rows="35"><?php echo $text; ?></textarea>
+                                <textarea name="post_content" cols="75" rows="35"><?php echo $text; // badmin.robnugen.com ?></textarea>
                             </div>
                             <div class="fix"></div>
                         </div>
