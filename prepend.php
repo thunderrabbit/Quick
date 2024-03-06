@@ -29,7 +29,6 @@ function print_rob($object, $exit = true)
 $config = new \Config();
 
 $mla_database = \Base::getDB($config);
-$prepend_site_handler = new \SiteHandler($config, $mla_database);
 
 $is_logged_in = new \Auth\IsLoggedIn($mla_database);
 $is_logged_in->checkLogin($mla_request);
