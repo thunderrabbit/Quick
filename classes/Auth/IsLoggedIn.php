@@ -11,8 +11,6 @@ namespace Auth;
 
 class IsLoggedIn
 {
-    private $di_mla_request;
-
     private bool $is_logged_in = false;
 
     private string $session_variable = 'login';   // must match the one in \UserAuthentication
@@ -26,11 +24,10 @@ class IsLoggedIn
 
     public function checkLogin(\Mlaphp\Request $mla_request): bool
     {
-        $this->di_mla_request = $mla_request;
         $found_user_id = 0;
-        if(!empty($this->di_mla_request->cookie[$this->cookie_name]))
+        if(!empty($mla_request->cookie[$this->cookie_name]))
         {
-            $found_user_id = $this->getUserIdForCookieInDatabase($this->di_mla_request->cookie[$this->cookie_name]);
+            $found_user_id = $this->getUserIdForCookieInDatabase($mla_request->cookie[$this->cookie_name]);
             if(empty($found_user_id))
             {
                 $this->killCookie();
@@ -39,8 +36,8 @@ class IsLoggedIn
                 $this->is_logged_in = true;
                 return true;
             }
-        } elseif(!empty($this->di_mla_request->post['email']) && !empty($this->di_mla_request->post['pass'])) {
-            $found_user_id = $this->checkPHPHashedPassword($this->di_mla_request->post['email'], $this->di_mla_request->post['pass']);
+        } elseif(!empty($mla_request->post['email']) && !empty($mla_request->post['pass'])) {
+            $found_user_id = $this->checkPHPHashedPassword($mla_request->post['email'], $mla_request->post['pass']);
             if(empty($found_user_id))
             {
                 // don't killCookie here because an attacker could kill my login by sending a post with bad password
