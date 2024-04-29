@@ -36,8 +36,11 @@
                     echo "<br>Post saved to <a target='journal' href='https://quick.robnugen.com/$post_path'>$post_path</a>";
                 }
                 echo "<br>logged in! <a href='/logout'>Log out</a>";
-                echo "<br>Next steps:";
 ?>
+                <p><a href="https://quick.robnugen.com">https://quick.robnugen.com</a>
+                <br><a href="https://badmin.robnugen.com">https://badmin.robnugen.com</a></p>
+                <p>Next steps:</p>
+
                 <form action="/poster/" id="valid" class="mainForm" method="POST">
                     <fieldset>
                         <div class="PageRow noborder">
