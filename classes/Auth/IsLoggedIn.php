@@ -40,7 +40,7 @@ class IsLoggedIn
             $found_user_id = $this->checkPHPHashedPassword($mla_request->post['email'], $mla_request->post['pass']);
             if(empty($found_user_id))
             {
-                // don't killCookie here because an attacker could kill my login by sending a post with bad password
+                $this->killCookie();        // bad login, so kill any cookie
                 return false;
             } else {
                 $this->setAutoLoginCookie($found_user_id);
