@@ -9,6 +9,9 @@ if ($mla_request->post) {
     if($okay)
     {
         $post_path = $postifier->post_path;
+        // remove leading / from post_path
+        $post_path = ltrim(string: $post_path, characters: "/");
+
 
         // Instantiate TempOSpooner without parameters
         $tempOSpooner = new TempOSpooner();
@@ -33,7 +36,7 @@ if($mla_request->get)
         $text = $mla_request->get['text'];
     }
 }
-$page = new \Template(mla_request: $mla_request, dbase: $mla_database, $config);
+$page = new \Template(mla_request: $mla_request, dbase: $mla_database, config: $config);
 if(isset($post_path))
 {
     $page->set(name: "post_path",value: $post_path);
