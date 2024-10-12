@@ -34,11 +34,16 @@ class TempOSpooner
             throw new Exception(message: "Failed to commit changes: " . ($errorOutput ?: "No output returned") . ($returnVar ? " (Return code: $returnVar)" : ""));
         }
 
-        // Switch to the 'tempospoon' branch
-        exec(command: "git checkout tempospoon", output: $output, result_code: $returnVar);
-        if ($returnVar !== 0) {
-            $errorOutput = implode(separator: "\n", array: $output);  // Merge all lines of output into a single string
-            throw new Exception(message: "Failed to switch to branch 'tempospoon': " . ($errorOutput ?: "No output returned") . ($returnVar ? " (Return code: $returnVar)" : ""));
+        // Check the current branch
+        exec(command: "git rev-parse --abbrev-ref HEAD", output: $currentBranchOutput, result_code: $returnVar);
+        $currentBranch = trim(string: implode(separator: "\n", array: $currentBranchOutput));
+        if ($currentBranch !== 'tempospoon') {
+            // Switch to the 'tempospoon' branch
+            exec(command: "git checkout tempospoon", output: $output, result_code: $returnVar);
+            if ($returnVar !== 0) {
+                $errorOutput = implode(separator: "\n", array: $output);  // Merge all lines of output into a single string
+                throw new Exception(message: "Failed to switch to branch 'tempospoon': " . ($errorOutput ?: "No output returned") . ($returnVar ? " (Return code: $returnVar)" : ""));
+            }
         }
 
         // Push the changes to the remote
@@ -49,6 +54,7 @@ class TempOSpooner
         }
     }
 }
+
 
 
 
