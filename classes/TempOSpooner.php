@@ -31,7 +31,7 @@ class TempOSpooner
         exec(command: "git commit -m 'Add new journal entry'", output: $output, result_code: $returnVar);
         if ($returnVar !== 0) {
             $errorOutput = implode(separator: "\n", array: $output);  // Merge all lines of output into a single string
-            throw new Exception(message: "Failed to commit changes: " . ($errorOutput ?: "No output returned") . ($returnVar ? " (Return code: $returnVar)" : ""));
+      throw new Exception(message: "Failed to commit changes: " . ($errorOutput ?: "No output returned") . ($returnVar ? " (Return code: $returnVar)" : ""));
         }
 
         // Check the current branch
@@ -54,7 +54,3 @@ class TempOSpooner
         }
     }
 }
-
-
-
-
