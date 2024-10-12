@@ -35,22 +35,45 @@ class TempOSpooner
         }
 
         // Check the current branch
-        exec(command: "git rev-parse --abbrev-ref HEAD", output: $currentBranchOutput, result_code: $returnVar);
-        $currentBranch = trim(string: implode(separator: "\n", array: $currentBranchOutput));
-        if ($currentBranch !== 'tempospoon') {
-            // Switch to the 'tempospoon' branch
-            exec(command: "git checkout tempospoon", output: $output, result_code: $returnVar);
+        exec("git rev-parse --abbrev-ref HEAD", $currentBranchOutput, $returnVar);
+        $currentBranch = trim(implode("\n", $currentBranchOutput));
+
+        // Check if the current branch starts with 'tempo'
+        if (strpos($currentBranch, 'tempo') === 0) {
+            $oldBranchName = $currentBranch;
+        }
+
+        // Create a new random branch name starting with 'tempo'
+        $newBranchName = 'tempo_' . uniqid();
+
+        // Switch to the new branch
+        exec("git checkout -b " . escapeshellarg($newBranchName), $output, $returnVar);
+        if ($returnVar !== 0) {
+            throw new Exception("Failed to create and switch to new branch: " . implode("\n", $output));
+        }
+
+        // Delete the old branch locally and from the remote
+        if (isset($oldBranchName)) {
+            // Delete the old branch locally
+            exec("git branch -d " . escapeshellarg($oldBranchName), $output, $returnVar);
             if ($returnVar !== 0) {
-                $errorOutput = implode(separator: "\n", array: $output);  // Merge all lines of output into a single string
-                throw new Exception(message: "Failed to switch to branch 'tempospoon': " . ($errorOutput ?: "No output returned") . ($returnVar ? " (Return code: $returnVar)" : ""));
+                throw new Exception("Failed to delete old branch locally: " . implode("\n", $output));
+            }
+
+            // Delete the old branch from the remote
+            exec("git push origin --delete " . escapeshellarg($oldBranchName), $output, $returnVar);
+            if ($returnVar !== 0) {
+                throw new Exception("Failed to delete old branch from remote: " . implode("\n", $output));
             }
         }
 
-        // Push the changes to the remote
-        exec(command: "git push origin tempospoon", output: $output, result_code: $returnVar);
+        // Push the changes to the new branch
+        exec("git push origin " . escapeshellarg($newBranchName), $output, $returnVar);
         if ($returnVar !== 0) {
-            $errorOutput = implode(separator: "\n", array: $output);  // Merge all lines of output into a single string
-            throw new Exception(message: "Failed to push changes to remote: " . ($errorOutput ?: "No output returned") . ($returnVar ? " (Return code: $returnVar)" : ""));
+            throw new Exception("Failed to push changes to remote: " . implode("\n", $output));
         }
     }
 }
+
+
+
