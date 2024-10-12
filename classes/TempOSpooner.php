@@ -7,7 +7,7 @@ class TempOSpooner
     }
 
 
-    public function addAndPushToGit($filePath, $config)
+    public function addAndPushToGit($filePath, $config): void
     {
         // Use the repository path from the config
         $repositoryPath = $config->post_path_journal;
@@ -16,27 +16,27 @@ class TempOSpooner
         chdir($repositoryPath);
 
         // Add the file to the git index
-        exec("git add " . escapeshellarg($filePath), $output, $returnVar);
+        exec(command: "git add " . escapeshellarg(arg: $filePath), output: $output, result_code: $returnVar);
         if ($returnVar !== 0) {
-            throw new Exception("Failed to add file to git: " . implode("\n", $output));
+            throw new Exception(message: "Failed to add file to git: " . implode(separator: "\n", array: $output));
         }
 
         // Commit the changes
-        exec("git commit -m 'Add new journal entry'", $output, $returnVar);
+        exec(command: "git commit -m 'Add new journal entry'", output: $output, result_code: $returnVar);
         if ($returnVar !== 0) {
-            throw new Exception("Failed to commit changes: " . implode("\n", $output));
+            throw new Exception(message: "Failed to commit changes: " . implode(separator: "\n", array: $output));
         }
 
         // Switch to the 'tempospoon' branch
-        exec("git checkout tempospoon", $output, $returnVar);
+        exec(command: "git checkout tempospoon", output: $output, result_code: $returnVar);
         if ($returnVar !== 0) {
-            throw new Exception("Failed to switch to branch 'tempospoon': " . implode("\n", $output));
+            throw new Exception(message: "Failed to switch to branch 'tempospoon': " . implode(separator: "\n", array: $output));
         }
 
         // Push the changes to the remote
-        exec("git push origin tempospoon", $output, $returnVar);
+        exec(command: "git push origin tempospoon", output: $output, result_code: $returnVar);
         if ($returnVar !== 0) {
-            throw new Exception("Failed to push changes to remote: " . implode("\n", $output));
+            throw new Exception(message: "Failed to push changes to remote: " . implode(separator: "\n", array: $output));
         }
     }
 }

@@ -54,7 +54,7 @@ class QuickPoster{
         fclose($file);
 
         // return path after removing the app path
-        $this->post_path = str_replace($config->post_path_journal, "", $file_path);
+        $this->post_path = str_replace(search: $config->post_path_journal, replace: "", subject: $file_path);
 
         return true;
 
@@ -62,16 +62,16 @@ class QuickPoster{
 
     private function createFrontMatter(string $title, string $date, string $time, string $tags): string
     {
-        $dateObject = new DateTime($date);
+        $dateObject = new DateTime(datetime: $date);
 
-        $year = $dateObject->format('Y');
-        $month = $dateObject->format('m');
-        $day = $dateObject->format('d');
+        $year = $dateObject->format(format: 'Y');
+        $month = $dateObject->format(format: 'm');
+        $day = $dateObject->format(format: 'd');
 
         $frontmatter = "---\n";
         $frontmatter .= "title: \"$title\"\n";
         // "life, journal, fun" => ["life", "journal", "fun"]
-        $quoted_tags = '"' . preg_replace("/, /", "\", \"", $tags) . '"';
+        $quoted_tags = '"' . preg_replace(pattern: "/, /", replacement: "\", \"", subject: $tags) . '"';
         $frontmatter .= "tags: [ \"$year\", $quoted_tags ]\n";
         $frontmatter .= "author: Rob Nugen\n";
         $frontmatter .= "date: $year-$month-$day"."T$time:00+09:00\n";      // :00 so Hugo will parse datetime properly
@@ -82,13 +82,13 @@ class QuickPoster{
     }
     private function createFilePath(string $title, string $date, \Config $config): string
     {
-        $url_title = $this->createUrlTitle($title);
+        $url_title = $this->createUrlTitle(title: $title);
         // Parse $date = 'Saturday 3 February 2024 JST' to date so we can get numeric year month and day
-        $dateObject = new DateTime($date);
+        $dateObject = new DateTime(datetime: $date);
 
-        $year = $dateObject->format('Y');
-        $month = $dateObject->format('m');
-        $day = $dateObject->format('d');
+        $year = $dateObject->format(format: 'Y');
+        $month = $dateObject->format(format: 'm');
+        $day = $dateObject->format(format: 'd');
 
         $file_path = "$config->post_path_journal/$year/$month/$day$url_title.md";
 
