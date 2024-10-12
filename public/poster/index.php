@@ -10,7 +10,7 @@ if ($mla_request->post) {
     {
         $post_path = $postifier->post_path;
 
-        // Instantiate TempOSpooner
+        // Instantiate TempOSpooner without parameters
         $tempOSpooner = new TempOSpooner();
 
         try {
@@ -41,4 +41,5 @@ if(isset($post_path))
 $page->setTemplate("poster/index.tpl.php");
 $page->set("text", $text);
 $page->echoToScreen();
+
 

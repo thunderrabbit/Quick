@@ -2,12 +2,10 @@
 
 class TempOSpooner
 {
-    private $repositoryPath;
-
-    public function __construct($repositoryPath)
+    public function __construct()
     {
-        $this->repositoryPath = $repositoryPath;
     }
+
 
     public function addAndPushToGit($filePath, $config)
     {
@@ -42,5 +40,6 @@ class TempOSpooner
         }
     }
 }
+
 
 
