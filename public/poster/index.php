@@ -10,12 +10,12 @@ if ($mla_request->post) {
     {
         $post_path = $postifier->post_path;
 
-        // Instantiate TempOSpooner with the path to the git repository
-        $tempOSpooner = new TempOSpooner($post_path_journal);
+        // Instantiate TempOSpooner
+        $tempOSpooner = new TempOSpooner();
 
         try {
             // Add and push the saved file to the git branch 'tempospoon'
-            $tempOSpooner->addAndPushToGit($post_path);
+            $tempOSpooner->addAndPushToGit($post_path, $config);
             echo "File successfully added and pushed to git branch 'tempospoon'.";
         } catch (Exception $e) {
             echo "Error: " . $e->getMessage();
@@ -41,3 +41,4 @@ if(isset($post_path))
 $page->setTemplate("poster/index.tpl.php");
 $page->set("text", $text);
 $page->echoToScreen();
+

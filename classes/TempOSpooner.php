@@ -9,10 +9,13 @@ class TempOSpooner
         $this->repositoryPath = $repositoryPath;
     }
 
-    public function addAndPushToGit($filePath)
+    public function addAndPushToGit($filePath, $config)
     {
+        // Use the repository path from the config
+        $repositoryPath = $config->post_path_journal;
+
         // Change directory to the repository path
-        chdir($this->repositoryPath);
+        chdir($repositoryPath);
 
         // Add the file to the git index
         exec("git add " . escapeshellarg($filePath), $output, $returnVar);
@@ -39,4 +42,5 @@ class TempOSpooner
         }
     }
 }
+
 
