@@ -4,11 +4,25 @@
 include_once("/home/barefoot_rob/quick.robnugen.com/prepend.php");
 
 if ($mla_request->post) {
-    $postifier = new \QuickPoster($mla_database);
-    $okay = $postifier->createPost($config, $mla_request->post);
+    $postifier = new \QuickPoster(dbase: $mla_database);
+    $okay = $postifier->createPost(config: $config, post_array: $mla_request->post);
     if($okay)
     {
         $post_path = $postifier->post_path;
+        // remove leading / from post_path
+        $post_path = ltrim(string: $post_path, characters: "/");
+
+
+        // Instantiate TempOSpooner without parameters
+        $tempOSpooner = new TempOSpooner();
+
+        try {
+            // Add and push the saved file to the git branch 'tempospoon'
+            $tempOSpooner->addAndPushToGit(filePath: $post_path, config: $config);
+            echo "File successfully added and pushed to git branch 'tempospoon'.";
+        } catch (Exception $e) {
+            echo "Error: " . $e->getMessage();
+        }
     }
 }
 
@@ -22,11 +36,13 @@ if($mla_request->get)
         $text = $mla_request->get['text'];
     }
 }
-$page = new \Template($mla_request, $mla_database, $config);
+$page = new \Template(mla_request: $mla_request, dbase: $mla_database, config: $config);
 if(isset($post_path))
 {
-    $page->set("post_path",$post_path);
+    $page->set(name: "post_path",value: $post_path);
 }
-$page->setTemplate("poster/index.tpl.php");
-$page->set("text", $text);
+$page->setTemplate(template_file: "poster/index.tpl.php");
+$page->set(name: "text", value: $text);
 $page->echoToScreen();
+
+
