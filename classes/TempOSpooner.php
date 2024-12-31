@@ -19,8 +19,8 @@ class TempOSpooner
         $output = [];
         $returnVar = 0;
 
-        echo "Adding $filePath to git repository at $repositoryPath\n";
         // Add the file to the git index
+        echo "Adding $filePath to git repository at $repositoryPath\n";
         exec(command: "git add " . escapeshellarg(arg: $filePath), output: $output, result_code: $returnVar);
         if ($returnVar !== 0) {
             $errorOutput = implode(separator: "\n", array: $output);  // Merge all lines of output into a single string
@@ -28,17 +28,20 @@ class TempOSpooner
         }
 
         // Commit the changes
+        echo "Committing changes\n";
         exec(command: "git commit -m 'Add new journal entry'", output: $output, result_code: $returnVar);
         if ($returnVar !== 0) {
             $errorOutput = implode(separator: "\n", array: $output);  // Merge all lines of output into a single string
-      throw new Exception(message: "Failed to commit changes: " . ($errorOutput ?: "No output returned") . ($returnVar ? " (Return code: $returnVar)" : ""));
+            throw new Exception(message: "Failed to commit changes: " . ($errorOutput ?: "No output returned") . ($returnVar ? " (Return code: $returnVar)" : ""));
         }
 
         // Check the current branch
+        echo "Checking current branch\n";
         exec("git rev-parse --abbrev-ref HEAD", $currentBranchOutput, $returnVar);
         $currentBranch = trim(implode("\n", $currentBranchOutput));
 
         // Check if the current branch starts with 'tempo'
+        echo "Checking if current branch starts with 'tempo'\n";
         if (strpos($currentBranch, 'tempo') === 0) {
             $oldBranchName = $currentBranch;
         }
@@ -47,6 +50,7 @@ class TempOSpooner
         $newBranchName = 'tempo_' . uniqid();
 
         // Switch to the new branch
+        echo "Switching to new branch $newBranchName\n";
         exec("git checkout -b " . escapeshellarg($newBranchName), $output, $returnVar);
         if ($returnVar !== 0) {
             throw new Exception("Failed to create and switch to new branch: " . implode("\n", $output));
@@ -55,12 +59,14 @@ class TempOSpooner
         // Delete the old branch locally and from the remote
         if (isset($oldBranchName)) {
             // Delete the old branch locally
+            echo "Locally deleting old branch named $oldBranchName\n";
             exec("git branch -d " . escapeshellarg($oldBranchName), $output, $returnVar);
             if ($returnVar !== 0) {
                 throw new Exception("Failed to delete old branch locally: " . implode("\n", $output));
             }
 
             // Delete the old branch from the remote
+            echo "Remotely deleting old branch named $oldBranchName\n";
             exec("git push origin --delete " . escapeshellarg($oldBranchName), $output, $returnVar);
             if ($returnVar !== 0) {
                 throw new Exception("Failed to delete old branch from remote: " . implode("\n", $output));
@@ -68,12 +74,10 @@ class TempOSpooner
         }
 
         // Push the changes to the new branch
+        echo "Pushing changes to remote for new branch $newBranchName\n";
         exec("git push origin " . escapeshellarg($newBranchName), $output, $returnVar);
         if ($returnVar !== 0) {
             throw new Exception("Failed to push changes to remote: " . implode("\n", $output));
         }
     }
 }
-
-
-
