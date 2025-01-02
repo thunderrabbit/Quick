@@ -30,9 +30,9 @@ class TempOSpooner
         // Commit the changes
         echo "<p>Committing changes\n</p>";
         $returnVar = exec(command: "git commit -m 'Add new journal entry'", output: $output);
-        if (!empty($returnVar)) {
+        if (!str_starts_with(haystack: $returnVar, needle: " create mode 100644")) {
             $errorOutput = implode(separator: "\n", array: $output);  // Merge all lines of output into a single string
-            throw new Exception(message: "Failed to commit changes: " . ($errorOutput ?: "No output returned") . ($returnVar ? " (Return code: $returnVar)" : ""));
+            throw new Exception(message: "Failed >$returnVar< to commit changes: " . ($errorOutput ?: "No output returned") . ($returnVar ? " (Return code: $returnVar)" : ""));
         }
 
         // Check the current branch
@@ -61,8 +61,8 @@ class TempOSpooner
             // Delete the old branch locally
             echo "<p>Locally deleting old branch named $oldBranchName\n</p>";
             $returnVar = exec(command: "git branch -d $oldBranchName");
-            if (!empty($returnVar)) {
-                throw new Exception("Failed to delete old branch locally: " . implode("\n", $output));
+            if (!str_starts_with(haystack: $returnVar, needle: "Deleted branch $oldBranchName")) {
+                throw new Exception("Failed >$returnVar< to delete old branch locally: " . implode("\n", $output));
             }
 
             // Delete the old branch from the remote
