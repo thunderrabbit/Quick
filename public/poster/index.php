@@ -18,8 +18,8 @@ if ($mla_request->post) {
 
         try {
             // Add and push the saved file to the git branch 'tempospoon'
-            $tempOSpooner->addAndPushToGit(filePath: $post_path, config: $config);
-            echo "File successfully added and pushed to git branch 'tempospoon'.";
+            $newBranchName = $tempOSpooner->addAndPushToGit(filePath: $post_path, config: $config);
+            echo "File successfully added and pushed to git branch $newBranchName.";
         } catch (Exception $e) {
             echo "Error: " . $e->getMessage();
         }

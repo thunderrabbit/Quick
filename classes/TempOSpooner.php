@@ -7,7 +7,7 @@ class TempOSpooner
     }
 
 
-    public function addAndPushToGit($filePath, $config): void
+    public function addAndPushToGit($filePath, $config): string
     {
         // Use the repository path from the config
         $repositoryPath = $config->post_path_journal;
@@ -79,5 +79,7 @@ class TempOSpooner
         if (!empty($returnVar)) {
             throw new Exception("Failed to push >$returnVar< changes to remote: " . implode("\n", $output));
         }
+
+        return $newBranchName;   // to be used in the message displayed to the user
     }
 }
