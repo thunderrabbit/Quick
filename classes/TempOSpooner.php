@@ -46,7 +46,11 @@ class TempOSpooner
     {
         echo "<p>Switching to branch $branch\n</p>";
         $returnVar = exec("git checkout $branch", $output);
-        if (!str_starts_with(haystack: $returnVar, needle: "Switched to branch '$branch'")) {
+        if (!
+             (str_starts_with(haystack: $returnVar, needle: "Switched to branch '$branch'")
+              || str_starts_with(haystack: $returnVar, needle: "Your branch is up to date with 'origin/master'")
+             )
+            ) {
             throw new Exception("Failed to switch to branch $branch: " . implode("\n", $output));
         } else {
             echo "<p>Successfully switched to branch $branch\n</p>";
