@@ -12,22 +12,34 @@ class TempOSpooner
      */
     private function getMrBranchOfCurrentHEAD(): MrBranch
     {
-        // Check the current branch
-        echo "<p>Checking current branch\n</p>";
-        exec("git rev-parse --abbrev-ref HEAD", $currentBranchOutput);
-        $currentBranch = trim(implode("\n", $currentBranchOutput));
+        $maxAttempts = 5;
+        $delayBetweenAttempts = 5000; // 5 seconds in milliseconds
 
-        // Get the date of the current HEAD
-        echo "<p>Getting the date of the current branch ($currentBranch)\n</p>";
-        exec(command: "git show -s --format=%ci HEAD", output: $dateOutput);
-        $date = trim(string: implode(separator: "\n", array: $dateOutput));
-        echo "<p>Date of $currentBranch: $date\n</p>";
-        return new MrBranch(
-            branchName: $currentBranch,
-            commitDate: new DateTime(
-                            datetime: $date
-                        )
-        );
+        for ($attempt = 1; $attempt <= $maxAttempts; $attempt++) {
+        try {
+            // Check the current branch
+            echo "<p>Checking current branch (Attempt $attempt)</p>";
+            exec("git rev-parse --abbrev-ref HEAD", $currentBranchOutput);
+            $currentBranch = trim(implode("\n", $currentBranchOutput));
+
+            // Get the date of the current HEAD
+            echo "<p>Getting the date of the current branch ($currentBranch)</p>";
+            exec("git show -s --format=%ci HEAD", $dateOutput);
+            $date = trim(implode("\n", $dateOutput));
+            echo "<p>Date of $currentBranch: $date</p>";
+
+            return new MrBranch(
+                branchName: $currentBranch,
+                commitDate: new DateTime($date)
+            );
+        } catch (Exception $e) {
+            if ($attempt == $maxAttempts) {
+                throw $e;
+            }
+            echo "<p>Attempt $attempt failed. Retrying in $delayBetweenAttempts milliseconds...</p>";
+            usleep($delayBetweenAttempts * 1000); // Convert milliseconds to microseconds
+        }
+    }
     }
 
     private function switchToThisBranch(string $branch): bool
