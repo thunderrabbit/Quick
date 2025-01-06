@@ -4,7 +4,7 @@ class MrBranch {
 
     public function __construct(
         private string $branchName,
-        private DateTime $latestCommit
+        private DateTime $commitDate
     ) {
     }
 
@@ -15,16 +15,16 @@ class MrBranch {
 
     public function getLatestCommit(): DateTime
     {
-        return $this->latestCommit;
+        return $this->commitDate;
     }
 
     public function __toString(): string
     {
         return $this->getBranchName();
     }
-    public function getLatestCommitAsString(): string
+    public function getBranchDateAsString(): string
     {
-        return $this->latestCommit->format('Y-m-d H:i:s');
+        return $this->commitDate->format('Y-m-d H:i:s');
     }
     public function returnMostRecentBranchName(MrBranch $otherBranch): string
     {

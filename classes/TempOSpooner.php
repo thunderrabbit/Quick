@@ -18,11 +18,16 @@ class TempOSpooner
         $currentBranch = trim(implode("\n", $currentBranchOutput));
 
         // Get the date of the current HEAD
-        echo "<p>Getting the date of the current HEAD ($currentBranch)\n</p>";
+        echo "<p>Getting the date of the current branch ($currentBranch)\n</p>";
         exec(command: "git show -s --format=%ci HEAD", output: $dateOutput);
         $date = trim(string: implode(separator: "\n", array: $dateOutput));
-        echo "<p>Date of current HEAD: $date\n</p>";
-        return new MrBranch(branchName: $currentBranch, latestCommit: new DateTime(datetime: $date));
+        echo "<p>Date of $currentBranch: $date\n</p>";
+        return new MrBranch(
+            branchName: $currentBranch,
+            commitDate: new DateTime(
+                            datetime: $date
+                        )
+        );
     }
 
     private function getOntoCorrectLatestBranch(): void
@@ -33,9 +38,9 @@ class TempOSpooner
         // Check if the current branch starts with 'tempo'
         echo "<p>Checking if $probablyTempBranch is actually a temp branch\n</p>";
         if (strpos($probablyTempBranch, needle: 'tempo') === 0) {
-            echo "<p>Branch $probablyTempBranch starts with 'tempo'.\n</p>";
+            echo "<p>Yes; $probablyTempBranch starts with 'tempo'.\n</p>";
         } elseif (strpos(haystack: $probablyTempBranch, needle: 'master') === 0) {
-            echo "<p>We are on the master branch already.";
+            echo "<p>Nope!  We are on the master branch already.";
             $onMasterBranch = true;
         } else {
             throw new Exception(message: "You are not on a branch starting with 'tempo' nor 'master'.");
@@ -54,11 +59,11 @@ class TempOSpooner
             }
         }
 
-        echo "<p>Checking out master branch and pulling it\n</p>";
+        echo "<p>Checked out master branch and now pulling it\n</p>";
         exec("git pull", $output);
         $mrMasterBranch = $this->getMrBranchOfCurrentHEAD();
 
-        echo "<p>Date of master branch: " . $mrMasterBranch->getLatestCommitAsString() . "\n</p>";
+        echo "<p>Date of master branch: " . $mrMasterBranch->getBranchDateAsString() . "\n</p>";
 
         // check if the master branch is newer than the tempo branch
         if($mrMasterBranch->getLatestCommit() < $probablyTempBranch->getLatestCommit()) {
