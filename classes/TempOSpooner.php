@@ -81,7 +81,7 @@ class TempOSpooner
         echo "<p>Date of master branch: " . $mrMasterBranch->getBranchDateAsString() . "\n</p>";
 
         // check if the master branch is newer than the tempo branch
-        if($mrMasterBranch->getLatestCommit() < $probablyTempBranch->getLatestCommit()) {
+        if($mrMasterBranch->getLatestCommit() > $probablyTempBranch->getLatestCommit()) {
             echo "<p>Master branch is older than tempo branch\n</p>";
             // Switch to the $tempoBranchName branch
             $onTempBranch = $this->switchToThisBranch(branch:$probablyTempBranch);
