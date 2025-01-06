@@ -8,36 +8,33 @@ class TempOSpooner
 
     /**
      * Find date of current HEAD and create a date type based on strings like 2025-01-01 20:58:05 -0800
-     * @param string $bname only used for output
-     * @return string
+     * @return MrBranch
      */
-    private function getMrBranchOfCurrentHEAD(string $bname): MrBranch
+    private function getMrBranchOfCurrentHEAD(): MrBranch
     {
-        // Get the date of the current HEAD
-        echo "<p>Getting the date of the current HEAD ($bname)\n</p>";
-        exec(command: "git show -s --format=%ci HEAD", output: $dateOutput);
-        $date = trim(string: implode(separator: "\n", array: $dateOutput));
-        echo "<p>Date of current HEAD: $date\n</p>";
-        return new MrBranch(branchName: $bname, latestCommit: new DateTime(datetime: $date));
-    }
-
-    private function getOntoCorrectLatestBranch(): void
-    {
-        // create this here so we can see it on line 69 or so
-        $mrTempBranch = new MrBranch("placeholder", new DateTime("1988-05-19 16:58:05 -0800"));
         // Check the current branch
         echo "<p>Checking current branch\n</p>";
         exec("git rev-parse --abbrev-ref HEAD", $currentBranchOutput);
         $currentBranch = trim(implode("\n", $currentBranchOutput));
 
+        // Get the date of the current HEAD
+        echo "<p>Getting the date of the current HEAD ($currentBranch)\n</p>";
+        exec(command: "git show -s --format=%ci HEAD", output: $dateOutput);
+        $date = trim(string: implode(separator: "\n", array: $dateOutput));
+        echo "<p>Date of current HEAD: $date\n</p>";
+        return new MrBranch(branchName: $currentBranch, latestCommit: new DateTime(datetime: $date));
+    }
+
+    private function getOntoCorrectLatestBranch(): void
+    {
+        $probablyTempBranch = $this->getMrBranchOfCurrentHEAD();
+
         $onMasterBranch = false;
         // Check if the current branch starts with 'tempo'
-        echo "<p>Checking if current branch $currentBranch starts with 'tempo'\n</p>";
-        if (strpos($currentBranch, needle: 'tempo') === 0) {
-            $tempoBranchName = $currentBranch;
-            echo "<p>Branch $tempoBranchName starts with 'tempo'.\n</p>";
-            $mrTempBranch = $this->getMrBranchOfCurrentHEAD(bname: $tempoBranchName);
-        } elseif (strpos(haystack: $currentBranch, needle: 'master') === 0) {
+        echo "<p>Checking if $probablyTempBranch is actually a temp branch\n</p>";
+        if (strpos($probablyTempBranch, needle: 'tempo') === 0) {
+            echo "<p>Branch $probablyTempBranch starts with 'tempo'.\n</p>";
+        } elseif (strpos(haystack: $probablyTempBranch, needle: 'master') === 0) {
             echo "<p>We are on the master branch already.";
             $onMasterBranch = true;
         } else {
@@ -59,18 +56,18 @@ class TempOSpooner
 
         echo "<p>Checking out master branch and pulling it\n</p>";
         exec("git pull", $output);
-        $mrMasterBranch = $this->getMrBranchOfCurrentHEAD(bname: 'master');
+        $mrMasterBranch = $this->getMrBranchOfCurrentHEAD();
 
         echo "<p>Date of master branch: " . $mrMasterBranch->getLatestCommitAsString() . "\n</p>";
 
         // check if the master branch is newer than the tempo branch
-        if($mrMasterBranch->getLatestCommit() < $mrTempBranch->getLatestCommit()) {
+        if($mrMasterBranch->getLatestCommit() < $probablyTempBranch->getLatestCommit()) {
             echo "<p>Master branch is older than tempo branch\n</p>";
             // Switch to the $tempoBranchName branch
-            echo "<p>Switching to $tempoBranchName branch\n</p>";
-            echo "<pre>git checkout $tempoBranchName</pre>";
-            $returnVar = exec("git checkout $tempoBranchName", $output);
-            if (!str_starts_with(haystack: $returnVar, needle: "Switched to branch '$tempoBranchName'")) {
+            echo "<p>Switching to $probablyTempBranch branch\n</p>";
+            echo "<pre>git checkout $probablyTempBranch</pre>";
+            $returnVar = exec("git checkout $probablyTempBranch", $output);
+            if (!str_starts_with(haystack: $returnVar, needle: "Switched to branch '$probablyTempBranch'")) {
                 throw new Exception(message: "Failed to switch to tempo branch: $returnVar");
             } else {
                 echo "<p>Successfully switched to tempo branch\n</p>";

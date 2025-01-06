@@ -18,6 +18,10 @@ class MrBranch {
         return $this->latestCommit;
     }
 
+    public function __toString(): string
+    {
+        return $this->getBranchName();
+    }
     public function getLatestCommitAsString(): string
     {
         return $this->latestCommit->format('Y-m-d H:i:s');
