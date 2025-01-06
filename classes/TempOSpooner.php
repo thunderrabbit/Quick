@@ -30,6 +30,17 @@ class TempOSpooner
         );
     }
 
+    private function switchToThisBranch(string $branch): bool
+    {
+        echo "<p>Switching to branch $branch\n</p>";
+        $returnVar = exec("git checkout $branch", $output);
+        if (!str_starts_with(haystack: $returnVar, needle: "Switched to branch '$branch'")) {
+            throw new Exception("Failed to switch to branch $branch: " . implode("\n", $output));
+        } else {
+            echo "<p>Successfully switched to branch $branch\n</p>";
+            return true;
+        }
+    }
     private function getOntoCorrectLatestBranch(): void
     {
         $probablyTempBranch = $this->getMrBranchOfCurrentHEAD();
@@ -48,15 +59,7 @@ class TempOSpooner
 
         if (! $onMasterBranch) {
             // Switch to the master branch
-            echo "<p>Switching to master branch\n</p>";
-
-            $returnVar = exec("git checkout master", $output);
-            if (!str_starts_with(haystack: $returnVar, needle: "Your branch is up to date with 'origin/master'.")) {
-                throw new Exception(message: "Failed to switch to master branch: " . implode("\n", $output));
-            } else {
-                echo "<p>Successfully switched to master branch\n</p>";
-                $onMasterBranch = true;
-            }
+            $onMasterBranch = $this->switchToThisBranch(branch: 'master');
         }
 
         echo "<p>Checked out master branch and now pulling it\n</p>";
@@ -69,14 +72,7 @@ class TempOSpooner
         if($mrMasterBranch->getLatestCommit() < $probablyTempBranch->getLatestCommit()) {
             echo "<p>Master branch is older than tempo branch\n</p>";
             // Switch to the $tempoBranchName branch
-            echo "<p>Switching to $probablyTempBranch branch\n</p>";
-            echo "<pre>git checkout $probablyTempBranch</pre>";
-            $returnVar = exec("git checkout $probablyTempBranch", $output);
-            if (!str_starts_with(haystack: $returnVar, needle: "Switched to branch '$probablyTempBranch'")) {
-                throw new Exception(message: "Failed to switch to tempo branch: $returnVar");
-            } else {
-                echo "<p>Successfully switched to tempo branch\n</p>";
-            }
+            $onTempBranch = $this->switchToThisBranch(branch:$probablyTempBranch);
         } else {
             echo "<p>Master branch is newer than tempo branch\n</p>";
         }
