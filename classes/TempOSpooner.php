@@ -9,6 +9,7 @@ class TempOSpooner
     /**
      * Find date of current HEAD and create a date type based on strings like 2025-01-01 20:58:05 -0800
      * @return MrBranch
+     * TODO allow return null and deal with it in the calling function
      */
     private function getMrBranchOfCurrentHEAD(): MrBranch
     {
@@ -16,30 +17,30 @@ class TempOSpooner
         $delayBetweenAttempts = 5000; // 5 seconds in milliseconds
 
         for ($attempt = 1; $attempt <= $maxAttempts; $attempt++) {
-        try {
-            // Check the current branch
-            echo "<p>Checking current branch (Attempt $attempt)</p>";
-            exec("git rev-parse --abbrev-ref HEAD", $currentBranchOutput);
-            $currentBranch = trim(implode("\n", $currentBranchOutput));
+            try {
+                // Check the current branch
+                echo "<p>Checking current branch (Attempt $attempt)</p>";
+                exec("git rev-parse --abbrev-ref HEAD", $currentBranchOutput);
+                $currentBranch = trim(implode("\n", $currentBranchOutput));
 
-            // Get the date of the current HEAD
-            echo "<p>Getting the date of the current branch ($currentBranch)</p>";
-            exec("git show -s --format=%ci HEAD", $dateOutput);
-            $date = trim(implode("\n", $dateOutput));
-            echo "<p>Date of $currentBranch: $date</p>";
+                // Get the date of the current HEAD
+                echo "<p>Getting the date of the current branch ($currentBranch)</p>";
+                exec("git show -s --format=%ci HEAD", $dateOutput);
+                $date = trim(implode("\n", $dateOutput));
+                echo "<p>Date of $currentBranch: $date</p>";
 
-            return new MrBranch(
-                branchName: $currentBranch,
-                commitDate: new DateTime($date)
-            );
-        } catch (Exception $e) {
-            if ($attempt == $maxAttempts) {
-                throw $e;
+                return new MrBranch(
+                    branchName: $currentBranch,
+                    commitDate: new DateTime($date)
+                );
+            } catch (Exception $e) {
+                if ($attempt == $maxAttempts) {
+                    throw $e;
+                }
+                echo "<p>Attempt $attempt failed. Retrying in $delayBetweenAttempts milliseconds...</p>";
+                usleep($delayBetweenAttempts * 1000); // Convert milliseconds to microseconds
             }
-            echo "<p>Attempt $attempt failed. Retrying in $delayBetweenAttempts milliseconds...</p>";
-            usleep($delayBetweenAttempts * 1000); // Convert milliseconds to microseconds
         }
-    }
     }
 
     private function switchToThisBranch(string $branch): bool
@@ -95,6 +96,22 @@ class TempOSpooner
             return true;
         }
     }
+    private function deleteOldBranchIfItsATempBranch(MrBranch $oldBranch): void
+    {
+        // Delete the old branch locally and from the remote
+        if ($oldBranch->isTempBranch()) {
+            // Delete the old branch locally
+            echo "<p>Locally deleting old branch named $oldBranch\n</p>";
+            $returnVar = exec(command: "git branch -d $oldBranch");
+            if (!str_starts_with(haystack: $returnVar, needle: "Deleted branch $oldBranch")) {
+                throw new Exception("Failed >$returnVar< to delete old branch locally: " . implode("\n", $output));
+            }
+
+            // Delete the old branch from the remote
+            echo "<p>Remotely deleting old branch named $oldBranch\n</p>";
+            exec(command: "git push origin --delete $oldBranch");
+        }
+    }
     private function getOntoCorrectLatestBranch(): string
     {
         $probablyTempBranch = $this->getMrBranchOfCurrentHEAD();
@@ -123,8 +140,9 @@ class TempOSpooner
         echo "<p>Date of master branch: " . $mrMasterBranch->getBranchDateAsString() . "\n</p>";
 
         // check if the master branch is newer than the tempo branch
-        if($mrMasterBranch->getLatestCommit() > $probablyTempBranch->getLatestCommit()) {
+        if($mrMasterBranch->getLatestCommit() >= $probablyTempBranch->getLatestCommit()) {
             echo "<p>Master branch is newer or same age as $probablyTempBranch\n</p>";
+            $this->deleteOldBranchIfItsATempBranch(oldBranch: $probablyTempBranch);
             $newBranchName = 'tempo_' . uniqid();
             $created_new_branch = $this->createNewBranch(newBranchName: $newBranchName);
             return $newBranchName;
@@ -226,17 +244,13 @@ class TempOSpooner
     }
 
 
-    public function newaddAndPushToGit($filePath, $config): string
+    public function addAndPushToGit($filePath, $config): string
     {
         // Use the repository path from the config
         $repositoryPath = $config->post_path_journal;
 
         // Change directory to the repository path
         chdir($repositoryPath);
-
-        // Initialize $output as an empty array
-        $output = [];
-        $returnVar = 0;
 
         try {
             $newBranchName = $this->getOntoCorrectLatestBranch();
@@ -256,82 +270,5 @@ class TempOSpooner
             echo "<p>Error: " . $e->getMessage() . "</p>";
             throw $e;
         }
-    }
-    public function addAndPushToGit($filePath, $config): string
-    {
-        // Use the repository path from the config
-        $repositoryPath = $config->post_path_journal;
-
-        // Change directory to the repository path
-        chdir($repositoryPath);
-
-        // Initialize $output as an empty array
-        $output = [];
-        $returnVar = 0;
-
-        // git checkout master branch and pull it
-        // echo "<p>Checking out master branch and pulling it\n</p>";
-        // $returnVar = exec("git checkout master", $output);
-        // $returnVar = exec("git pull", $output);
-
-
-        // // Add the file to the git index
-        // echo "<p>Adding $filePath to git repository at $repositoryPath\n</p>";
-        // $returnVar = exec(command: "git add " . escapeshellarg(arg: $filePath), output: $output);
-        // if (!empty($returnVar)) {
-        //     $errorOutput = implode(separator: "\n", array: $output);  // Merge all lines of output into a single string
-        //     throw new Exception(message: "Failed to add file to git: " . ($errorOutput ?: "No output returned") . ($returnVar ? " (Return code: $returnVar)" : ""));
-        // }
-
-        // // Commit the changes
-        // echo "<p>Committing changes\n</p>";
-        // $returnVar = exec(command: "git commit -m 'Add new journal entry'", output: $output);
-        // if (!str_starts_with(haystack: $returnVar, needle: " create mode 100644")) {
-        //     $errorOutput = implode(separator: "\n", array: $output);  // Merge all lines of output into a single string
-        //     throw new Exception(message: "Failed >$returnVar< to commit changes: " . ($errorOutput ?: "No output returned") . ($returnVar ? " (Return code: $returnVar)" : ""));
-        // }
-
-        $this->getOntoCorrectLatestBranch();
-
-        // Create a new random branch name starting with 'tempo'
-        $newBranchName = 'tempo_' . uniqid();
-
-        // Switch to the new branch
-        echo "<p>Switching to new branch $newBranchName\n</p>";
-        $returnVar = exec(command: "git checkout -b $newBranchName");
-        if (!empty($returnVar)) {
-            throw new Exception("Failed to create and switch to new branch: " . implode("\n", $output));
-        }
-
-        // Delete the old branch locally and from the remote
-        if (isset($oldBranchName)) {
-            // Delete the old branch locally
-            echo "<p>Locally deleting old branch named $oldBranchName\n</p>";
-            $returnVar = exec(command: "git branch -d $oldBranchName");
-            if (!str_starts_with(haystack: $returnVar, needle: "Deleted branch $oldBranchName")) {
-                throw new Exception("Failed >$returnVar< to delete old branch locally: " . implode("\n", $output));
-            }
-
-            // Delete the old branch from the remote
-            echo "<p>Remotely deleting old branch named $oldBranchName\n</p>";
-            $returnVar = exec(command: "git push origin --delete $oldBranchName");
-            if (!empty($returnVar)) {
-                throw new Exception("Failed to delete old branch $oldBranchName from remote: " . implode("\n", $output));
-            }
-        }
-
-        // Push the changes to the new branch
-        echo "<p>Pushing changes to remote for new branch $newBranchName\n</p>";
-        echo "<pre>git push origin $newBranchName</pre>";
-        $returnVar = exec(command: "git push origin $newBranchName", output: $outputOfPush);
-        echo "<pre>outputOfPush: " . print_r($outputOfPush, true) . "</pre>";
-        if (!empty($returnVar)) {
-            echo "Failed >$returnVar< to push changes to remote: " . implode("\n", $output);
-            throw new Exception("Failed to push >$returnVar< changes to remote: " . implode("\n", $output));
-        } else {
-            echo "<p>Changes >$returnVar< successfully pushed to remote for new branch $newBranchName\n</p>";
-        }
-
-        return $newBranchName;   // to be used in the message displayed to the user
     }
 }
