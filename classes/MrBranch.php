@@ -22,6 +22,20 @@ class MrBranch {
     {
         return $this->getBranchName();
     }
+    public function compareTo(MrBranch $other): int
+    {
+        if (!$other instanceof self) {
+            throw new TypeError('Argument must be an instance of MrBranch');
+        }
+
+        return $this->commitDate <=> $other->commitDate;
+    }
+
+    public static function compare(MrBranch $a, MrBranch $b): int
+    {
+        return $a->compareTo($b);
+    }
+
     public function getBranchDateAsString(): string
     {
         return $this->commitDate->format('Y-m-d H:i:s');

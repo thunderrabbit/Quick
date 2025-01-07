@@ -123,7 +123,7 @@ class TempOSpooner
         echo "<p>Date of master branch: " . $mrMasterBranch->getBranchDateAsString() . "\n</p>";
 
         // check if the master branch is newer than the tempo branch
-        if($mrMasterBranch->getLatestCommit() > $probablyTempBranch->getLatestCommit()) {
+        if($mrMasterBranch->getLatestCommit() >= $probablyTempBranch->getLatestCommit()) {
             echo "<p>Master branch is newer or same age as $probablyTempBranch\n</p>";
             $newBranchName = 'tempo_' . uniqid();
             $created_new_branch = $this->createNewBranch(newBranchName: $newBranchName);
