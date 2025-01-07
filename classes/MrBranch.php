@@ -13,6 +13,10 @@ class MrBranch {
         return $this->branchName;
     }
 
+    public function isTempBranch(): bool
+    {
+        return str_starts_with(haystack: $this->branchName, needle: 'temp');
+    }
     public function getLatestCommit(): DateTime
     {
         return $this->commitDate;

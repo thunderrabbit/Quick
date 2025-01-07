@@ -96,6 +96,22 @@ class TempOSpooner
             return true;
         }
     }
+    private function deleteOldBranchIfItsATempBranch(MrBranch $oldBranch): void
+    {
+        // Delete the old branch locally and from the remote
+        if ($oldBranch->isTempBranch()) {
+            // Delete the old branch locally
+            echo "<p>Locally deleting old branch named $oldBranch\n</p>";
+            $returnVar = exec(command: "git branch -d $oldBranch");
+            if (!str_starts_with(haystack: $returnVar, needle: "Deleted branch $oldBranch")) {
+                throw new Exception("Failed >$returnVar< to delete old branch locally: " . implode("\n", $output));
+            }
+
+            // Delete the old branch from the remote
+            echo "<p>Remotely deleting old branch named $oldBranch\n</p>";
+            exec(command: "git push origin --delete $oldBranch");
+        }
+    }
     private function getOntoCorrectLatestBranch(): string
     {
         $probablyTempBranch = $this->getMrBranchOfCurrentHEAD();
@@ -126,6 +142,7 @@ class TempOSpooner
         // check if the master branch is newer than the tempo branch
         if($mrMasterBranch->getLatestCommit() >= $probablyTempBranch->getLatestCommit()) {
             echo "<p>Master branch is newer or same age as $probablyTempBranch\n</p>";
+            $this->deleteOldBranchIfItsATempBranch(oldBranch: $probablyTempBranch);
             $newBranchName = 'tempo_' . uniqid();
             $created_new_branch = $this->createNewBranch(newBranchName: $newBranchName);
             return $newBranchName;
