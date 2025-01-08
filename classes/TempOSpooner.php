@@ -255,9 +255,13 @@ class TempOSpooner
         try {
             $newBranchName = $this->getOntoCorrectLatestBranch();
 
+            $nextStoryWord = new NextStoryWord(
+                gitLogCommand: "git log -15 --pretty=format:'%s'",
+                storyFile: "/home/barefoot_rob/x0x0x0/x0x0x0.txt",
+            );
             $success =
                 $this->addFileToGit(filePath: $filePath) &&
-                $this->commitChanges(commitMessage: "happy new year") &&
+                $this->commitChanges(commitMessage: $nextStoryWord) &&
                 $this->pushChanges(branchName: $newBranchName);
 
             if ($success) {
