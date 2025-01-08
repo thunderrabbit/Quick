@@ -2,41 +2,50 @@
 
 class NextStoryWord
 {
-    private $gitLogFile;
-    private $storyFile;
     private $gitLogEntries;
     private $storyWords;
 
-    public function __construct($gitLogFile, $storyFile)
-    {
-        $this->gitLogFile = $gitLogFile;
-        $this->storyFile = $storyFile;
-        $this->gitLogEntries = $this->readGitLog();
-        $this->storyWords = $this->readStory();
+    public function __construct(
+        private string $gitLogCommand,
+        private string $storyFile
+    ) {
+        $this->gitLogEntries = $this->readGitLog(gitLogCommand: $this->gitLogCommand);
+        echo "<pre>" . print_r($this->gitLogEntries, true) . "</pre>";
+
+        $this->storyWords = $this->readStory($this->storyFile);
+
+        echo "<pre>" . print_r($this->storyWords, true) . "</pre>";
     }
 
-    private function readGitLog()
+    /**
+     * Designed to retrieve words used so far as commit messages in the story.
+     *
+     * @param string $gitLogCommand (preferably "git log -31 --pretty=format:'%s'")
+     * @return array of single word commit messages
+     */
+    private function readGitLog(string $gitLogCommand): array
     {
-        if (!file_exists($this->gitLogFile)) {
-            throw new Exception("Git log file not found.");
-        }
-
-        $contents = file_get_contents($this->gitLogFile);
-        return explode("\n", trim($contents));
+        exec(
+            command: $gitLogCommand,
+            output: $output,
+            result_code: $result_code
+        );
+        return $output;
     }
 
-    private function readStory()
+    private function readStory(string $storyFile): array
     {
-        if (!file_exists($this->storyFile)) {
+        if (!file_exists($storyFile)) {
             throw new Exception("Story file not found.");
         }
 
-        $contents = file_get_contents($this->storyFile);
-        return explode(" ", trim($contents));
+        echo "<p>Reading story file: $storyFile<br>";
+        $contents = file_get_contents(filename: $storyFile);
+        return explode(separator: " ", string: trim(string: $contents));
     }
 
     // ... further methods will be implemented in the next subtasks ...
 }
-}
+
 
 
