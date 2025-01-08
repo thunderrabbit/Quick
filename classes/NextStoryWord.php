@@ -30,21 +30,20 @@ class NextStoryWord
 
         // Find the starting index of the subset in the larger array
         for ($i = 0; $i <= count(value: $this->storyWords) - count(value: $this->gitLogEntries); $i++) {
-            // echo "<br>i: $i ";
             if ($this->storyWords[$i] == $this->gitLogEntries[0]) {
-                // echo "Match found at index $i {$this->storyWords[$i]}";
                 $matchFound = true;
                 for ($j = 1; $j < count(value: $this->gitLogEntries); $j++) {
-                    echo "<br>{$this->storyWords[$i + $j]} : {$this->gitLogEntries[$j]}";
                     if (trim(string: $this->storyWords[$i + $j]) != trim(string: $this->gitLogEntries[$j])) {
-                        echo "<br>Match not found at index $j";
-                        echo "<br>[{$this->storyWords[$i + $j]}] -:- [{$this->gitLogEntries[$j]}]";
                         $matchFound = false;
                         break;
                     }
+                    echo "<br>{$this->storyWords[$i + $j - 1]}";
                 }
                 if ($matchFound) {
-                    // echo "<br>Match found at index $i";
+                    echo "<br><h2>{$this->storyWords[$i - 1]}</h2>";  // assumes $i > 0 (meaning we are not at the beginning of the story)
+                    if($i < 500) {
+                        echo "<br>but WE ONLY HAVE $i WORDS BEFORE WE REACH THE BEGINNING OF THE STORY!!!";
+                    }
                     $subsetStartIndex = $i;
                     break;
                 }
