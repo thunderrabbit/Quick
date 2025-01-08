@@ -4,56 +4,61 @@ class NextStoryWord
 {
     private $gitLogEntries;
     private $storyWords;
+    private string $wordBeforeSubset;
 
     public function __construct(
         private string $gitLogCommand,
         private string $storyFile
     ) {
         $this->gitLogEntries = $this->readGitLog(gitLogCommand: $this->gitLogCommand);
-        echo "<pre>" . print_r($this->gitLogEntries, true) . "</pre>";
+        // echo "<pre>" . print_r($this->gitLogEntries, true) . "</pre>";
 
         $this->storyWords = $this->readStory($this->storyFile);
 
-        echo "<pre>" . print_r($this->storyWords, true) . "</pre>";
+        // echo "<pre>" . print_r($this->storyWords, true) . "</pre>";
 
-        $wordBeforeSubset = $this->findWordBeforeSubset();
-        if ($wordBeforeSubset !== null) {
-            echo "The word before the subset is: $wordBeforeSubset";
-        } else {
-            echo "No such word found.";
-        }
+        $this->wordBeforeSubset = $this->findWordBeforeSubset() ?? '';
     }
 
+    public function __tostring() : string
+    {
+        return $this->wordBeforeSubset;
+    }
     private function findWordBeforeSubset(): ?string
     {
-        $left = 0;
-        $right = count($this->storyWords) - 1;
+        $subsetStartIndex = null;
 
-        while ($left <= $right) {
-            $mid = floor(($left + $right) / 2);
-
-            if ($this->isWordBeforeSubset($mid)) {
-                if ($mid == 0 || $this->storyWords[$mid] != $this->gitLogEntries[0]) {
-                    return $this->storyWords[$mid];
+        // Find the starting index of the subset in the larger array
+        for ($i = 0; $i <= count(value: $this->storyWords) - count(value: $this->gitLogEntries); $i++) {
+            // echo "<br>i: $i ";
+            if ($this->storyWords[$i] == $this->gitLogEntries[0]) {
+                // echo "Match found at index $i {$this->storyWords[$i]}";
+                $matchFound = true;
+                for ($j = 1; $j < count(value: $this->gitLogEntries); $j++) {
+                    echo "<br>{$this->storyWords[$i + $j]} : {$this->gitLogEntries[$j]}";
+                    if (trim(string: $this->storyWords[$i + $j]) != trim(string: $this->gitLogEntries[$j])) {
+                        echo "<br>Match not found at index $j";
+                        echo "<br>[{$this->storyWords[$i + $j]}] -:- [{$this->gitLogEntries[$j]}]";
+                        $matchFound = false;
+                        break;
+                    }
                 }
-                $right = $mid - 1;
-            } else {
-                $left = $mid + 1;
+                if ($matchFound) {
+                    // echo "<br>Match found at index $i";
+                    $subsetStartIndex = $i;
+                    break;
+                }
             }
         }
-
-        return null;
-    }
-
-    private function isWordBeforeSubset(int $index): bool
-    {
-        for ($i = 0; $i < count($this->gitLogEntries); $i++) {
-            if ($index >= count($this->storyWords) || $this->storyWords[$index] != $this->gitLogEntries[$i]) {
-                return false;
-            }
-            $index++;
+        if ($subsetStartIndex === null) {
+            // echo "No match found down in line " . __LINE__;
+            return null;
         }
-        return true;
+        if($subsetStartIndex > 0) {
+            return $this->storyWords[$subsetStartIndex - 1];
+        } else {
+            return null;
+        }
     }
 
     /**
