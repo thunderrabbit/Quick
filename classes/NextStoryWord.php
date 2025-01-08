@@ -55,13 +55,19 @@ class NextStoryWord
                 // Handle empty lines
                 $words[] = "NEWLINE";
             } elseif (strpos(haystack: $trimmedLine, needle: ' ') !== false ||
-                        strpos(haystack: $trimmedLine, needle: "\t") !== false) {
-                // If the line contains spaces or tabs, treat it as multiple words
-                $words = array_merge($words, explode(separator: ' ', string: $trimmedLine));
+                    strpos(haystack: $trimmedLine, needle: "\t") !== false) {
+                // Split the line into words
+                $wordArray = explode(separator: ' ', string: str_replace(search: "\t", replace: ' ', subject: $trimmedLine));
+
+                foreach ($wordArray as $word) {
+                    if (!empty($word)) {
+                        $words[] = $word;
+                    }
+                }
             } else {
                 // For single-word lines, add them directly
                 $words[] = $trimmedLine;
-        }
+            }
         }
 
         fclose(stream: $handle);
