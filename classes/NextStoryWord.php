@@ -24,6 +24,24 @@ class NextStoryWord
     {
         return $this->wordBeforeSubset;
     }
+
+    /**
+     * Just helps print what words did NOT match the story
+     * @param array $array unless this exists,
+     * @param string $word print this
+     * @return string
+     */
+    private function thisArrayOrThisWord(array $array, string $word) : string
+    {
+        if(count($array) > 1) {
+            return implode(
+                separator: " ",
+                array: $array
+            );
+        } else {
+            return $word;
+        }
+    }
     private function findWordBeforeSubset(): ?string
     {
         $subsetStartIndex = null;
@@ -32,17 +50,20 @@ class NextStoryWord
         // Find the starting index of the subset in the larger array
         for ($i = 0; $i <= count(value: $this->storyWords) - count(value: $this->gitLogEntries); $i++) {
             if ($this->storyWords[$i] == $this->gitLogEntries[0]) {
+                // echo "Found a match at index $i   {$this->storyWords[$i]}<br>";
                 $matchFound = true;
                 for ($j = 1; $j < count(value: $this->gitLogEntries); $j++) {
                     if (trim(string: $this->storyWords[$i + $j]) != trim(string: $this->gitLogEntries[$j])) {
                         $matchFound = false;
+                        echo "❌ " . $this->thisArrayOrThisWord($correctlyMatchedWords, $this->storyWords[$i + $j - 1]);
+                        echo " {$this->storyWords[$i + $j]}<br>";  // specifically this word did not match
                         $correctlyMatchedWords = [];
                         break;
                     }
                     $correctlyMatchedWords[] = $this->storyWords[$i + $j - 1];
                 }
                 if ($matchFound) {
-                    echo "<br><b>{$this->storyWords[$i - 1]}</b> ";  // assumes $i > 0 (meaning we are not at the beginning of the story)
+                    echo "<br>✅ <b>{$this->storyWords[$i - 1]}</b> ";  // assumes $i > 0 (meaning we are not at the beginning of the story)
                     echo implode(separator: " ", array: $correctlyMatchedWords); echo " ...<br>";
                     if($i < 500) {
                         echo "<br>but WE ONLY HAVE $i WORDS BEFORE WE REACH THE BEGINNING OF THE STORY!!!";
