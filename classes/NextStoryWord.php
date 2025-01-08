@@ -8,14 +8,19 @@ class NextStoryWord
 
     public function __construct(
         private string $gitLogCommand,
-        private string $storyFile
+        private string $storyFile,
+        private int $debugLevel = 0,
     ) {
         $this->gitLogEntries = $this->readGitLog(gitLogCommand: $this->gitLogCommand);
-        // echo "<pre>" . print_r($this->gitLogEntries, true) . "</pre>";
+        if ($this->debugLevel > 3) {
+            echo "<pre>" . print_r($this->gitLogEntries, true) . "</pre>";
+        }
 
         $this->storyWords = $this->readStory($this->storyFile);
 
-        // echo "<pre>" . print_r($this->storyWords, true) . "</pre>";
+        if ($this->debugLevel > 4) {
+            echo "<pre>" . print_r($this->storyWords, true) . "</pre>";
+        }
 
         $this->wordBeforeSubset = $this->findWordBeforeSubset() ?? '';
     }
@@ -50,23 +55,29 @@ class NextStoryWord
         // Find the starting index of the subset in the larger array
         for ($i = 0; $i <= count(value: $this->storyWords) - count(value: $this->gitLogEntries); $i++) {
             if ($this->storyWords[$i] == $this->gitLogEntries[0]) {
-                // echo "Found a match at index $i   {$this->storyWords[$i]}<br>";
+                if ($this->debugLevel > 4) {
+                    echo "Found a match at index $i   {$this->storyWords[$i]}<br>";
+                }
                 $matchFound = true;
                 for ($j = 1; $j < count(value: $this->gitLogEntries); $j++) {
                     if (trim(string: $this->storyWords[$i + $j]) != trim(string: $this->gitLogEntries[$j])) {
                         $matchFound = false;
-                        echo "❌ " . $this->thisArrayOrThisWord($correctlyMatchedWords, $this->storyWords[$i + $j - 1]);
-                        echo " {$this->storyWords[$i + $j]}<br>";  // specifically this word did not match
+                        if ($this->debugLevel > 1) {
+                            echo "❌ " . $this->thisArrayOrThisWord($correctlyMatchedWords, $this->storyWords[$i + $j - 1]);
+                            echo " {$this->storyWords[$i + $j]}<br>";  // specifically this word did not match
+                        }
                         $correctlyMatchedWords = [];
                         break;
                     }
                     $correctlyMatchedWords[] = $this->storyWords[$i + $j - 1];
                 }
                 if ($matchFound) {
-                    echo "<br>✅ <b>{$this->storyWords[$i - 1]}</b> ";  // assumes $i > 0 (meaning we are not at the beginning of the story)
-                    echo implode(separator: " ", array: $correctlyMatchedWords); echo " ...<br>";
+                    if ($this->debugLevel > 0) {
+                        echo "<br>✅ <b>{$this->storyWords[$i - 1]}</b> ";  // assumes $i > 0 (meaning we are not at the beginning of the story)
+                        echo implode(separator: " ", array: $correctlyMatchedWords); echo " ...<br>";
+                    }
                     if($i < 500) {
-                        echo "<br>but WE ONLY HAVE $i WORDS BEFORE WE REACH THE BEGINNING OF THE STORY!!!";
+                        echo "<br>WE ONLY HAVE $i WORDS BEFORE WE REACH THE BEGINNING OF THE STORY!!!";
                     }
                     $subsetStartIndex = $i;
                     break;
@@ -74,7 +85,7 @@ class NextStoryWord
             }
         }
         if ($subsetStartIndex === null) {
-            // echo "No match found down in line " . __LINE__;
+            echo "Something really surprising happened; we didn't find a single match. Line " . __LINE__;
             return null;
         }
         if($subsetStartIndex > 0) {
@@ -107,7 +118,6 @@ class NextStoryWord
         }
 
         $words = [];
-        $currentWord = '';
 
         $handle = fopen(filename: $storyFile, mode: "r");
 
@@ -120,11 +130,18 @@ class NextStoryWord
 
             if (empty($trimmedLine)) {
                 // Handle empty lines
-                $words[] = "　";
+                $words[] = "　";    // will be used as commit message as git allows full-width space character, but not ascii space
             } elseif (strpos(haystack: $trimmedLine, needle: ' ') !== false ||
                     strpos(haystack: $trimmedLine, needle: "\t") !== false) {
                 // Split the line into words
-                $wordArray = explode(separator: ' ', string: str_replace(search: "\t", replace: ' ', subject: $trimmedLine));
+                $wordArray = explode(
+                                separator: ' ',
+                                string: str_replace(
+                                            search: "\t",
+                                            replace: ' ',
+                                            subject: $trimmedLine
+                                        )
+                                    );
 
                 foreach ($wordArray as $word) {
                     if (!empty($word)) {
@@ -141,8 +158,6 @@ class NextStoryWord
 
         return $words;
     }
-
-    // ... further methods will be implemented in the next subtasks ...
 }
 
 
