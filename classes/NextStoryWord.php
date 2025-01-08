@@ -35,13 +35,38 @@ class NextStoryWord
 
     private function readStory(string $storyFile): array
     {
-        if (!file_exists($storyFile)) {
-            throw new Exception("Story file not found.");
+        if (!file_exists(filename: $storyFile)) {
+            throw new Exception(message: "Story file not found.");
         }
 
-        echo "<p>Reading story file: $storyFile<br>";
-        $contents = file_get_contents(filename: $storyFile);
-        return explode(separator: " ", string: trim(string: $contents));
+        $words = [];
+        $currentWord = '';
+
+        $handle = fopen(filename: $storyFile, mode: "r");
+
+        if ($handle === false) {
+            throw new Exception(message: "Failed to open story file.");
+        }
+
+        while (($line = fgets(stream: $handle)) !== false) {
+            $trimmedLine = trim(string: $line);
+
+            if (empty($trimmedLine)) {
+                // Handle empty lines
+                $words[] = "NEWLINE";
+            } elseif (strpos(haystack: $trimmedLine, needle: ' ') !== false ||
+                        strpos(haystack: $trimmedLine, needle: "\t") !== false) {
+                // If the line contains spaces or tabs, treat it as multiple words
+                $words = array_merge($words, explode(separator: ' ', string: $trimmedLine));
+            } else {
+                // For single-word lines, add them directly
+                $words[] = $trimmedLine;
+        }
+        }
+
+        fclose(stream: $handle);
+
+        return $words;
     }
 
     // ... further methods will be implemented in the next subtasks ...
