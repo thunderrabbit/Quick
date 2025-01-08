@@ -27,6 +27,7 @@ class NextStoryWord
     private function findWordBeforeSubset(): ?string
     {
         $subsetStartIndex = null;
+        $correctlyMatchedWords = [];
 
         // Find the starting index of the subset in the larger array
         for ($i = 0; $i <= count(value: $this->storyWords) - count(value: $this->gitLogEntries); $i++) {
@@ -35,12 +36,14 @@ class NextStoryWord
                 for ($j = 1; $j < count(value: $this->gitLogEntries); $j++) {
                     if (trim(string: $this->storyWords[$i + $j]) != trim(string: $this->gitLogEntries[$j])) {
                         $matchFound = false;
+                        $correctlyMatchedWords = [];
                         break;
                     }
-                    echo "<br>{$this->storyWords[$i + $j - 1]}";
+                    $correctlyMatchedWords[] = $this->storyWords[$i + $j - 1];
                 }
                 if ($matchFound) {
-                    echo "<br><h2>{$this->storyWords[$i - 1]}</h2>";  // assumes $i > 0 (meaning we are not at the beginning of the story)
+                    echo "<br><b>{$this->storyWords[$i - 1]}</b> ";  // assumes $i > 0 (meaning we are not at the beginning of the story)
+                    echo implode(separator: " ", array: $correctlyMatchedWords); echo " ...<br>";
                     if($i < 500) {
                         echo "<br>but WE ONLY HAVE $i WORDS BEFORE WE REACH THE BEGINNING OF THE STORY!!!";
                     }
