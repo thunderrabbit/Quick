@@ -53,7 +53,7 @@ class NextStoryWord
 
             if (empty($trimmedLine)) {
                 // Handle empty lines
-                $words[] = "NEWLINE";
+                $words[] = "　";
             } elseif (strpos(haystack: $trimmedLine, needle: ' ') !== false ||
                     strpos(haystack: $trimmedLine, needle: "\t") !== false) {
                 // Split the line into words
