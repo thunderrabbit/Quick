@@ -131,17 +131,12 @@ class NextStoryWord
             if (empty($trimmedLine)) {
                 // Handle empty lines
                 $words[] = "　";    // will be used as commit message as git allows full-width space character, but not ascii space
-            } elseif (strpos(haystack: $trimmedLine, needle: ' ') !== false ||
-                    strpos(haystack: $trimmedLine, needle: "\t") !== false) {
+            } elseif (strpos(haystack: $trimmedLine, needle: ' ') !== false) {
                 // Split the line into words
                 $wordArray = explode(
                                 separator: ' ',
-                                string: str_replace(
-                                            search: "\t",
-                                            replace: ' ',
-                                            subject: $trimmedLine
-                                        )
-                                    );
+                                string: $trimmedLine
+                            );
 
                 foreach ($wordArray as $word) {
                     if (!empty($word)) {
