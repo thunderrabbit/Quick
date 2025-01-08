@@ -15,6 +15,45 @@ class NextStoryWord
         $this->storyWords = $this->readStory($this->storyFile);
 
         echo "<pre>" . print_r($this->storyWords, true) . "</pre>";
+
+        $wordBeforeSubset = $this->findWordBeforeSubset();
+        if ($wordBeforeSubset !== null) {
+            echo "The word before the subset is: $wordBeforeSubset";
+        } else {
+            echo "No such word found.";
+        }
+    }
+
+    private function findWordBeforeSubset(): ?string
+    {
+        $left = 0;
+        $right = count($this->storyWords) - 1;
+
+        while ($left <= $right) {
+            $mid = floor(($left + $right) / 2);
+
+            if ($this->isWordBeforeSubset($mid)) {
+                if ($mid == 0 || $this->storyWords[$mid] != $this->gitLogEntries[0]) {
+                    return $this->storyWords[$mid];
+                }
+                $right = $mid - 1;
+            } else {
+                $left = $mid + 1;
+            }
+        }
+
+        return null;
+    }
+
+    private function isWordBeforeSubset(int $index): bool
+    {
+        for ($i = 0; $i < count($this->gitLogEntries); $i++) {
+            if ($index >= count($this->storyWords) || $this->storyWords[$index] != $this->gitLogEntries[$i]) {
+                return false;
+            }
+            $index++;
+        }
+        return true;
     }
 
     /**
