@@ -244,24 +244,15 @@ class TempOSpooner
     }
 
 
-    public function addAndPushToGit($filePath, $config): string
+    public function addAndPushToGit(string $filePath, string $commitMessage): string
     {
-        // Use the repository path from the config
-        $repositoryPath = $config->post_path_journal;
-
-        // Change directory to the repository path
-        chdir($repositoryPath);
-
         try {
             $newBranchName = $this->getOntoCorrectLatestBranch();
 
-            $nextStoryWord = new NextStoryWord(
-                gitLogCommand: "git log -15 --pretty=format:'%s'",
-                storyFile: "/home/barefoot_rob/x0x0x0/x0x0x0.txt",
-            );
+            echo "<br>Commit message is $commitMessage\n";
             $success =
                 $this->addFileToGit(filePath: $filePath) &&
-                $this->commitChanges(commitMessage: $nextStoryWord) &&
+                $this->commitChanges(commitMessage: $commitMessage) &&
                 $this->pushChanges(branchName: $newBranchName);
 
             if ($success) {
