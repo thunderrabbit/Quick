@@ -5,6 +5,7 @@ class NextStoryWord
     private $gitLogEntries;
     private $storyWords;
     private string $wordBeforeSubset;
+    private array $correctlyMatchedWords = [];
 
     public function __construct(
         private string $gitLogCommand,
@@ -50,7 +51,6 @@ class NextStoryWord
     private function findWordBeforeSubset(): ?string
     {
         $subsetStartIndex = null;
-        $correctlyMatchedWords = [];
 
         // Find the starting index of the subset in the larger array
         for ($i = 0; $i <= count(value: $this->storyWords) - count(value: $this->gitLogEntries); $i++) {
@@ -63,19 +63,21 @@ class NextStoryWord
                     if (trim(string: $this->storyWords[$i + $j]) != trim(string: $this->gitLogEntries[$j])) {
                         $matchFound = false;
                         if ($this->debugLevel > 1) {
-                            echo "❌ " . $this->thisArrayOrThisWord($correctlyMatchedWords, $this->storyWords[$i + $j - 1]);
+                            echo "❌ " . $this->thisArrayOrThisWord($this->correctlyMatchedWords, $this->storyWords[$i + $j - 1]);
                             echo " {$this->storyWords[$i + $j]}<br>";  // specifically this word did not match
                         }
-                        $correctlyMatchedWords = [];
+                        $this->correctlyMatchedWords = [];
                         break;
                     }
-                    $correctlyMatchedWords[] = $this->storyWords[$i + $j - 1];
+                    $this->correctlyMatchedWords[] = $this->storyWords[$i + $j - 1];
                 }
                 if ($matchFound) {
                     if ($this->debugLevel > 0) {
                         echo "<br>✅ <b>{$this->storyWords[$i - 1]}</b> ";  // assumes $i > 0 (meaning we are not at the beginning of the story)
-                        echo implode(separator: " ", array: $correctlyMatchedWords); echo " ...<br>";
+                        echo implode(separator: " ", array: $this->correctlyMatchedWords);
+                        echo " ...<br>";
                     }
+                    // $this->foundWords = [$this->storyWords[$i - 1], ...$this->correctlyMatchedWords];  // so we can let caller show debug infos
                     if($i < 500) {
                         echo "<br>WE ONLY HAVE $i WORDS BEFORE WE REACH THE BEGINNING OF THE STORY!!!";
                     }
@@ -93,6 +95,11 @@ class NextStoryWord
         } else {
             return null;
         }
+    }
+
+    public function getCorrectlyMatchedWords() : array
+    {
+        return $this->correctlyMatchedWords;
     }
 
     /**
