@@ -4,7 +4,7 @@
 include_once "/home/barefoot_rob/quick.robnugen.com/prepend.php";
 
 if ($mla_request->post) {
-    $postifier = new \QuickPoster(dbase: $mla_database);
+    $postifier = new \QuickPoster(debug: $mla_request->post['debug']);
     $okay = $postifier->createPost(config: $config, post_array: $mla_request->post);
     if($okay)
     {

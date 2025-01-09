@@ -2,8 +2,9 @@
 class QuickPoster{
     public readonly string $post_path;
 
-    public function __construct()
-    {
+    public function __construct(
+        private int $debug,
+    ) {
     }
 
     /**
@@ -13,8 +14,10 @@ class QuickPoster{
      */
     public function createPost(\Config $config, array $post_array): bool
     {
-        print_rob("inside createPost", false);
-        print_rob($post_array, false);
+        if($this->debug > 2){
+            print_rob(object: "inside createPost", exit: false);
+            print_rob(object: $post_array, exit: false);
+        }
 
         /* $post_array = Array
 (
