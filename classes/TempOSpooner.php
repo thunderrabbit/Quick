@@ -7,52 +7,6 @@ class TempOSpooner
     ) {
     }
 
-    private function switchToThisBranch(string $branch): bool
-    {
-        $maxAttempts = 5;
-        $delayBetweenAttempts = 5000; // 5 seconds in milliseconds
-
-        for ($attempt = 1; $attempt <= $maxAttempts; $attempt++) {
-            try {
-                $output = [];
-                $result_code = 0;
-                if($this->debugLevel > 4) {
-                    echo "<p>Switching to branch $branch (Attempt $attempt)\n</p>";
-                }
-                $git_checkout_command = "git checkout $branch";
-                if($this->debugLevel > 5) {
-                    echo "<pre>git_checkout_command: $git_checkout_command</pre>";
-                }
-                $returnVar = exec(
-                    command: $git_checkout_command,
-                    output: $output,
-                    result_code: $result_code
-                );
-
-                if($this->debugLevel > 5) {
-                    echo "<pre>output: " . print_r($output, true) . "</pre>";
-                    echo "<pre>returnVar: $returnVar       result_code = $result_code</pre>";
-                }
-                if ($result_code == 0 ||
-                    strpos($returnVar, "Switched to branch '$branch'") !== false ||
-                    strpos($returnVar, "Your branch is up to date with 'origin/master'") !== false
-                ) {
-                    if($this->debugLevel > 4) {
-                        echo "<p>Successfully switched to branch $branch\n</p>";
-                    }
-                    return true;
-                } else {
-                    throw new Exception("Unexpected output from git checkout: $returnVar");
-                }
-            } catch (Exception $e) {
-                echo "<p>Attempt $attempt failed. Retrying in $delayBetweenAttempts milliseconds...</p>";
-                usleep($delayBetweenAttempts * 1000); // Convert milliseconds to microseconds
-            }
-        }
-
-        throw new Exception("Failed to switch to branch $branch after $maxAttempts attempts");
-    }
-
     private function createNewBranch(string $newBranchName): bool
     {
         // Create a new random branch name starting with 'tempo'
@@ -96,6 +50,8 @@ class TempOSpooner
         $mrBranchFactory = new MrBranchFactory(debugLevel: $this->debugLevel);
         $probablyTempBranch = $mrBranchFactory->getMrBranchOfCurrentHEAD();
 
+        $mrBranchSwitcher = new BranchSwitcher(debugLevel: $this->debugLevel);
+
         $onMasterBranch = false;
         // Check if the current branch starts with 'tempo'
         if($this->debugLevel > 2) {
@@ -116,7 +72,7 @@ class TempOSpooner
 
         if (! $onMasterBranch) {
             // Switch to the master branch so we can pull it and compare its date to temp
-            $onMasterBranch = $this->switchToThisBranch(branch: 'master');
+            $onMasterBranch = $mrBranchSwitcher->switchToThisBranch(branch: 'master');
         }
 
         if (! $onMasterBranch) {
@@ -147,7 +103,7 @@ class TempOSpooner
                 echo "<p>Master branch is older than tempo branch\n</p>";
             }
             // Switch to the $tempoBranchName branch
-            $onTempBranch = $this->switchToThisBranch(branch:$probablyTempBranch);
+            $onTempBranch = $mrBranchSwitcher->switchToThisBranch(branch:$probablyTempBranch);
             if($onTempBranch) {
                 return $probablyTempBranch;
             } else {
