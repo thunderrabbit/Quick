@@ -1,11 +1,9 @@
 <?php
 class QuickPoster{
-    protected $di_dbase;
     public readonly string $post_path;
 
-    public function __construct(\Database\Database $dbase)
+    public function __construct()
     {
-        $this->di_dbase = $dbase;
     }
 
     /**
