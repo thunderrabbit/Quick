@@ -75,7 +75,7 @@ class QuickPoster{
         $quoted_tags = '"' . preg_replace(pattern: "/, /", replacement: "\", \"", subject: $tags) . '"';
         $frontmatter .= "tags: [ \"$year\", $quoted_tags ]\n";
         $frontmatter .= "author: Rob Nugen\n";
-        $frontmatter .= "date: $year-$month-$day"."T$time:00+09:00\n";      // :00 so Hugo will parse datetime properly
+        $frontmatter .= "date: $year-$month-{$day}T$time:00+09:00\n";      // :00 so Hugo will parse datetime properly
         $frontmatter .= "draft: false\n";
         $frontmatter .= "---\n";
 
