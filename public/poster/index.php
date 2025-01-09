@@ -34,8 +34,9 @@ if ($mla_request->post) {
                 filePath: $post_path,
                 commitMessage: $nextStoryWord,
             );
+            $correctlyMatchedWords = implode(separator: ' ', array: $nextStoryWord->getCorrectlyMatchedWords());
             echo "<br>✅ <b>$nextStoryWord</b> ";  // assumes $i > 0 (meaning we are not at the beginning of the story)
-            echo implode(separator: ' ', array: $nextStoryWord->getCorrectlyMatchedWords());
+            echo $correctlyMatchedWords;
             echo " ...<br>";
             echo "File successfully added and pushed to git branch $newBranchName.";
         } catch (Exception $e) {
