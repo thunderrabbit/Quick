@@ -48,7 +48,7 @@
                             <div class="fix"></div>
                         </div>
                         <div class="PageRow noborder">
-                            <label for="req2">Date:</label>
+                            <label for="dp">Date:</label>
                             <div class="PageInput">
                                 <input type="text" name="time" value="<?php echo $current_time ?>" size="5" />
                                 <input type="text" name="date" value="<?php echo $current_date ?>" size="35" id="dp" />
@@ -59,25 +59,25 @@
                         </div>
 
                         <div class="PageRow noborder">
-                            <label for="req1">Title:</label>
+                            <label for="title">Title:</label>
                             <div class="PageInput">
-                                <input type="text" name="title" size="75" value="" />
+                                <input id="title" type="text" name="title" size="75" value="" />
                             </div>
                             <div class="fix"></div>
                         </div>
 
                         <div class="PageRow noborder">
-                            <label for="req1">Tags:</label>
+                            <label for="tags">Tags:</label>
                             <div class="PageInput">
-                                <input type="text" name="tags" size="75" value="" />
+                                <input id="tags" type="text" name="tags" size="75" value="" />
                             </div>
                             <div class="fix"></div>
                         </div>
 
                         <div class="PageRow noborder">
-                            <label for="req2">Content:</label>
+                            <label for="content">Content:</label>
                             <div class="PageInput">
-                                <textarea name="post_content" cols="75" rows="35"><?php echo $text; // badmin.robnugen.com ?></textarea>
+                                <textarea id="content" name="post_content" cols="75" rows="35"><?php echo $text; // badmin.robnugen.com ?></textarea>
                             </div>
                             <div class="fix"></div>
                         </div>
