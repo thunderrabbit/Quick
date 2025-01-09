@@ -8,13 +8,10 @@ class Template{
     protected $mla_request;      // Encapsulates superglobals e.g. $SESSION, $REQUEST, etc (misspelled in this comment to keep searches clean)
     protected $di_dbase;
 
-    public function __construct(\Mlaphp\Request $mla_request, \Database\Database $dbase, \Config $config) {
+    public function __construct(\Config $config) {
+        $this->template_location = "{$config->app_path}/templates";
 
-        $this->mla_request = $mla_request;
-        $this->di_dbase = $dbase;
-        $this->template_location = $config->app_path."/templates";
-
-        $this->vars = array();
+        $this->vars = [];
     }
 
     public function setTemplate($template_file) {

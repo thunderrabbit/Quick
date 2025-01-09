@@ -4,6 +4,6 @@
 include_once "/home/barefoot_rob/quick.robnugen.com/prepend.php";
 
 $is_logged_in->logout();
-$page = new \Template($mla_request, $mla_database, $config);
-$page->setTemplate("logout/index.tpl.php");
+$page = new \Template(config: $config);
+$page->setTemplate(template_file: "logout/index.tpl.php");
 $page->echoToScreen();

@@ -60,7 +60,7 @@ if($mla_request->get)
         $text = $mla_request->get['text'];
     }
 }
-$page = new \Template(mla_request: $mla_request, dbase: $mla_database, config: $config);
+$page = new \Template(config: $config);
 if(isset($post_path))
 {
     $page->set(name: "post_path", value: $post_path);
