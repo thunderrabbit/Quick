@@ -53,6 +53,8 @@
                                 <input type="submit" value="Deploy to <?php echo $newBranchName; ?>" class="greyishBtn submitForm" />
                                 <div class="fix"></div>
                             </div>
+                            <label for="debug_deploy">Debug:</label>
+                            <input id="debug_deploy" type="text" name="debug_deploy" value="0" size="5" />
                             <input type="hidden" name="branch" value="<?php echo $newBranchName; ?>" />
                         </fieldset>
                     </form>
