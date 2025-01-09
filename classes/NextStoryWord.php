@@ -23,7 +23,7 @@ class NextStoryWord
             echo "<pre>" . print_r($this->storyWords, true) . "</pre>";
         }
 
-        $this->wordBeforeSubset = $this->findWordBeforeSubset() ?? '';
+        $this->wordBeforeSubset = $this->findWordBeforeSubset() ?? 'WORD NOT FOUND';
     }
 
     public function __tostring() : string
@@ -47,6 +47,37 @@ class NextStoryWord
         } else {
             return $word;
         }
+    }
+
+    private function explainHowToRecoverFromDisaster():void
+    {
+        $storySnippet = print_r(array_slice(array: $this->storyWords, offset: 0, length: 10),true);
+        $logSnippet = print_r(value: $this->gitLogEntries, return: true);
+        echo <<<HTML
+        <h2>Something really surprising happened; we didn't find a single match.</h2>
+        <br>Here is part of the story:<br>
+        <pre>$storySnippet</pre>
+        <br>Here is the git log entries:<br>
+        <pre>$logSnippet</pre>
+        <p>If the above looks way off, then probably it's being run in the wrong directory.</p>
+        <ol>
+            <li>From Lemur, `ssh bfr`</li>
+            <li>On bfr, `cd Quick`</li>
+            <li>Make sure index.php points to correct directory `~/x0x0x0/`.</li>
+        </ol>
+        <p>If the above looks reasonable, then probably the x0x0x0 file got changed.</p>
+        <ol>
+            <li>From Lemur, `ssh bfr`</li>
+            <li>On bfr, </li>
+            <ul>
+                <li>`jour` to visit journal directory</li>
+                <li>`gitl` to see latest commits</li>
+                <li>`cd x0x0x0` to visit story directory</li>
+                <li>look for latest commit worss</li>
+                <li>Fix the story or fix the git commit hashes</li>
+            </ul>
+        </ol>
+HTML;
     }
     private function findWordBeforeSubset(): ?string
     {
@@ -87,7 +118,7 @@ class NextStoryWord
             }
         }
         if ($subsetStartIndex === null) {
-            echo "Something really surprising happened; we didn't find a single match. Line " . __LINE__;
+            $this->explainHowToRecoverFromDisaster();
             return null;
         }
         if($subsetStartIndex > 0) {
