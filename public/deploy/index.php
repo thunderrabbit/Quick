@@ -21,7 +21,7 @@ if ($mla_request->post) {
         );
     }
     $deployer = new \QuickDeployer(debug: $mla_request->post['debug_deploy']);
-    $okay = $deployer->pushToBranch(newBranchName: $expectedBranchName);
+    $okay = $deployer->mergeMasterToBranch(newBranchName: $expectedBranchName);
     if($okay)
     {
     }

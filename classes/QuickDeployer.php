@@ -6,16 +6,22 @@ class QuickDeployer{
     }
 
     /**
-     * Create a post
-     * @param array $post_array
-     * @return bool true if post was created
+     * Summary of mergeMasterToBranch
+     * @param string $newBranchName
+     * @return bool
      */
-    public function pushToBranch(string $newBranchName): bool
+    public function mergeMasterToBranch(string $newBranchName): bool
     {
+        $mrBranchSwitcher = new BranchSwitcher(debugLevel: $this->debug);
+
         if($this->debug > 2){
-            print_rob(object: "inside pushToBranch", exit: false);
+            print_rob(object: "inside mergeMasterToBranch", exit: false);
             print_rob(object: $newBranchName, exit: false);
         }
+
+        $mrBranchSwitcher->switchToThisBranch(branch: 'master');
+
+        exec(command: "git merge $newBranchName");
 
         return true;
     }
