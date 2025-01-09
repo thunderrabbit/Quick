@@ -7,51 +7,6 @@ class TempOSpooner
     ) {
     }
 
-    /**
-     * Find date of current HEAD and create a date type based on strings like 2025-01-01 20:58:05 -0800
-     * @return MrBranch
-     * TODO allow return null and deal with it in the calling function
-     */
-    private function getMrBranchOfCurrentHEAD(): MrBranch
-    {
-        $maxAttempts = 5;
-        $delayBetweenAttempts = 5000; // 5 seconds in milliseconds
-
-        for ($attempt = 1; $attempt <= $maxAttempts; $attempt++) {
-            try {
-                // Check the current branch
-                if($this->debugLevel > 4) {
-                    echo "<p>Checking current branch (Attempt $attempt)</p>";
-                }
-                exec("git rev-parse --abbrev-ref HEAD", $currentBranchOutput);
-                $currentBranch = trim(implode("\n", $currentBranchOutput));
-
-                // Get the date of the current HEAD
-                if($this->debugLevel > 4) {
-                    echo "<p>Getting the date of the current branch ($currentBranch)</p>";
-                }
-                exec("git show -s --format=%ci HEAD", $dateOutput);
-                $date = trim(implode("\n", $dateOutput));
-                if($this->debugLevel > 2) {
-                    echo "<p>Date of $currentBranch: $date</p>";
-                }
-
-                return new MrBranch(
-                    branchName: $currentBranch,
-                    commitDate: new DateTime($date)
-                );
-            } catch (Exception $e) {
-                if ($attempt == $maxAttempts) {
-                    throw $e;
-                }
-                if($this->debugLevel > 1) {
-                    echo "<p>Attempt $attempt failed to get branch info. Retrying in $delayBetweenAttempts milliseconds...</p>";
-                }
-                usleep($delayBetweenAttempts * 1000); // Convert milliseconds to microseconds
-            }
-        }
-    }
-
     private function switchToThisBranch(string $branch): bool
     {
         $maxAttempts = 5;
@@ -138,7 +93,8 @@ class TempOSpooner
     }
     private function getOntoCorrectLatestBranch(): string
     {
-        $probablyTempBranch = $this->getMrBranchOfCurrentHEAD();
+        $mrBranchFactory = new MrBranchFactory(debugLevel: $this->debugLevel);
+        $probablyTempBranch = $mrBranchFactory->getMrBranchOfCurrentHEAD();
 
         $onMasterBranch = false;
         // Check if the current branch starts with 'tempo'
@@ -171,7 +127,7 @@ class TempOSpooner
             echo "<p>Checked out master branch and now pulling it\n</p>";
         }
         exec("git pull", $output);
-        $mrMasterBranch = $this->getMrBranchOfCurrentHEAD();
+        $mrMasterBranch = $mrBranchFactory->getMrBranchOfCurrentHEAD();
 
         if($this->debugLevel > 3) {
             echo "<p>Date of master branch: " . $mrMasterBranch->getBranchDateAsString() . "\n</p>";

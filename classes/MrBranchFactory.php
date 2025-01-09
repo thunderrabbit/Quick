@@ -8,6 +8,10 @@ class MrBranchFactory
         $this->debugLevel = $debugLevel;
     }
 
+    /**
+     * Find date of current HEAD and create a date type based on strings like 2025-01-01 20:58:05 -0800
+     * @return MrBranch
+     */
     public function getMrBranchOfCurrentHEAD(): MrBranch
     {
         $currentBranch = $this->getCurrentBranch();
