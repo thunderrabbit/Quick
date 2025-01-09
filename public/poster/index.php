@@ -35,10 +35,11 @@ if ($mla_request->post) {
                 commitMessage: $nextStoryWord,
             );
             $correctlyMatchedWords = implode(separator: ' ', array: $nextStoryWord->getCorrectlyMatchedWords());
-            echo "<br>✅ <b>$nextStoryWord</b> ";  // assumes $i > 0 (meaning we are not at the beginning of the story)
-            echo $correctlyMatchedWords;
-            echo " ...<br>";
-            echo "File successfully added and pushed to git branch $newBranchName.";
+            $storyWordOutput = <<<STORY
+                <br>✅ <b>$nextStoryWord</b>
+                $correctlyMatchedWords
+                ...<br>
+STORY;
         } catch (Exception $e) {
             echo "Error: " . $e->getMessage();
         }
@@ -59,6 +60,12 @@ $page = new \Template(mla_request: $mla_request, dbase: $mla_database, config: $
 if(isset($post_path))
 {
     $page->set(name: "post_path",value: $post_path);
+}
+if (isset($storyWordOutput)) {
+    $page->set(name: "storyWordOutput", value: $storyWordOutput);
+}
+if (isset($newBranchName)) {
+    $page->set(name: "newBranchName", value: $newBranchName);
 }
 $page->setTemplate(template_file: "poster/index.tpl.php");
 $page->set(name: "text", value: $text);

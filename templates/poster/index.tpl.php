@@ -35,6 +35,14 @@
                 {
                     echo "<br>Post saved to <a target='journal' href='https://quick.robnugen.com/$post_path'>$post_path</a>";
                 }
+                if(isset($storyWordOutput))
+                {
+                    echo $storyWordOutput;
+                }
+                if(isset($newBranchName))
+                {
+                    echo "<br>File successfully added and pushed to git branch <b>$newBranchName</b>";
+                }
                 echo "<br>logged in! <a href='/logout'>Log out</a>";
 ?>
                 <p><a href="https://quick.robnugen.com">https://quick.robnugen.com</a>
