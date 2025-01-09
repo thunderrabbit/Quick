@@ -19,11 +19,13 @@ if ($mla_request->post) {
         chdir($repositoryPath);
 
         // Instantiate TempOSpooner without parameters
-        $tempOSpooner = new TempOSpooner();
+        $tempOSpooner = new TempOSpooner(
+            debugLevel: $mla_request->post['debug']
+        );
         $nextStoryWord = new NextStoryWord(
             gitLogCommand: "git log -15 --pretty=format:'%s'",
             storyFile: "/home/barefoot_rob/x0x0x0/x0x0x0.txt",
-            debugLevel: 0,
+            debugLevel: $mla_request->post['debug'],
         );
 
         try {

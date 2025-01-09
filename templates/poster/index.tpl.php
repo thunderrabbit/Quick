@@ -51,7 +51,10 @@
                             <label for="req2">Date:</label>
                             <div class="PageInput">
                                 <input type="text" name="time" value="<?php echo $current_time ?>" size="5" />
-                                <input type="text" name="date" value="<?php echo $current_date ?>" size="35" id="dp" /></div>
+                                <input type="text" name="date" value="<?php echo $current_date ?>" size="35" id="dp" />
+                                <label for="debug">Debug:</label>
+                                <input type="text" name="debug" value="0" size="5" />
+                            </div>
                             <div class="fix"></div>
                         </div>
 
