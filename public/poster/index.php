@@ -16,7 +16,7 @@ if ($mla_request->post) {
         $repositoryPath = $config->post_path_journal;
 
         // Change directory to the repository path
-        chdir($repositoryPath);
+        chdir(directory: $repositoryPath);
 
         // Instantiate TempOSpooner without parameters
         $tempOSpooner = new TempOSpooner(
