@@ -30,24 +30,36 @@
                 $current_time = date("H:i");
                 // current date in "Friday 2 February 2024" format
                 $current_date = date("l j F Y T");
+                echo "<br>logged in! <a href='/logout'>Log out</a>";
 
                 if(isset($post_path))
                 {
                     echo "<br>Post saved to <a target='journal' href='https://quick.robnugen.com/$post_path'>$post_path</a>";
                 }
-                if(isset($storyWordOutput))
+                if(isset($storyWordOutput) && isset($newBranchName))
                 {
                     echo $storyWordOutput;
-                }
-                if(isset($newBranchName))
-                {
                     echo "<br>File successfully added and pushed to git branch <b>$newBranchName</b>";
                 }
-                echo "<br>logged in! <a href='/logout'>Log out</a>";
+                if(isset($gitLog)) {
+                    echo "<br>git log:<br>";
+                    echo "<pre>$gitLog</pre>";
+                }
 ?>
+                <?php if (isset($storyWordOutput) && isset($newBranchName)): ?>
+                    <form action="/deploy/" id="deploy" class="mainForm" method="POST">
+                        <fieldset>
+                            <div class="PageRow noborder">
+                                <input type="submit" value="Deploy to <?php echo $newBranchName; ?>" class="greyishBtn submitForm" />
+                                <div class="fix"></div>
+                            </div>
+                            <input type="hidden" name="branch" value="<?php echo $newBranchName; ?>" />
+                        </fieldset>
+                    </form>
+                <?php endif; // (isset($storyWordOutput) && isset($newBranchName)): ?>
+
                 <p><a href="https://quick.robnugen.com">https://quick.robnugen.com</a>
                 <br><a href="https://badmin.robnugen.com">https://badmin.robnugen.com</a></p>
-                <p>Next steps:</p>
 
                 <form action="/poster/" id="valid" class="mainForm" method="POST">
                     <fieldset>

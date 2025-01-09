@@ -40,6 +40,10 @@ if ($mla_request->post) {
                 $correctlyMatchedWords
                 ...<br>
 STORY;
+            if(isset($newBranchName))
+            {
+                $gitLog = $tempOSpooner->getGitLog();
+            }
         } catch (Exception $e) {
             echo "Error: " . $e->getMessage();
         }
@@ -59,13 +63,19 @@ if($mla_request->get)
 $page = new \Template(mla_request: $mla_request, dbase: $mla_database, config: $config);
 if(isset($post_path))
 {
-    $page->set(name: "post_path",value: $post_path);
+    $page->set(name: "post_path", value: $post_path);
 }
-if (isset($storyWordOutput)) {
+if (isset($storyWordOutput))
+{
     $page->set(name: "storyWordOutput", value: $storyWordOutput);
 }
-if (isset($newBranchName)) {
+if (isset($newBranchName))
+{
     $page->set(name: "newBranchName", value: $newBranchName);
+}
+if(isset($gitLog))
+{
+    $page->set(name: "gitLog", value: $gitLog);
 }
 $page->setTemplate(template_file: "poster/index.tpl.php");
 $page->set(name: "text", value: $text);

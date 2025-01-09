@@ -329,4 +329,11 @@ class TempOSpooner
             throw $e;
         }
     }
+
+    public function getGitLog(): string
+    {
+        $output = [];
+        exec(command: "git log -25 --pretty=format:'%h %s %d'", output: $output);
+        return implode(separator: "\n", array: $output);
+    }
 }
