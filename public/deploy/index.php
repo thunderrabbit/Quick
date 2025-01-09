@@ -4,8 +4,8 @@
 include_once "/home/barefoot_rob/quick.robnugen.com/prepend.php";
 
 if ($mla_request->post) {
-    $postifier = new \QuickDeployer(debug: $mla_request->post['debug_deploy']);
-    $okay = $postifier->pushToBranch(newBranchName: $mla_request->post['branch']);
+    $deployer = new \QuickDeployer(debug: $mla_request->post['debug_deploy']);
+    $okay = $deployer->pushToBranch(newBranchName: $mla_request->post['branch']);
     if($okay)
     {
     }
