@@ -53,7 +53,7 @@ class QuickDeployer{
         if($successful_merge){
             $output = [];
             exec(
-                command: "git push",
+                command: "/home/barefoot_rob/scripts/update_robnugen.com_journal.sh",
                 output: $output,
                 result_code: $resultCode
             );
