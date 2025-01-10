@@ -28,8 +28,40 @@ class QuickDeployer{
             result_code: $resultCode
         );
 
-        if ($this->debug > 1) {
+        if($this->debug > 2)
+        {
             echo "<pre>Git merge output:\n";
+            foreach ($output as $line) {
+                echo "$line\n";
+            }
+            echo "</pre>";
+        }
+
+        /**
+         * Sample output:
+         * Updating b5d81805..d7faf77e
+         * Fast-forward
+         */
+        $successful_merge = false;
+        // look for sample output in $output
+        if(str_starts_with(haystack: $output[0], needle: "Updating") &&
+            str_starts_with(haystack: $output[1], needle: "Fast-forward")
+        ) {
+            $successful_merge = true;
+        }
+
+        if($successful_merge){
+            $output = [];
+            exec(
+                command: "git push",
+                output: $output,
+                result_code: $resultCode
+            );
+        }
+
+        if($this->debug > 2)
+        {
+            echo "<pre>Git push output:\n";
             foreach ($output as $line) {
                 echo "$line\n";
             }
