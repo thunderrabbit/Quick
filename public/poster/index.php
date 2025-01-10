@@ -1,10 +1,10 @@
 <?php
 
 # Must include here because DH runs FastCGI https://www.phind.com/search?cache=zfj8o8igbqvaj8cm91wp1b7k
-include_once("/home/barefoot_rob/quick.robnugen.com/prepend.php");
+include_once "/home/barefoot_rob/quick.robnugen.com/prepend.php";
 
 if ($mla_request->post) {
-    $postifier = new \QuickPoster(dbase: $mla_database);
+    $postifier = new \QuickPoster(debug: $mla_request->post['debug']);
     $okay = $postifier->createPost(config: $config, post_array: $mla_request->post);
     if($okay)
     {
@@ -12,14 +12,38 @@ if ($mla_request->post) {
         // remove leading / from post_path
         $post_path = ltrim(string: $post_path, characters: "/");
 
+        // Use the repository path from the config
+        $repositoryPath = $config->post_path_journal;
+
+        // Change directory to the repository path
+        chdir(directory: $repositoryPath);
 
         // Instantiate TempOSpooner without parameters
-        $tempOSpooner = new TempOSpooner();
+        $tempOSpooner = new TempOSpooner(
+            debugLevel: $mla_request->post['debug']
+        );
+        $nextStoryWord = new NextStoryWord(
+            gitLogCommand: "git log -15 --pretty=format:'%s'",
+            storyFile: "/home/barefoot_rob/x0x0x0/x0x0x0.txt",
+            debugLevel: $mla_request->post['debug'],
+        );
 
         try {
             // Add and push the saved file to the git branch 'tempospoon'
-            $newBranchName = $tempOSpooner->addAndPushToGit(filePath: $post_path, config: $config);
-            echo "File successfully added and pushed to git branch $newBranchName.";
+            $newBranchName = $tempOSpooner->addAndPushToGit(
+                filePath: $post_path,
+                commitMessage: $nextStoryWord,
+            );
+            $correctlyMatchedWords = implode(separator: ' ', array: $nextStoryWord->getCorrectlyMatchedWords());
+            $storyWordOutput = <<<STORY
+                <br>✅ <b>$nextStoryWord</b>
+                $correctlyMatchedWords
+                ...<br>
+STORY;
+            if(isset($newBranchName))
+            {
+                $gitLog = $tempOSpooner->getGitLog();
+            }
         } catch (Exception $e) {
             echo "Error: " . $e->getMessage();
         }
@@ -36,10 +60,22 @@ if($mla_request->get)
         $text = $mla_request->get['text'];
     }
 }
-$page = new \Template(mla_request: $mla_request, dbase: $mla_database, config: $config);
+$page = new \Template(config: $config);
 if(isset($post_path))
 {
-    $page->set(name: "post_path",value: $post_path);
+    $page->set(name: "post_path", value: $post_path);
+}
+if (isset($storyWordOutput))
+{
+    $page->set(name: "storyWordOutput", value: $storyWordOutput);
+}
+if (isset($newBranchName))
+{
+    $page->set(name: "newBranchName", value: $newBranchName);
+}
+if(isset($gitLog))
+{
+    $page->set(name: "gitLog", value: $gitLog);
 }
 $page->setTemplate(template_file: "poster/index.tpl.php");
 $page->set(name: "text", value: $text);

@@ -1,11 +1,10 @@
 <?php
 class QuickPoster{
-    protected $di_dbase;
     public readonly string $post_path;
 
-    public function __construct(\Database\Database $dbase)
-    {
-        $this->di_dbase = $dbase;
+    public function __construct(
+        private int $debug,
+    ) {
     }
 
     /**
@@ -15,8 +14,10 @@ class QuickPoster{
      */
     public function createPost(\Config $config, array $post_array): bool
     {
-        print_rob("inside createPost", false);
-        print_rob($post_array, false);
+        if($this->debug > 2){
+            print_rob(object: "inside createPost", exit: false);
+            print_rob(object: $post_array, exit: false);
+        }
 
         /* $post_array = Array
 (
@@ -74,7 +75,7 @@ class QuickPoster{
         $quoted_tags = '"' . preg_replace(pattern: "/, /", replacement: "\", \"", subject: $tags) . '"';
         $frontmatter .= "tags: [ \"$year\", $quoted_tags ]\n";
         $frontmatter .= "author: Rob Nugen\n";
-        $frontmatter .= "date: $year-$month-$day"."T$time:00+09:00\n";      // :00 so Hugo will parse datetime properly
+        $frontmatter .= "date: $year-$month-{$day}T$time:00+09:00\n";      // :00 so Hugo will parse datetime properly
         $frontmatter .= "draft: false\n";
         $frontmatter .= "---\n";
 
