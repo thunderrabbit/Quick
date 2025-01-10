@@ -21,8 +21,25 @@ class QuickDeployer{
 
         $mrBranchSwitcher->switchToThisBranch(branch: 'master');
 
-        exec(command: "git merge $newBranchName");
+        $output = [];
+        exec(
+            command: "git merge $newBranchName",
+            output: $output,
+            result_code: $resultCode
+        );
 
-        return true;
+        if ($this->debug > 1) {
+            echo "<pre>Git merge output:\n";
+            foreach ($output as $line) {
+                echo "$line\n";
+            }
+            echo "</pre>";
+        }
+
+        if ($resultCode !== 0) {
+            throw new Exception("Failed to merge branch. Return value: $resultCode\nOutput:\n" . implode("\n", $output));
+        } else {
+            return true;
+        }
     }
 }
