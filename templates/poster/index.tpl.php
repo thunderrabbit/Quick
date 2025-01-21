@@ -61,6 +61,7 @@
                 <?php endif; // (isset($storyWordOutput) && isset($newBranchName)): ?>
 
                 <p><a href="https://quick.robnugen.com">https://quick.robnugen.com</a>
+                <br><a href="https://robnugen.com/journal">https://robnugen.com/journal</a>
                 <br><a href="https://badmin.robnugen.com">https://badmin.robnugen.com</a></p>
 
                 <form action="/poster/" id="valid" class="mainForm" method="POST">
