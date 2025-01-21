@@ -3,6 +3,12 @@
 # Must include here because DH runs FastCGI https://www.phind.com/search?cache=zfj8o8igbqvaj8cm91wp1b7k
 include_once "/home/barefoot_rob/quick.robnugen.com/prepend.php";
 
+// Use the repository path from the config
+$repositoryPath = $config->post_path_journal;
+
+// Change directory to the repository path
+chdir(directory: $repositoryPath);
+
 if ($mla_request->post) {
     $postifier = new \QuickPoster(debug: $mla_request->post['debug']);
     $okay = $postifier->createPost(config: $config, post_array: $mla_request->post);
@@ -12,12 +18,6 @@ if ($mla_request->post) {
         $post_path = $postifier->post_path;
         // remove leading / from post_path
         $post_path = ltrim(string: $post_path, characters: "/");
-
-        // Use the repository path from the config
-        $repositoryPath = $config->post_path_journal;
-
-        // Change directory to the repository path
-        chdir(directory: $repositoryPath);
 
         // Instantiate TempOSpooner without parameters
         $tempOSpooner = new TempOSpooner(
