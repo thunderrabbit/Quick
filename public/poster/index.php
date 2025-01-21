@@ -6,6 +6,7 @@ include_once "/home/barefoot_rob/quick.robnugen.com/prepend.php";
 if ($mla_request->post) {
     $postifier = new \QuickPoster(debug: $mla_request->post['debug']);
     $okay = $postifier->createPost(config: $config, post_array: $mla_request->post);
+    $show_deploy = false;
     if($okay)
     {
         $post_path = $postifier->post_path;
@@ -47,6 +48,7 @@ STORY;
         } catch (Exception $e) {
             echo "Error: " . $e->getMessage();
         }
+        $show_deploy = isset($storyWordOutput) && isset($newBranchName);
     }
 }
 
@@ -79,6 +81,7 @@ if(isset($gitLog))
 }
 $page->setTemplate(template_file: "poster/index.tpl.php");
 $page->set(name: "text", value: $text);
+$page->set(name:"show_deploy", value: $show_deploy);
 $page->echoToScreen();
 
 

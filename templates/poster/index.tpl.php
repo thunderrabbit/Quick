@@ -46,7 +46,7 @@
                     echo "<pre>$gitLog</pre>";
                 }
 ?>
-                <?php if (isset($storyWordOutput) && isset($newBranchName)): ?>
+                <?php if ($show_deploy): ?>
                     <form action="/deploy/" id="deploy" class="mainForm" method="POST">
                         <fieldset>
                             <div class="PageRow noborder">
@@ -58,7 +58,7 @@
                             <input type="hidden" name="branch" value="<?php echo $newBranchName; ?>" />
                         </fieldset>
                     </form>
-                <?php endif; // (isset($storyWordOutput) && isset($newBranchName)): ?>
+                <?php endif; // ($show_deploy): ?>
 
                 <p><a href="https://quick.robnugen.com">https://quick.robnugen.com</a>
                 <br><a href="https://robnugen.com/journal">https://robnugen.com/journal</a>
