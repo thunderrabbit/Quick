@@ -50,6 +50,16 @@ STORY;
         }
         $show_deploy = isset($storyWordOutput) && isset($newBranchName);
     }
+} else {
+    // Allow deploy without posting
+    $tempOSpooner = new TempOSpooner(
+        debugLevel: 0,
+    );
+
+    $gitLog = $tempOSpooner->getGitLog();
+    $show_deploy = true;
+    $mrBranchFactory = new MrBranchFactory(debugLevel: 0);
+    $newBranchName = $mrBranchFactory->getMrBranchOfCurrentHEAD();
 }
 
 $text = "";
