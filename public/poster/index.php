@@ -3,6 +3,12 @@
 # Must include here because DH runs FastCGI https://www.phind.com/search?cache=zfj8o8igbqvaj8cm91wp1b7k
 include_once "/home/barefoot_rob/quick.robnugen.com/prepend.php";
 
+// Use the repository path from the config
+$repositoryPath = $config->post_path_journal;
+
+// Change directory to the repository path
+chdir(directory: $repositoryPath);
+
 if ($mla_request->post) {
     $postifier = new \QuickPoster(debug: $mla_request->post['debug']);
     $okay = $postifier->createPost(config: $config, post_array: $mla_request->post);
@@ -12,12 +18,6 @@ if ($mla_request->post) {
         $post_path = $postifier->post_path;
         // remove leading / from post_path
         $post_path = ltrim(string: $post_path, characters: "/");
-
-        // Use the repository path from the config
-        $repositoryPath = $config->post_path_journal;
-
-        // Change directory to the repository path
-        chdir(directory: $repositoryPath);
 
         // Instantiate TempOSpooner without parameters
         $tempOSpooner = new TempOSpooner(
@@ -50,6 +50,16 @@ STORY;
         }
         $show_deploy = isset($storyWordOutput) && isset($newBranchName);
     }
+} else {
+    // Allow deploy without posting
+    $tempOSpooner = new TempOSpooner(
+        debugLevel: 0,
+    );
+
+    $gitLog = $tempOSpooner->getGitLog();
+    $show_deploy = true;
+    $mrBranchFactory = new MrBranchFactory(debugLevel: 0);
+    $newBranchName = $mrBranchFactory->getMrBranchOfCurrentHEAD();
 }
 
 $text = "";
@@ -83,5 +93,3 @@ $page->setTemplate(template_file: "poster/index.tpl.php");
 $page->set(name: "text", value: $text);
 $page->set(name:"show_deploy", value: $show_deploy);
 $page->echoToScreen();
-
-

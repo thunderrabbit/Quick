@@ -33,5 +33,6 @@ if(isset($post_path))
     $page->set(name: "post_path", value: $post_path);
 }
 $page->setTemplate(template_file: "poster/index.tpl.php");
+$page->set(name: "show_deploy", value: false);  //no need to deploy after we deploy
 $page->set(name: "text", value: "");
 $page->echoToScreen();
