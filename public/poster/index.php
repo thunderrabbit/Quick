@@ -93,5 +93,3 @@ $page->setTemplate(template_file: "poster/index.tpl.php");
 $page->set(name: "text", value: $text);
 $page->set(name:"show_deploy", value: $show_deploy);
 $page->echoToScreen();
-
-
