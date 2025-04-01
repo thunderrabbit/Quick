@@ -137,7 +137,17 @@
                                     type="button"
                                     class="ui-button ui-corner-all quickTagBtn"
                                     onclick="wrapSelectedParagraphs('dream')"
-                                    title="Tag as dream">💤</button>
+                                    title="Tag as dream">💭</button>
+                                <button
+                                    type="button"
+                                    class="ui-button ui-corner-all quickTagBtn"
+                                    onclick="wrapSelectedParagraphs('lucid')"
+                                    title="Tag as lucid dream">👁️</button>
+                                <button
+                                    type="button"
+                                    class="ui-button ui-corner-all quickTagBtn"
+                                    onclick="wrapSelectedParagraphs('sleepy')"
+                                    title="Tag as sleepy">💤</button>
                                 <button
                                     type="button"
                                     class="ui-button ui-corner-all quickTagBtn"
