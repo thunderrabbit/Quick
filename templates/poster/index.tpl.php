@@ -124,12 +124,31 @@
                         <div class="fix"></div>
                     </div>
 
-<div class="PageRow noborder">
-    <button type="button" onclick="wrapSelectedParagraphs('dream')">Dream</button>
-    <button type="button" onclick="wrapSelectedParagraphs('note')">Note</button>
-    <button type="button" onclick="wrapSelectedParagraphs('ai')">AI</button>
-    <button type="button" onclick="wrapSelectedParagraphs('anger')">Anger</button>
-</div>
+                    <div class="PageRow noborder">
+                        <div class="quickTagToolbar">
+                            <button
+                                type="button"
+                                class="ui-button ui-corner-all quickTagBtn"
+                                onclick="wrapSelectedParagraphs('note')"
+                                title="Tag as note">📝</button>
+                            <button
+                                type="button"
+                                class="ui-button ui-corner-all quickTagBtn"
+                                onclick="wrapSelectedParagraphs('dream')"
+                                title="Tag as dream">💤</button>
+                            <button
+                                type="button"
+                                class="ui-button ui-corner-all quickTagBtn"
+                                onclick="wrapSelectedParagraphs('ai')"
+                                title="Tag as AI">🤖</button>
+                            <button
+                                type="button"
+                                class="ui-button ui-corner-all quickTagBtn"
+                                onclick="wrapSelectedParagraphs('anger')"
+                                title="Tag as anger">😠</button>
+                        </div>
+                    </div>
+
                     <div class="PageRow noborder">
                         <label for="content">Content:</label>
                         <div class="PageInput">
