@@ -37,18 +37,25 @@ body {
     cursor: pointer;
 }
 
-.quickTagToolbar {
+.contentWrapper {
     display: flex;
-    gap: 6px;
-    margin-top: 10px;
-    flex-wrap: wrap;
-    /* Optional: allows wrapping on small screens */
+    align-items: flex-start;
+    position: relative;
+}
+
+.quickTagSidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    position: sticky;
+    top: 10px;
+    margin-right: 10px;
 }
 
 .quickTagBtn {
-    min-width: 40px;
-    padding: 4px 6px;
-    font-size: 16px;
+    width: 40px;
+    padding: 6px;
+    font-size: 18px;
 }
 
 .quickTagBtn:hover {

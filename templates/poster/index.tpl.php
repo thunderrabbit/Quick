@@ -125,38 +125,35 @@
                     </div>
 
                     <div class="PageRow noborder">
-                        <div class="quickTagToolbar">
-                            <button
-                                type="button"
-                                class="ui-button ui-corner-all quickTagBtn"
-                                onclick="wrapSelectedParagraphs('note')"
-                                title="Tag as note">📝</button>
-                            <button
-                                type="button"
-                                class="ui-button ui-corner-all quickTagBtn"
-                                onclick="wrapSelectedParagraphs('dream')"
-                                title="Tag as dream">💤</button>
-                            <button
-                                type="button"
-                                class="ui-button ui-corner-all quickTagBtn"
-                                onclick="wrapSelectedParagraphs('ai')"
-                                title="Tag as AI">🤖</button>
-                            <button
-                                type="button"
-                                class="ui-button ui-corner-all quickTagBtn"
-                                onclick="wrapSelectedParagraphs('anger')"
-                                title="Tag as anger">😠</button>
-                        </div>
-                    </div>
-
-                    <div class="PageRow noborder">
                         <label for="content">Content:</label>
-                        <div class="PageInput">
-                            <textarea id="content" name="post_content" cols="75"
-                                rows="35"><?php echo $text; // badmin.robnugen.com ?></textarea>
+                        <div class="PageInput contentWrapper">
+                            <div class="quickTagSidebar">
+                                <button
+                                    type="button"
+                                    class="ui-button ui-corner-all quickTagBtn"
+                                    onclick="wrapSelectedParagraphs('note')"
+                                    title="Tag as note">📝</button>
+                                <button
+                                    type="button"
+                                    class="ui-button ui-corner-all quickTagBtn"
+                                    onclick="wrapSelectedParagraphs('dream')"
+                                    title="Tag as dream">💤</button>
+                                <button
+                                    type="button"
+                                    class="ui-button ui-corner-all quickTagBtn"
+                                    onclick="wrapSelectedParagraphs('ai')"
+                                    title="Tag as AI">🤖</button>
+                                <button
+                                    type="button"
+                                    class="ui-button ui-corner-all quickTagBtn"
+                                    onclick="wrapSelectedParagraphs('anger')"
+                                    title="Tag as anger">😠</button>
+                            </div>
+                            <textarea id="content" name="post_content" cols="75" rows="35"><?php echo $text; ?></textarea>
                         </div>
                         <div class="fix"></div>
                     </div>
+
                     <div class="PageRow noborder">
                         <input type="submit" value="Save" class="greyishBtn submitForm" />
                         <div class="fix"></div>
