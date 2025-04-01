@@ -11,5 +11,4 @@ class Config {
     public $dbUser = "";
     public $dbPass = "";
     public $dbName = "";
-    public $domain_name = "example.com";
 }
