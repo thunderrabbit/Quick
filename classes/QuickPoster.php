@@ -36,23 +36,23 @@ class QuickPoster{
         $title = $post_array['title'];
         $tags = $post_array['tags'];
         // remove ^M from the end of the lines of the content
-        $content = preg_replace("/\r/", "", $post_array['post_content']);
+        $content = preg_replace(pattern: "/\r/", replacement: "", subject: $post_array['post_content']);
 
-        $file_path = $this->createFilePath($title, $date, $config);
+        $file_path = $this->createFilePath(title: $title, date: $date, config: $config);
 
-        $frontmatter = $this->createFrontMatter($title, $date, $time, $tags);
+        $frontmatter = $this->createFrontMatter(title: $title, date: $date, time: $time, tags: $tags);
 
         // Create file path if it doesn't exist
-        $dir = dirname($file_path);
-        if (!is_dir($dir)) {
-            mkdir($dir, 0755, true);
+        $dir = dirname(path: $file_path);
+        if (!is_dir(filename: $dir)) {
+            mkdir(directory: $dir, permissions: 0755, recursive: true);
         }
-        $file = fopen($file_path, "w");
+        $file = fopen(filename: $file_path, mode: "w");
         // write time and date at top of the file
-        fwrite($file, $frontmatter);
-        fwrite($file, "\n");
-        fwrite($file, $content);
-        fclose($file);
+        fwrite(stream: $file, data: $frontmatter);
+        fwrite(stream: $file, data: "\n");
+        fwrite(stream: $file, data: $content);
+        fclose(stream: $file);
 
         // return path after removing the app path
         $this->post_path = str_replace(search: $config->post_path_journal, replace: "", subject: $file_path);
@@ -99,19 +99,19 @@ class QuickPoster{
     private function createUrlTitle(string $title): string
     {
         // remove single quotes so I'm and It's don't become I-m and It-s
-        $url_title = preg_replace("/'/", "", $title);
+        $url_title = preg_replace(pattern: "/'/", replacement: "", subject: $title);
 
         // replace "?' " with "-"
-        $url_title = preg_replace("/[^a-zA-Z0-9\w]/", "-", $url_title);
+        $url_title = preg_replace(pattern: "/[^a-zA-Z0-9\w]/", replacement: "-", subject: $url_title);
 
         // replace multiple hyphens with a single hyphen
-        $url_title = preg_replace("/-+/", "-", $url_title);
+        $url_title = preg_replace(pattern: "/-+/", replacement: "-", subject: $url_title);
 
         // remove leading and trailing hyphens
-        $url_title = trim($url_title, "-");
+        $url_title = trim(string: $url_title, characters: "-");
 
         // convert to lowercase
-        $url_title = strtolower($url_title);
+        $url_title = strtolower(string: $url_title);
 
         return $url_title;
     }
