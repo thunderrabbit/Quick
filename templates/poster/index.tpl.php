@@ -19,6 +19,29 @@
             });
         });
     </script>
+    <script>
+    function wrapSelectedParagraphs(className) {
+        const textarea = document.getElementById('content');
+        const text = textarea.value;
+        const start = textarea.selectionStart;
+        const end = textarea.selectionEnd;
+
+        const before = text.substring(0, start);
+        const selected = text.substring(start, end);
+        const after = text.substring(end);
+
+        const paragraphs = selected
+            .split(/\n{2,}/)
+            .map(p => `<p class="${className}">${p.trim()}</p>`);
+
+        const newText = before + paragraphs.join("\n\n") + after;
+        textarea.value = newText;
+
+        // Don't reselect the new text because the buttons don't toggle the addition of <p> tags.
+        // textarea.setSelectionRange(before.length, before.length + paragraphs.join("\n\n").length);
+        // textarea.focus();
+    }
+    </script>
 </head>
 
 <body><!-- Quick form area -->
@@ -101,6 +124,12 @@
                         <div class="fix"></div>
                     </div>
 
+<div class="PageRow noborder">
+    <button type="button" onclick="wrapSelectedParagraphs('dream')">Dream</button>
+    <button type="button" onclick="wrapSelectedParagraphs('note')">Note</button>
+    <button type="button" onclick="wrapSelectedParagraphs('ai')">AI</button>
+    <button type="button" onclick="wrapSelectedParagraphs('anger')">Anger</button>
+</div>
                     <div class="PageRow noborder">
                         <label for="content">Content:</label>
                         <div class="PageInput">
