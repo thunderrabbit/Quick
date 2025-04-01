@@ -54,8 +54,21 @@ body {
 
 .quickTagBtn {
     width: 40px;
-    padding: 6px;
-    font-size: 18px;
+    height: 40px;
+    font-size: 20px;
+    line-height: 1;
+    padding: 0;
+    margin: 0;
+    display: inline-block;
+    text-align: center;
+    vertical-align: middle;
+    overflow: hidden;
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    font-family: "Segoe UI Emoji", "Noto Color Emoji", sans-serif;
 }
 
 .quickTagBtn:hover {
