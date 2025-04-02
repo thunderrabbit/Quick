@@ -9,6 +9,7 @@ declare(strict_types=1);
 class QuickLister {
     public function __construct(
         private readonly string $journalRoot,
+        private readonly int $debugLevel = 0,
         private readonly array $allowedExtensions = ['md', 'html']
     ) {}
 
@@ -34,12 +35,34 @@ class QuickLister {
 
         $directory = new RecursiveDirectoryIterator($baseDir);
         $iterator = new RecursiveIteratorIterator($directory);
-        $regex = '/\.(' . implode('|', $this->allowedExtensions) . ')$/i';
-        $files = new RegexIterator($iterator, $regex, RecursiveRegexIterator::GET_MATCH);
 
-        foreach ($files as $matches) {
-            $fullPath = $matches[0];
+        foreach ($iterator as $fileInfo) {
+            if (!$fileInfo->isFile()) {
+                if ($this->debugLevel >= 5) {
+                    print_rob("Skipping what is not a file", false);
+                    print_rob($fileInfo, false);
+                }
+                continue;
+            }
+
+            $extension = strtolower($fileInfo->getExtension());
+
+            if (!in_array($extension, $this->allowedExtensions)) {
+                if ($this->debugLevel >= 5) {
+                    print_rob("Skipping invalid extension", false);
+                    print_rob($extension, false);
+                }
+                continue;
+            }
+
+            $fullPath = $fileInfo->getRealPath();
             $relativePath = str_replace($this->journalRoot . '/', '', $fullPath);
+
+            if ($this->debugLevel >= 4) {
+                print_rob("Valid file found", false);
+                print_rob($fullPath, false);
+            }
+
             $entries[] = [
                 'path' => $relativePath,
                 'filename' => basename($fullPath),

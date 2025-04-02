@@ -15,9 +15,12 @@ if ($debug >= 1) {
     echo "Month: $month<br>";
 }
 
-$lister = new \QuickLister(journalRoot: $config->post_path_journal);
+$lister = new \QuickLister(
+    journalRoot: $config->post_path_journal,
+    debugLevel: $debug,
+);
 
-if ($debug >= 4) {
+if ($debug >= 5) {
     print_rob($lister, false);
 }
 
@@ -25,7 +28,7 @@ $entries = $lister->listEntries(year: $year, month: $month !== '' ? $month : nul
 
 if ($debug >= 1) {
     echo "Found " . count($entries) . " entries.<br>";
-    if ($debug >= 2) {
+    if ($debug >= 3) {
         print_rob($entries, false);
     }
     echo "</div>";
