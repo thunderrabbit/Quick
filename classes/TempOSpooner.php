@@ -1,9 +1,27 @@
 <?php
 
+/**
+ * TempOSpooner
+ *
+ * Manages adding, committing, and pushing files to Git.
+ *
+ * By default, uses a temporary branch workflow to isolate commits.
+ * If `$useTempBranches` is false, will skip branch creation and work on the current branch (e.g., `tempo_kjkjkjkj`).
+ *
+ * Required: set `$useTempBranches = false` when editing
+ * existing files through the editor otherwise `git checkout master` will break.
+ */
 class TempOSpooner
 {
+    /**
+     * Set $useTempBranches to false if you want to work on the current branch (e.g., `tempo_kjkjkjkj`).
+     * This is required when editing existing files through the editor.
+     * @param int $debugLevel
+     * @param bool $useTempBranches
+     */
     public function __construct(
         private int $debugLevel = 0,
+        private bool $useTempBranches = true,
     ) {
     }
 
@@ -45,6 +63,7 @@ class TempOSpooner
             exec(command: "git push origin --delete $oldBranch");
         }
     }
+/*
     private function getOntoCorrectLatestBranch(): string
     {
         $mrBranchFactory = new MrBranchFactory(debugLevel: $this->debugLevel);
@@ -112,6 +131,7 @@ class TempOSpooner
         }
 
     }
+    */
 
     private function addFileToGit($filePath): bool
     {
@@ -218,21 +238,28 @@ class TempOSpooner
     public function addAndPushToGit(string $filePath, string $commitMessage): string
     {
         try {
-            $newBranchName = $this->getOntoCorrectLatestBranch();
+            // if ($this->useTempBranches) {
+            //     $newBranchName = $this->getOntoCorrectLatestBranch();
+            // } else {
+            //     $newBranchName = "whupwhup";
+            // }
 
             if($this->debugLevel > 1) {
                 echo "<br>Commit message is $commitMessage\n";
             }
             $success =
                 $this->addFileToGit(filePath: $filePath) &&
-                $this->commitChanges(commitMessage: $commitMessage) &&
-                $this->pushChanges(branchName: $newBranchName);
+                $this->commitChanges(commitMessage: $commitMessage);
+
+            // if($this->useTempBranches) {
+            //     $success = $success && $this->pushChanges(branchName: $newBranchName);
+            // }
 
             if ($success) {
                 if($this->debugLevel > 0) {
-                    echo "<p>Successfully commited `$commitMessage` to branch $newBranchName\n</p>";
+                    echo "<p>Successfully commited `$commitMessage` to branch master (harddcoddeddd)\n</p>";
                 }
-                return $newBranchName;
+                return "master";   // getting rid of all branches because commit messages are working well enough
             } else {
                 throw new Exception("Failed to commit and push changes after multiple attempts");
             }

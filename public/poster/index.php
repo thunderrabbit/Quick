@@ -21,7 +21,8 @@ if ($mla_request->post) {
 
         // Instantiate TempOSpooner without parameters
         $tempOSpooner = new TempOSpooner(
-            debugLevel: $mla_request->post['debug']
+            debugLevel: $mla_request->post['debug'],
+            useTempBranches: false,
         );
         $nextStoryWord = new NextStoryWord(
             gitLogCommand: "git log -15 --pretty=format:'%s'",
