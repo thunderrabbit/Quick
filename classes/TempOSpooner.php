@@ -1,137 +1,14 @@
 <?php
 
-/**
- * TempOSpooner
- *
- * Manages adding, committing, and pushing files to Git.
- *
- * By default, uses a temporary branch workflow to isolate commits.
- * If `$useTempBranches` is false, will skip branch creation and work on the current branch (e.g., `tempo_kjkjkjkj`).
- *
- * Required: set `$useTempBranches = false` when editing
- * existing files through the editor otherwise `git checkout master` will break.
- */
 class TempOSpooner
 {
     /**
-     * Set $useTempBranches to false if you want to work on the current branch (e.g., `tempo_kjkjkjkj`).
-     * This is required when editing existing files through the editor.
      * @param int $debugLevel
-     * @param bool $useTempBranches
      */
     public function __construct(
         private int $debugLevel = 0,
-        private bool $useTempBranches = true,
     ) {
     }
-
-    private function createNewBranch(string $newBranchName): bool
-    {
-        // Create a new random branch name starting with 'tempo'
-        // Switch to the new branch
-
-        if($this->debugLevel > 5) {
-            echo "<p>Creating new branch $newBranchName\n</p>";
-        }
-        $returnVar = exec(command: "git checkout -b $newBranchName");
-        if (!empty($returnVar)) {
-            throw new Exception("Failed to create and switch to new branch: " . implode("\n", $output));
-        } else {
-            if($this->debugLevel > 4) {
-                echo "<p>Successfully created new branch $newBranchName\n</p>";
-            }
-            return true;
-        }
-    }
-    private function deleteOldBranchIfItsATempBranch(MrBranch $oldBranch): void
-    {
-        // Delete the old branch locally and from the remote
-        if ($oldBranch->isTempBranch()) {
-            // Delete the old branch locally
-            if($this->debugLevel > 4) {
-                echo "<p>Locally deleting old branch named $oldBranch\n</p>";
-            }
-            $returnVar = exec(command: "git branch -d $oldBranch");
-            if (!str_starts_with(haystack: $returnVar, needle: "Deleted branch $oldBranch")) {
-                throw new Exception("Failed >$returnVar< to delete old branch locally: " . implode("\n", $output));
-            }
-
-            // Delete the old branch from the remote
-            if($this->debugLevel > 5) {
-                echo "<p>Remotely deleting old branch named $oldBranch\n</p>";
-            }
-            exec(command: "git push origin --delete $oldBranch");
-        }
-    }
-/*
-    private function getOntoCorrectLatestBranch(): string
-    {
-        $mrBranchFactory = new MrBranchFactory(debugLevel: $this->debugLevel);
-        $probablyTempBranch = $mrBranchFactory->getMrBranchOfCurrentHEAD();
-
-        $mrBranchSwitcher = new BranchSwitcher(debugLevel: $this->debugLevel);
-
-        $onMasterBranch = false;
-        // Check if the current branch starts with 'tempo'
-        if($this->debugLevel > 2) {
-            echo "<p>Checking if $probablyTempBranch is actually a temp branch\n</p>";
-        }
-        if (strpos($probablyTempBranch, needle: 'tempo') === 0) {
-            if($this->debugLevel > 3) {
-                echo "<p>Yes; $probablyTempBranch starts with 'tempo'.\n</p>";
-            }
-        } elseif (strpos(haystack: $probablyTempBranch, needle: 'master') === 0) {
-            if($this->debugLevel > 3) {
-                echo "<p>Nope!  We are on the master branch already.";
-            }
-            $onMasterBranch = true;
-        } else {
-            throw new Exception(message: "You are not on a branch starting with 'tempo' nor 'master'.");
-        }
-
-        if (! $onMasterBranch) {
-            // Switch to the master branch so we can pull it and compare its date to temp
-            $onMasterBranch = $mrBranchSwitcher->switchToThisBranch(branch: 'master');
-        }
-
-        if (! $onMasterBranch) {
-            echo "<p>Failed to switch to master branch\n</p>";
-            throw new Exception("Failed to switch to master branch");
-        }
-        if($this->debugLevel > 2) {
-            echo "<p>Checked out master branch and now pulling it\n</p>";
-        }
-        exec("git pull", $output);
-        $mrMasterBranch = $mrBranchFactory->getMrBranchOfCurrentHEAD();
-
-        if($this->debugLevel > 3) {
-            echo "<p>Date of master branch: " . $mrMasterBranch->getBranchDateAsString() . "\n</p>";
-        }
-
-        // check if the master branch is newer than the tempo branch
-        if($mrMasterBranch->getLatestCommit() >= $probablyTempBranch->getLatestCommit()) {
-            if($this->debugLevel > 2) {
-                echo "<p>Master branch is newer or same age as $probablyTempBranch\n</p>";
-            }
-            $this->deleteOldBranchIfItsATempBranch(oldBranch: $probablyTempBranch);
-            $newBranchName = 'tempo_' . uniqid();
-            $created_new_branch = $this->createNewBranch(newBranchName: $newBranchName);
-            return $newBranchName;
-        } else {
-            if($this->debugLevel > 2) {
-                echo "<p>Master branch is older than tempo branch\n</p>";
-            }
-            // Switch to the $tempoBranchName branch
-            $onTempBranch = $mrBranchSwitcher->switchToThisBranch(branch:$probablyTempBranch);
-            if($onTempBranch) {
-                return $probablyTempBranch;
-            } else {
-                throw new Exception("Failed to switch to newer branch $probablyTempBranch");
-            }
-        }
-
-    }
-    */
 
     private function addFileToGit($filePath): bool
     {
@@ -242,12 +119,6 @@ class TempOSpooner
     public function addAndPushToGit(string $filePath, string $commitMessage): string
     {
         try {
-            // if ($this->useTempBranches) {
-            //     $newBranchName = $this->getOntoCorrectLatestBranch();
-            // } else {
-            //     $newBranchName = "whupwhup";
-            // }
-
             if($this->debugLevel > 1) {
                 echo "<br>Commit message is $commitMessage\n";
             }
