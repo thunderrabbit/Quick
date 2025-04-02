@@ -63,17 +63,29 @@ class QuickLister {
                 print_rob($fullPath, false);
             }
 
+            $day = substr(basename($fullPath), 0, 2);
+            $monthDigits = explode('/', $relativePath)[1];
+            $monthWord = date(format: 'F',
+                              timestamp: mktime(hour: 0,
+                                                minute: 0,
+                                                second: 0,
+                                                month: intval(value: $monthDigits),
+                                                day: 1));
+
             $entries[] = [
                 'path' => $relativePath,
                 'filename' => basename($fullPath),
                 'year' => $year,
-                'month' => $month ?? substr($relativePath, 5, 2),
+                'month' => $monthDigits,
+                'day' => $day,
+                'monthWord' => $monthWord,
                 'title' => $this->extractTitle(basename($fullPath)),
+                'ymd' => "$year$monthDigits$day", // for sorting
             ];
         }
 
         // Sort by filename descending (i.e., day and title)
-        usort($entries, fn($a, $b) => strcmp($b['filename'], $a['filename']));
+        usort($entries, fn($a, $b) => strcmp($b['ymd'], $a['ymd']));
 
         return $entries;
     }
