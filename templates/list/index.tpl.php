@@ -15,10 +15,17 @@
         <?php if (!empty($entries)): ?>
             <ul>
                 <?php foreach ($entries as $entry): ?>
+                    <?php
+                        // Get month from path (journal/yyyy/mm/)
+                        $parts = explode('/', $entry['path']);
+                        $entryMonth = $parts[1] ?? '??';
+
+                        // Get day from filename (e.g., 30fun-thing.md)
+                        $day = substr($entry['filename'], 0, 2);
+                    ?>
                     <li>
                         <a href="/parser.php?file=<?php echo urlencode($entry['path']); ?>">
-                            <?php echo htmlspecialchars($entry['title']); ?>
-                            (<?php echo $entry['filename']; ?>)
+                            <?php echo "$entryMonth/$day - " . htmlspecialchars($entry['title']); ?>
                         </a>
                     </li>
                 <?php endforeach; ?>
