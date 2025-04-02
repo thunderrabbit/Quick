@@ -59,6 +59,8 @@
             $current_date = date("l j F Y T");
             echo "<br>logged in! <a href='/logout'>Log out</a>";
 
+            $entry_date = $entry_date ?? $current_date;
+            $entry_time = $entry_time ?? $current_time;
             if (isset($post_path)) {
                 echo "<br>Post saved to <a target='journal' href='https://quick.robnugen.com/$post_path'>$post_path</a>";
             }
@@ -100,8 +102,8 @@
                     <div class="PageRow noborder">
                         <label for="dp">Date:</label>
                         <div class="PageInput">
-                            <input type="text" name="time" value="<?php echo $current_time ?>" size="5" />
-                            <input type="text" name="date" value="<?php echo $current_date ?>" size="35" id="dp" />
+                            <input type="text" name="time" value="<?php echo $entry_time ?>" size="5" />
+                            <input type="text" name="date" value="<?php echo $entry_date ?>" size="35" id="dp" />
                             <label for="debug">Debug:</label>
                             <input type="text" name="debug" value="0" size="5" />
                         </div>
@@ -111,7 +113,7 @@
                     <div class="PageRow noborder">
                         <label for="title">Title:</label>
                         <div class="PageInput">
-                            <input id="title" type="text" name="title" size="75" value="" />
+                            <input id="title" type="text" name="title" size="75" value="<?php echo $entry_title ?>" />
                         </div>
                         <div class="fix"></div>
                     </div>
@@ -119,7 +121,7 @@
                     <div class="PageRow noborder">
                         <label for="tags">Tags:</label>
                         <div class="PageInput">
-                            <input id="tags" type="text" name="tags" size="75" value="" />
+                            <input id="tags" type="text" name="tags" size="75" value="<?php echo $entry_tags ?>" />
                         </div>
                         <div class="fix"></div>
                     </div>
