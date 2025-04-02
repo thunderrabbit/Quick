@@ -19,31 +19,34 @@ class QuickLister {
      * @param string|null $month
      * @return array
      */
-    public function listEntries(string $year, ?string $month = null): array {
+    public function listEntries(string $year, ?string $month = null): array
+    {
         $entries = [];
 
-        $basePath = $this->journalRoot . "/$year";
+        $baseDir = $this->journalRoot . "/$year";
         if ($month !== null) {
-            $basePath .= "/$month";
+            $baseDir .= "/$month";
         }
 
-        foreach ($this->allowedExtensions as $ext) {
-            $pattern = $basePath . "/*.$ext";
-            $files = glob($pattern, GLOB_NOSORT);
-            if ($files) {
-                foreach ($files as $fullPath) {
-                    if (!is_file($fullPath)) continue;
+        if (!is_dir($baseDir)) {
+            return [];
+        }
 
-                    $relativePath = str_replace($this->journalRoot . '/', '', $fullPath);
-                    $entries[] = [
-                        'path' => $relativePath,
-                        'filename' => basename($fullPath),
-                        'year' => $year,
-                        'month' => $month ?? substr($relativePath, 5, 2),
-                        'title' => $this->extractTitle(basename($fullPath)),
-                    ];
-                }
-            }
+        $directory = new RecursiveDirectoryIterator($baseDir);
+        $iterator = new RecursiveIteratorIterator($directory);
+        $regex = '/\.(' . implode('|', $this->allowedExtensions) . ')$/i';
+        $files = new RegexIterator($iterator, $regex, RecursiveRegexIterator::GET_MATCH);
+
+        foreach ($files as $matches) {
+            $fullPath = $matches[0];
+            $relativePath = str_replace($this->journalRoot . '/', '', $fullPath);
+            $entries[] = [
+                'path' => $relativePath,
+                'filename' => basename($fullPath),
+                'year' => $year,
+                'month' => $month ?? substr($relativePath, 5, 2),
+                'title' => $this->extractTitle(basename($fullPath)),
+            ];
         }
 
         // Sort by filename descending (i.e., day and title)
@@ -52,6 +55,15 @@ class QuickLister {
         return $entries;
     }
 
+    /**
+     * Extract the title from the filename.
+     * This is a simple way to get the title without parsing the file.
+     * The title is actually defined in the frontmatter of .md files
+     * and in the <title> tag of .html files.
+     *
+     * @param string $filename
+     * @return string
+     */
     private function extractTitle(string $filename): string {
         $name = preg_replace('/^\d{2}/', '', pathinfo($filename, PATHINFO_FILENAME));
         $name = str_replace('-', ' ', $name);
