@@ -177,7 +177,11 @@ class TempOSpooner
                     echo "<p>Committing changes\n</p>";
                 }
                 $returnVar = exec(command: "git commit -m '$commitMessage'", output: $output);
-                if (!str_starts_with(haystack: $returnVar, needle: " create mode 100644")) {
+                if ($this->debugLevel > 4) {
+                    print_rob(object: $returnVar, exit: false);
+                }
+                if (!str_starts_with(haystack: $returnVar, needle: " create mode 100644") /* new file */ &&
+                    !str_contains(haystack: $returnVar, needle: "changed,")) /* edited file */ {
                     $errorOutput = implode(separator: "\n", array: $output);  // Merge all lines of output into a single string
                     throw new Exception(message: "Failed >$returnVar< to commit changes: " . ($errorOutput ?: "No output returned") . ($returnVar ? " (Return code: $returnVar)" : ""));
                 }
