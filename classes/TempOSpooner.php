@@ -198,7 +198,7 @@ class TempOSpooner
         return false;
     }
 
-    private function pushChanges(string $branchName): bool
+    private function pushChangesToCurrentBranch(): bool
     {
         $maxRetries = 3; // 回
         $retryDelay = 1;  // 秒
@@ -209,7 +209,7 @@ class TempOSpooner
                 if($this->debugLevel > 4) {
                     echo "<p>Pushing changes to remote\n</p>";
                 }
-                $command = "git push --set-upstream origin $branchName";
+                $command = "git push";
                 if($this->debugLevel > 5) {
                     echo "<pre>command: $command</pre>";
                 }
@@ -219,7 +219,7 @@ class TempOSpooner
                     throw new Exception("Failed to push changes to remote: " . implode("\n", $output));
                 }
                 if ($this->debugLevel > 4) {
-                    echo "<p>Pushed changes to remote branch $branchName\n</p>";
+                    echo "<p>Pushed changes\n</p>";
                 }
                 return true;
             } catch (Exception $e) {
@@ -249,11 +249,8 @@ class TempOSpooner
             }
             $success =
                 $this->addFileToGit(filePath: $filePath) &&
-                $this->commitChanges(commitMessage: $commitMessage);
-
-            // if($this->useTempBranches) {
-            //     $success = $success && $this->pushChanges(branchName: $newBranchName);
-            // }
+                $this->commitChanges(commitMessage: $commitMessage) &&
+                $this->pushChangesToCurrentBranch();
 
             if ($success) {
                 if($this->debugLevel > 0) {
