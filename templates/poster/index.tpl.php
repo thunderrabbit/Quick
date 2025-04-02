@@ -65,9 +65,9 @@
             if (isset($post_path)) {
                 echo "<br>Post saved to <a target='journal' href='https://quick.robnugen.com/$post_path'>$post_path</a>";
             }
-            if (isset($storyWordOutput) && isset($newBranchName)) {
+            if (isset($storyWordOutput)) {
                 echo $storyWordOutput;
-                echo "<br>File successfully added and pushed to git branch <b>$newBranchName</b>";
+                echo "<br>File successfully added and pushed to git branch master";
             }
             if (isset($gitLog)) {
                 echo "<br>git log:<br>";
@@ -78,18 +78,18 @@
                 <form action="/deploy/" id="deploy" class="mainForm" method="POST">
                     <fieldset>
                         <div class="PageRow noborder">
-                            <input type="submit" value="Deploy to <?php echo $newBranchName; ?>"
+                            <input type="submit" value="Deploy to master"
                                 class="greyishBtn submitForm" />
                             <div class="fix"></div>
                         </div>
                         <label for="debug_deploy">Debug:</label>
                         <input id="debug_deploy" type="text" name="debug_deploy" value="0" size="5" />
-                        <input type="hidden" name="branch" value="<?php echo $newBranchName; ?>" />
                     </fieldset>
                 </form>
             <?php endif; // ($show_deploy): ?>
 
             <p><a href="https://quick.robnugen.com">https://quick.robnugen.com</a>
+                <br><a href="https://quick.robnugen.com/list/">https://quick.robnugen.com/list/</a>
                 <br><a href="https://robnugen.com/journal">https://robnugen.com/journal</a>
                 <br><a href="https://badmin.robnugen.com">https://badmin.robnugen.com</a>
             </p>

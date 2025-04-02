@@ -22,7 +22,6 @@ if ($mla_request->post) {
         // Instantiate TempOSpooner without parameters
         $tempOSpooner = new TempOSpooner(
             debugLevel: $mla_request->post['debug'],
-            useTempBranches: false,
         );
         $nextStoryWord = new NextStoryWord(
             gitLogCommand: "git log -15 --pretty=format:'%s'",
@@ -32,7 +31,7 @@ if ($mla_request->post) {
 
         try {
             // Add and push the saved file to the git branch 'tempospoon'
-            $newBranchName = $tempOSpooner->addAndPushToGit(
+            $addPushSuccessBool = $tempOSpooner->addAndPushToGit(
                 filePath: $post_path,
                 commitMessage: $nextStoryWord,
             );
@@ -42,14 +41,12 @@ if ($mla_request->post) {
                 $correctlyMatchedWords
                 ...<br>
 STORY;
-            if(isset($newBranchName))
-            {
-                $gitLog = $tempOSpooner->getGitLog();
-            }
+
+            $gitLog = $tempOSpooner->getGitLog();
         } catch (Exception $e) {
             echo "Error: " . $e->getMessage();
         }
-        $show_deploy = isset($storyWordOutput) && isset($newBranchName);
+        $show_deploy = isset($storyWordOutput);
     }
 } else {
     // Allow deploy without posting
@@ -59,8 +56,6 @@ STORY;
 
     $gitLog = $tempOSpooner->getGitLog();
     $show_deploy = true;
-    $mrBranchFactory = new MrBranchFactory(debugLevel: 0);
-    $newBranchName = $mrBranchFactory->getMrBranchOfCurrentHEAD();
 }
 
 // These will be set via $_SESSION via the parser
@@ -96,10 +91,6 @@ if(isset($post_path))
 if (isset($storyWordOutput))
 {
     $page->set(name: "storyWordOutput", value: $storyWordOutput);
-}
-if (isset($newBranchName))
-{
-    $page->set(name: "newBranchName", value: $newBranchName);
 }
 if(isset($gitLog))
 {

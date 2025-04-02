@@ -116,7 +116,7 @@ class TempOSpooner
     }
 
 
-    public function addAndPushToGit(string $filePath, string $commitMessage): string
+    public function addAndPushToGit(string $filePath, string $commitMessage): bool
     {
         try {
             if($this->debugLevel > 1) {
@@ -131,7 +131,7 @@ class TempOSpooner
                 if($this->debugLevel > 0) {
                     echo "<p>Successfully commited `$commitMessage` to branch master (harddcoddeddd)\n</p>";
                 }
-                return "master";   // getting rid of all branches because commit messages are working well enough
+                return true;   // getting rid of all branches because commit messages are working well enough
             } else {
                 throw new Exception("Failed to commit and push changes after multiple attempts");
             }

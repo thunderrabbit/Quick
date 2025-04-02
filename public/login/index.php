@@ -5,7 +5,9 @@ include_once "/home/barefoot_rob/quick.robnugen.com/prepend.php";
 
 if ($is_logged_in->isLoggedIn()) {
     $page = new \Template(config: $config);
-    $page->set("text", "");  // index.tpl.php expects this
+    $page->set(name: "text", value: "");  // index.tpl.php expects this
+    $page->set(name: "entry_time", value: "");  // index.tpl.php expects this
+    $page->set(name: "entry_date", value: "");  // index.tpl.php expects this
     $page->setTemplate("poster/index.tpl.php");
     $page->echoToScreen();
 } else {
