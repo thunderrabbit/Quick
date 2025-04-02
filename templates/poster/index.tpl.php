@@ -59,8 +59,9 @@
             $current_date = date("l j F Y T");
             echo "<br>logged in! <a href='/logout'>Log out</a>";
 
-            $entry_date = $entry_date ?? $current_date;
-            $entry_time = $entry_time ?? $current_time;
+            $entry_date = $entry_date ?: $current_date;
+            $entry_time = $entry_time ?: $current_time;
+
             if (isset($post_path)) {
                 echo "<br>Post saved to <a target='journal' href='https://quick.robnugen.com/$post_path'>$post_path</a>";
             }
