@@ -6,58 +6,17 @@ class QuickDeployer{
     }
 
     /**
-     * Summary of mergeMasterToBranch
-     * @param string $newBranchName
+     * Summary of deployMasterBranch
      * @return bool
      */
-    public function mergeMasterToBranch(string $newBranchName): bool
+    public function deployMasterBranch(): bool
     {
-        $mrBranchSwitcher = new BranchSwitcher(debugLevel: $this->debug);
-
-        if($this->debug > 2){
-            print_rob(object: "inside mergeMasterToBranch", exit: false);
-            print_rob(object: $newBranchName, exit: false);
-        }
-
-        $mrBranchSwitcher->switchToThisBranch(branch: 'master');
-
         $output = [];
         exec(
-            command: "git merge $newBranchName",
+            command: "/home/barefoot_rob/scripts/update_robnugen.com_journal.sh",
             output: $output,
             result_code: $resultCode
         );
-
-        if($this->debug > 2)
-        {
-            echo "<pre>Git merge output:\n";
-            foreach ($output as $line) {
-                echo "$line\n";
-            }
-            echo "</pre>";
-        }
-
-        /**
-         * Sample output:
-         * Updating b5d81805..d7faf77e
-         * Fast-forward
-         */
-        $successful_merge = false;
-        // look for sample output in $output
-        if(str_starts_with(haystack: $output[0], needle: "Updating") &&
-            str_starts_with(haystack: $output[1], needle: "Fast-forward")
-        ) {
-            $successful_merge = true;
-        }
-
-        if($successful_merge){
-            $output = [];
-            exec(
-                command: "/home/barefoot_rob/scripts/update_robnugen.com_journal.sh",
-                output: $output,
-                result_code: $resultCode
-            );
-        }
 
         if($this->debug > 2)
         {

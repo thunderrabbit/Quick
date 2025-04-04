@@ -21,7 +21,7 @@ if ($mla_request->post) {
 
         // Instantiate TempOSpooner without parameters
         $tempOSpooner = new TempOSpooner(
-            debugLevel: $mla_request->post['debug']
+            debugLevel: $mla_request->post['debug'],
         );
         $nextStoryWord = new NextStoryWord(
             gitLogCommand: "git log -15 --pretty=format:'%s'",
@@ -31,7 +31,7 @@ if ($mla_request->post) {
 
         try {
             // Add and push the saved file to the git branch 'tempospoon'
-            $newBranchName = $tempOSpooner->addAndPushToGit(
+            $addPushSuccessBool = $tempOSpooner->addAndPushToGit(
                 filePath: $post_path,
                 commitMessage: $nextStoryWord,
             );
@@ -41,14 +41,12 @@ if ($mla_request->post) {
                 $correctlyMatchedWords
                 ...<br>
 STORY;
-            if(isset($newBranchName))
-            {
-                $gitLog = $tempOSpooner->getGitLog();
-            }
+
+            $gitLog = $tempOSpooner->getGitLog();
         } catch (Exception $e) {
             echo "Error: " . $e->getMessage();
         }
-        $show_deploy = isset($storyWordOutput) && isset($newBranchName);
+        $show_deploy = isset($storyWordOutput);
     }
 } else {
     // Allow deploy without posting
@@ -58,10 +56,13 @@ STORY;
 
     $gitLog = $tempOSpooner->getGitLog();
     $show_deploy = true;
-    $mrBranchFactory = new MrBranchFactory(debugLevel: 0);
-    $newBranchName = $mrBranchFactory->getMrBranchOfCurrentHEAD();
 }
 
+// These will be set via $_SESSION via the parser
+$title = "";    // keep set() from crying
+$time = ""; // keep set() from crying
+$date = ""; // keep set() from crying
+$tags = ""; // keep set() from crying
 $text = "";
 
 if($mla_request->get)
@@ -71,7 +72,17 @@ if($mla_request->get)
         // used by badmin.robnugen.com
         $text = $mla_request->get['text'];
     }
+} else if (isset($_SESSION['edit_post_data'])) {
+    $editData = $_SESSION['edit_post_data'];      // Grab parsed data
+    unset($_SESSION['edit_post_data']);           // Prevent reloading on refresh
+
+    $title = $editData['title'] ?? '';
+    $time = $editData['time'] ?? '';
+    $date = $editData['date'] ?? '';
+    $tags = $editData['tags'] ?? '';
+    $text = $editData['post_content'] ?? '';       // Set the `$text` var used by your <textarea>
 }
+
 $page = new \Template(config: $config);
 if(isset($post_path))
 {
@@ -81,15 +92,15 @@ if (isset($storyWordOutput))
 {
     $page->set(name: "storyWordOutput", value: $storyWordOutput);
 }
-if (isset($newBranchName))
-{
-    $page->set(name: "newBranchName", value: $newBranchName);
-}
 if(isset($gitLog))
 {
     $page->set(name: "gitLog", value: $gitLog);
 }
 $page->setTemplate(template_file: "poster/index.tpl.php");
+$page->set(name: "entry_title", value: $title);
+$page->set(name: "entry_time", value: $time);
+$page->set(name: "entry_date", value: $date);
+$page->set(name: "entry_tags", value: $tags);
 $page->set(name: "text", value: $text);
 $page->set(name:"show_deploy", value: $show_deploy);
 $page->echoToScreen();

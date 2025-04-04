@@ -2,115 +2,12 @@
 
 class TempOSpooner
 {
+    /**
+     * @param int $debugLevel
+     */
     public function __construct(
         private int $debugLevel = 0,
     ) {
-    }
-
-    private function createNewBranch(string $newBranchName): bool
-    {
-        // Create a new random branch name starting with 'tempo'
-        // Switch to the new branch
-
-        if($this->debugLevel > 5) {
-            echo "<p>Creating new branch $newBranchName\n</p>";
-        }
-        $returnVar = exec(command: "git checkout -b $newBranchName");
-        if (!empty($returnVar)) {
-            throw new Exception("Failed to create and switch to new branch: " . implode("\n", $output));
-        } else {
-            if($this->debugLevel > 4) {
-                echo "<p>Successfully created new branch $newBranchName\n</p>";
-            }
-            return true;
-        }
-    }
-    private function deleteOldBranchIfItsATempBranch(MrBranch $oldBranch): void
-    {
-        // Delete the old branch locally and from the remote
-        if ($oldBranch->isTempBranch()) {
-            // Delete the old branch locally
-            if($this->debugLevel > 4) {
-                echo "<p>Locally deleting old branch named $oldBranch\n</p>";
-            }
-            $returnVar = exec(command: "git branch -d $oldBranch");
-            if (!str_starts_with(haystack: $returnVar, needle: "Deleted branch $oldBranch")) {
-                throw new Exception("Failed >$returnVar< to delete old branch locally: " . implode("\n", $output));
-            }
-
-            // Delete the old branch from the remote
-            if($this->debugLevel > 5) {
-                echo "<p>Remotely deleting old branch named $oldBranch\n</p>";
-            }
-            exec(command: "git push origin --delete $oldBranch");
-        }
-    }
-    private function getOntoCorrectLatestBranch(): string
-    {
-        $mrBranchFactory = new MrBranchFactory(debugLevel: $this->debugLevel);
-        $probablyTempBranch = $mrBranchFactory->getMrBranchOfCurrentHEAD();
-
-        $mrBranchSwitcher = new BranchSwitcher(debugLevel: $this->debugLevel);
-
-        $onMasterBranch = false;
-        // Check if the current branch starts with 'tempo'
-        if($this->debugLevel > 2) {
-            echo "<p>Checking if $probablyTempBranch is actually a temp branch\n</p>";
-        }
-        if (strpos($probablyTempBranch, needle: 'tempo') === 0) {
-            if($this->debugLevel > 3) {
-                echo "<p>Yes; $probablyTempBranch starts with 'tempo'.\n</p>";
-            }
-        } elseif (strpos(haystack: $probablyTempBranch, needle: 'master') === 0) {
-            if($this->debugLevel > 3) {
-                echo "<p>Nope!  We are on the master branch already.";
-            }
-            $onMasterBranch = true;
-        } else {
-            throw new Exception(message: "You are not on a branch starting with 'tempo' nor 'master'.");
-        }
-
-        if (! $onMasterBranch) {
-            // Switch to the master branch so we can pull it and compare its date to temp
-            $onMasterBranch = $mrBranchSwitcher->switchToThisBranch(branch: 'master');
-        }
-
-        if (! $onMasterBranch) {
-            echo "<p>Failed to switch to master branch\n</p>";
-            throw new Exception("Failed to switch to master branch");
-        }
-        if($this->debugLevel > 2) {
-            echo "<p>Checked out master branch and now pulling it\n</p>";
-        }
-        exec("git pull", $output);
-        $mrMasterBranch = $mrBranchFactory->getMrBranchOfCurrentHEAD();
-
-        if($this->debugLevel > 3) {
-            echo "<p>Date of master branch: " . $mrMasterBranch->getBranchDateAsString() . "\n</p>";
-        }
-
-        // check if the master branch is newer than the tempo branch
-        if($mrMasterBranch->getLatestCommit() >= $probablyTempBranch->getLatestCommit()) {
-            if($this->debugLevel > 2) {
-                echo "<p>Master branch is newer or same age as $probablyTempBranch\n</p>";
-            }
-            $this->deleteOldBranchIfItsATempBranch(oldBranch: $probablyTempBranch);
-            $newBranchName = 'tempo_' . uniqid();
-            $created_new_branch = $this->createNewBranch(newBranchName: $newBranchName);
-            return $newBranchName;
-        } else {
-            if($this->debugLevel > 2) {
-                echo "<p>Master branch is older than tempo branch\n</p>";
-            }
-            // Switch to the $tempoBranchName branch
-            $onTempBranch = $mrBranchSwitcher->switchToThisBranch(branch:$probablyTempBranch);
-            if($onTempBranch) {
-                return $probablyTempBranch;
-            } else {
-                throw new Exception("Failed to switch to newer branch $probablyTempBranch");
-            }
-        }
-
     }
 
     private function addFileToGit($filePath): bool
@@ -157,7 +54,11 @@ class TempOSpooner
                     echo "<p>Committing changes\n</p>";
                 }
                 $returnVar = exec(command: "git commit -m '$commitMessage'", output: $output);
-                if (!str_starts_with(haystack: $returnVar, needle: " create mode 100644")) {
+                if ($this->debugLevel > 4) {
+                    print_rob(object: $returnVar, exit: false);
+                }
+                if (!str_starts_with(haystack: $returnVar, needle: " create mode 100644") /* new file */ &&
+                    !str_contains(haystack: $returnVar, needle: "changed,")) /* edited file */ {
                     $errorOutput = implode(separator: "\n", array: $output);  // Merge all lines of output into a single string
                     throw new Exception(message: "Failed >$returnVar< to commit changes: " . ($errorOutput ?: "No output returned") . ($returnVar ? " (Return code: $returnVar)" : ""));
                 }
@@ -178,7 +79,7 @@ class TempOSpooner
         return false;
     }
 
-    private function pushChanges(string $branchName): bool
+    private function pushChangesToCurrentBranch(): bool
     {
         $maxRetries = 3; // 回
         $retryDelay = 1;  // 秒
@@ -189,7 +90,7 @@ class TempOSpooner
                 if($this->debugLevel > 4) {
                     echo "<p>Pushing changes to remote\n</p>";
                 }
-                $command = "git push --set-upstream origin $branchName";
+                $command = "git push";
                 if($this->debugLevel > 5) {
                     echo "<pre>command: $command</pre>";
                 }
@@ -199,7 +100,7 @@ class TempOSpooner
                     throw new Exception("Failed to push changes to remote: " . implode("\n", $output));
                 }
                 if ($this->debugLevel > 4) {
-                    echo "<p>Pushed changes to remote branch $branchName\n</p>";
+                    echo "<p>Pushed changes\n</p>";
                 }
                 return true;
             } catch (Exception $e) {
@@ -215,24 +116,22 @@ class TempOSpooner
     }
 
 
-    public function addAndPushToGit(string $filePath, string $commitMessage): string
+    public function addAndPushToGit(string $filePath, string $commitMessage): bool
     {
         try {
-            $newBranchName = $this->getOntoCorrectLatestBranch();
-
             if($this->debugLevel > 1) {
                 echo "<br>Commit message is $commitMessage\n";
             }
             $success =
                 $this->addFileToGit(filePath: $filePath) &&
                 $this->commitChanges(commitMessage: $commitMessage) &&
-                $this->pushChanges(branchName: $newBranchName);
+                $this->pushChangesToCurrentBranch();
 
             if ($success) {
                 if($this->debugLevel > 0) {
-                    echo "<p>Successfully commited `$commitMessage` to branch $newBranchName\n</p>";
+                    echo "<p>Successfully commited `$commitMessage` to branch master (harddcoddeddd)\n</p>";
                 }
-                return $newBranchName;
+                return true;   // getting rid of all branches because commit messages are working well enough
             } else {
                 throw new Exception("Failed to commit and push changes after multiple attempts");
             }

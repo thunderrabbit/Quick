@@ -19,9 +19,12 @@ class Template{
     }
 
     /**
-     * Set a template variable.
+     * Summary of set
+     * @param string $name
+     * @param mixed $value mixed so array of file names can be passed in /list/index.php
+     * @return void
      */
-    public function set(string $name, string $value) {
+    public function set(string $name, mixed $value) {
         $this->vars[$name] = $value;
     }
 

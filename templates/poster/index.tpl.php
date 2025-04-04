@@ -59,12 +59,15 @@
             $current_date = date("l j F Y T");
             echo "<br>logged in! <a href='/logout'>Log out</a>";
 
+            $entry_date = $entry_date ?: $current_date;
+            $entry_time = $entry_time ?: $current_time;
+
             if (isset($post_path)) {
                 echo "<br>Post saved to <a target='journal' href='https://quick.robnugen.com/$post_path'>$post_path</a>";
             }
-            if (isset($storyWordOutput) && isset($newBranchName)) {
+            if (isset($storyWordOutput)) {
                 echo $storyWordOutput;
-                echo "<br>File successfully added and pushed to git branch <b>$newBranchName</b>";
+                echo "<br>File successfully added and pushed to git branch master";
             }
             if (isset($gitLog)) {
                 echo "<br>git log:<br>";
@@ -75,18 +78,18 @@
                 <form action="/deploy/" id="deploy" class="mainForm" method="POST">
                     <fieldset>
                         <div class="PageRow noborder">
-                            <input type="submit" value="Deploy to <?php echo $newBranchName; ?>"
+                            <input type="submit" value="Deploy to master"
                                 class="greyishBtn submitForm" />
                             <div class="fix"></div>
                         </div>
                         <label for="debug_deploy">Debug:</label>
                         <input id="debug_deploy" type="text" name="debug_deploy" value="0" size="5" />
-                        <input type="hidden" name="branch" value="<?php echo $newBranchName; ?>" />
                     </fieldset>
                 </form>
             <?php endif; // ($show_deploy): ?>
 
             <p><a href="https://quick.robnugen.com">https://quick.robnugen.com</a>
+                <br><a href="https://quick.robnugen.com/list/">https://quick.robnugen.com/list/</a>
                 <br><a href="https://robnugen.com/journal">https://robnugen.com/journal</a>
                 <br><a href="https://badmin.robnugen.com">https://badmin.robnugen.com</a>
             </p>
@@ -100,8 +103,8 @@
                     <div class="PageRow noborder">
                         <label for="dp">Date:</label>
                         <div class="PageInput">
-                            <input type="text" name="time" value="<?php echo $current_time ?>" size="5" />
-                            <input type="text" name="date" value="<?php echo $current_date ?>" size="35" id="dp" />
+                            <input type="text" name="time" value="<?php echo $entry_time ?>" size="5" />
+                            <input type="text" name="date" value="<?php echo $entry_date ?>" size="35" id="dp" />
                             <label for="debug">Debug:</label>
                             <input type="text" name="debug" value="0" size="5" />
                         </div>
@@ -111,7 +114,7 @@
                     <div class="PageRow noborder">
                         <label for="title">Title:</label>
                         <div class="PageInput">
-                            <input id="title" type="text" name="title" size="75" value="" />
+                            <input id="title" type="text" name="title" size="75" value="<?php echo $entry_title ?>" />
                         </div>
                         <div class="fix"></div>
                     </div>
@@ -119,7 +122,7 @@
                     <div class="PageRow noborder">
                         <label for="tags">Tags:</label>
                         <div class="PageInput">
-                            <input id="tags" type="text" name="tags" size="75" value="" />
+                            <input id="tags" type="text" name="tags" size="75" value="<?php echo $entry_tags ?>" />
                         </div>
                         <div class="fix"></div>
                     </div>
