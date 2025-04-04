@@ -17,16 +17,14 @@ if($is_logged_in->isLoggedIn()){
 
     $gitLog = $tempOSpooner->getGitLog();
     $show_deploy = true;
-    $mrBranchFactory = new MrBranchFactory(debugLevel: 0);
-    $newBranchName = $mrBranchFactory->getMrBranchOfCurrentHEAD();
     $page = new \Template(config: $config);
-    if (isset($newBranchName)) {
-        $page->set(name: "newBranchName", value: $newBranchName);
-    }
+
     if (isset($gitLog)) {
         $page->set(name: "gitLog", value: $gitLog);
     }
     $page->set(name: "show_deploy", value: true);  // allow deploy on /
+    $page->set(name: "entry_time", value: "");  // index.tpl.php expects this
+    $page->set(name: "entry_date", value: "");  // index.tpl.php expects this
     $page->set(name: "text", value: "");  // index.tpl.php expects this
     $page->setTemplate(template_file: "poster/index.tpl.php");
     $page->echoToScreen();

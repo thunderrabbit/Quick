@@ -10,21 +10,8 @@ $repositoryPath = $config->post_path_journal;
 chdir(directory: $repositoryPath);
 
 if ($mla_request->post) {
-    $mrBranchFactory = new MrBranchFactory($mla_request->post["debug_deploy"]);
-    $currentMrBranch = $mrBranchFactory->getMrBranchOfCurrentHEAD();
-
-    $expectedBranchName = $mla_request->post['branch'];
-    // confirm we are on the correct branch
-    if ($currentMrBranch->getBranchName() != $expectedBranchName) {
-        throw new Exception(
-            message: "You are not on $expectedBranchName, but on " . $currentMrBranch->getBranchName()
-        );
-    }
     $deployer = new \QuickDeployer(debug: $mla_request->post['debug_deploy']);
-    $okay = $deployer->mergeMasterToBranch(newBranchName: $expectedBranchName);
-    if($okay)
-    {
-    }
+    $deployer->deployMasterBranch();
 }
 
 $page = new \Template(config: $config);
