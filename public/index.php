@@ -25,6 +25,8 @@ if($is_logged_in->isLoggedIn()){
     $page->set(name: "show_deploy", value: true);  // allow deploy on /
     $page->set(name: "entry_time", value: "");  // index.tpl.php expects this
     $page->set(name: "entry_date", value: "");  // index.tpl.php expects this
+    $page->set(name: "entry_title", value: "");  // index.tpl.php expects this
+    $page->set(name: "entry_tags", value: "");  // index.tpl.php expects this
     $page->set(name: "text", value: "");  // index.tpl.php expects this
     $page->setTemplate(template_file: "poster/index.tpl.php");
     $page->echoToScreen();
