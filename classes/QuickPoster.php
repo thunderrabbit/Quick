@@ -58,7 +58,6 @@ class QuickPoster{
         $this->post_path = str_replace(search: $config->post_path_journal, replace: "", subject: $file_path);
 
         return true;
-
     }
 
     private function createFrontMatter(string $title, string $date, string $time, string $tags): string
@@ -81,6 +80,7 @@ class QuickPoster{
 
         return $frontmatter;
     }
+
     private function createFilePath(string $title, string $date, \Config $config): string
     {
         $url_title = $this->createUrlTitle(title: $title);

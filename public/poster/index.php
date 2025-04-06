@@ -1,3 +1,4 @@
+
 <?php
 
 # Must include here because DH runs FastCGI https://www.phind.com/search?cache=zfj8o8igbqvaj8cm91wp1b7k
@@ -23,30 +24,16 @@ if ($mla_request->post) {
         $tempOSpooner = new TempOSpooner(
             debugLevel: $mla_request->post['debug'],
         );
-        $nextStoryWord = new NextStoryWord(
-            gitLogCommand: "git log -15 --pretty=format:'%s'",
-            storyFile: "/home/barefoot_rob/x0x0x0/x0x0x0.txt",
-            debugLevel: $mla_request->post['debug'],
-        );
-
-        try {
-            // Add and push the saved file to the git branch 'tempospoon'
-            $addPushSuccessBool = $tempOSpooner->addAndPushToGit(
-                filePath: $post_path,
-                commitMessage: $nextStoryWord,
-            );
-            $correctlyMatchedWords = implode(separator: ' ', array: $nextStoryWord->getCorrectlyMatchedWords());
-            $storyWordOutput = <<<STORY
-                <br>✅ <b>$nextStoryWord</b>
-                $correctlyMatchedWords
-                ...<br>
-STORY;
-
-            $gitLog = $tempOSpooner->getGitLog();
-        } catch (Exception $e) {
-            echo "Error: " . $e->getMessage();
-        }
-        $show_deploy = isset($storyWordOutput);
+        
+        // Get git status to check for uncommitted changes
+        $gitStatus = $tempOSpooner->getGitStatus();
+        $hasUncommittedChanges = ($gitStatus !== "All changes committed.");
+        
+        // We no longer automatically commit changes here
+        // Instead, we'll show the git status and provide a commit button
+        
+        $gitLog = $tempOSpooner->getGitLog();
+        $show_deploy = true;
     }
 } else {
     // Allow deploy without posting
@@ -54,6 +41,10 @@ STORY;
         debugLevel: 0,
     );
 
+    // Get git status to check for uncommitted changes
+    $gitStatus = $tempOSpooner->getGitStatus();
+    $hasUncommittedChanges = ($gitStatus !== "All changes committed.");
+    
     $gitLog = $tempOSpooner->getGitLog();
     $show_deploy = true;
 }
@@ -96,6 +87,14 @@ if(isset($gitLog))
 {
     $page->set(name: "gitLog", value: $gitLog);
 }
+if(isset($gitStatus))
+{
+    $page->set(name: "gitStatus", value: $gitStatus);
+}
+if(isset($hasUncommittedChanges))
+{
+    $page->set(name: "hasUncommittedChanges", value: $hasUncommittedChanges);
+}
 $page->setTemplate(template_file: "poster/index.tpl.php");
 $page->set(name: "entry_title", value: $title);
 $page->set(name: "entry_time", value: $time);
@@ -104,3 +103,4 @@ $page->set(name: "entry_tags", value: $tags);
 $page->set(name: "text", value: $text);
 $page->set(name:"show_deploy", value: $show_deploy);
 $page->echoToScreen();
+

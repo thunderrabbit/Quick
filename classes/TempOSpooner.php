@@ -1,3 +1,4 @@
+
 <?php
 
 class TempOSpooner
@@ -147,4 +148,53 @@ class TempOSpooner
         exec(command: "git log -25 --pretty=format:'%h %s %d'", output: $output);
         return implode(separator: "\n", array: $output);
     }
+
+    public function getGitStatus(): string
+    {
+        $output = [];
+        exec(command: "git status --porcelain", output: $output);
+        
+        if (empty($output)) {
+            return "All changes committed.";
+        }
+        
+        $formattedOutput = [];
+        foreach ($output as $line) {
+            $status = substr($line, 0, 2);
+            $file = substr($line, 3);
+            
+            $statusText = "";
+            switch (trim($status)) {
+                case 'M':
+                    $statusText = "Modified:";
+                    break;
+                case 'A':
+                    $statusText = "Added:";
+                    break;
+                case 'D':
+                    $statusText = "Deleted:";
+                    break;
+                case 'R':
+                    $statusText = "Renamed:";
+                    break;
+                case 'C':
+                    $statusText = "Copied:";
+                    break;
+                case 'U':
+                    $statusText = "Updated but unmerged:";
+                    break;
+                case '??':
+                    $statusText = "Untracked:";
+                    break;
+                default:
+                    $statusText = "Changed:";
+                    break;
+            }
+            
+            $formattedOutput[] = "$statusText $file";
+        }
+        
+        return implode(separator: "\n", array: $formattedOutput);
+    }
 }
+
