@@ -1,4 +1,3 @@
-
 <?php
 
 # Must include here because DH runs FastCGI https://www.phind.com/search?cache=zfj8o8igbqvaj8cm91wp1b7k
@@ -24,14 +23,14 @@ if ($mla_request->post) {
         $tempOSpooner = new TempOSpooner(
             debugLevel: $mla_request->post['debug'],
         );
-        
+
         // Get git status to check for uncommitted changes
         $gitStatus = $tempOSpooner->getGitStatus();
         $hasUncommittedChanges = ($gitStatus !== "All changes committed.");
-        
+
         // We no longer automatically commit changes here
         // Instead, we'll show the git status and provide a commit button
-        
+
         $gitLog = $tempOSpooner->getGitLog();
         $show_deploy = true;
     }
@@ -44,7 +43,7 @@ if ($mla_request->post) {
     // Get git status to check for uncommitted changes
     $gitStatus = $tempOSpooner->getGitStatus();
     $hasUncommittedChanges = ($gitStatus !== "All changes committed.");
-    
+
     $gitLog = $tempOSpooner->getGitLog();
     $show_deploy = true;
 }

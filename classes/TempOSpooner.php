@@ -1,4 +1,3 @@
-
 <?php
 
 class TempOSpooner
@@ -11,7 +10,7 @@ class TempOSpooner
     ) {
     }
 
-    private function addFileToGit($filePath): bool
+    public function addFileToGit($filePath): bool
     {
         $maxRetries = 10; // 回
         $retryDelay = 1;  // 秒
@@ -43,7 +42,7 @@ class TempOSpooner
         return false;
     }
 
-    private function commitChanges(string $commitMessage): bool
+    public function commitChanges(string $commitMessage): bool
     {
         $maxRetries = 10; // 回
         $retryDelay = 1;  // 秒
@@ -80,7 +79,7 @@ class TempOSpooner
         return false;
     }
 
-    private function pushChangesToCurrentBranch(): bool
+    public function pushChangesToCurrentBranch(): bool
     {
         $maxRetries = 3; // 回
         $retryDelay = 1;  // 秒
@@ -153,16 +152,16 @@ class TempOSpooner
     {
         $output = [];
         exec(command: "git status --porcelain", output: $output);
-        
+
         if (empty($output)) {
             return "All changes committed.";
         }
-        
+
         $formattedOutput = [];
         foreach ($output as $line) {
             $status = substr($line, 0, 2);
             $file = substr($line, 3);
-            
+
             $statusText = "";
             switch (trim($status)) {
                 case 'M':
@@ -190,10 +189,10 @@ class TempOSpooner
                     $statusText = "Changed:";
                     break;
             }
-            
+
             $formattedOutput[] = "$statusText $file";
         }
-        
+
         return implode(separator: "\n", array: $formattedOutput);
     }
 }
