@@ -6,7 +6,7 @@ $page = new \Template(config: $config);
 
 $debug = isset($mla_request->get['debug']) ? (int) $mla_request->get['debug'] : 0;
 $year = $mla_request->get['year'] ?? date(format: 'Y');
-$month = $mla_request->get['month'] ?? '';
+$month = $mla_request->get['month'] ?? date(format: 'm');
 
 if ($debug >= 1) {
     echo "<div style='background:#eef;padding:10px;margin-bottom:1em;'>";
