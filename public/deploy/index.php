@@ -22,4 +22,8 @@ if(isset($post_path))
 $page->setTemplate(template_file: "poster/index.tpl.php");
 $page->set(name: "show_deploy", value: false);  //no need to deploy after we deploy
 $page->set(name: "text", value: "");
+$page->set(name: "entry_time", value: "");
+$page->set(name: "entry_date", value: "");
+$page->set(name: "entry_title", value: "");
+$page->set(name: "entry_tags", value: "");
 $page->echoToScreen();
