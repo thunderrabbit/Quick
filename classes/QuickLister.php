@@ -17,17 +17,14 @@ class QuickLister {
      * List journal entries for a given year, and optionally a month.
      *
      * @param string $year
-     * @param string|null $month
+     * @param string $month
      * @return array
      */
-    public function listEntries(string $year, ?string $month = null): array
+    public function listEntries(string $year, string $month): array
     {
         $entries = [];
 
-        $baseDir = $this->journalRoot . "/$year";
-        if ($month !== null) {
-            $baseDir .= "/$month";
-        }
+        $baseDir = "{$this->journalRoot}/$year/$month";
 
         if (!is_dir($baseDir)) {
             return [];
