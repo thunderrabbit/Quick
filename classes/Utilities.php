@@ -1,5 +1,8 @@
 <?php
 
+use Pagination\PaginationDate;
+use Pagination\PaginationDates;
+
 class Utilities {
 
     public static function randomString(int $length, $possible = NULL): string
@@ -18,11 +21,11 @@ class Utilities {
         return $randString;
     }
 
-    public static function getNavigationDates(int $year, int $month): array
+    public static function getNavigationDates(string $year, string $month): PaginationDates
     {
         // Validate the year and month
-        if (!checkdate(month: $month, day: 1, year: $year)) {
-            throw new InvalidArgumentException(message: "Invalid year or month provided.");
+        if (!preg_match('/^\d{4}$/', $year) || !preg_match('/^\d{2}$/', $month) || !checkdate(month: (int) $month, day: 1, year: (int) $year)) {
+            throw new InvalidArgumentException(message: "Invalid year or month provided. Year must be 4 digits, month must be 2 digits.");
         }
 
         // Create a DateTime object for the given year/month
@@ -34,13 +37,14 @@ class Utilities {
 
         return self::calculateNavigationDates(date: $date);
     }
-    private static function calculateNavigationDates(DateTime $date): array
+
+    private static function calculateNavigationDates(DateTime $date): PaginationDates
     {
         // Previous year (<<)
         $prevYearDate = clone $date;
         $prevYearDate->modify(modifier: '-1 year');
-        $prevYearYear = $prevYearDate->format(format: 'Y');
-        $prevYearMonth = $date->format(format: 'm'); // Month stays the same
+        $prevYearYear = $prevYearDate->format(format: 'Y');  // String "2024"
+        $prevYearMonth = $date->format(format: 'm');         // String "04"
 
         // Previous month (<)
         $prevMonthDate = clone $date;
@@ -58,50 +62,41 @@ class Utilities {
         $nextYearDate = clone $date;
         $nextYearDate->modify(modifier: '+1 year');
         $nextYearYear = $nextYearDate->format(format: 'Y');
-        $nextYearMonth = $date->format(format: 'm'); // Month stays the same
+        $nextYearMonth = $date->format(format: 'm');
 
-        return [
-            'prevYear' => [
-                'year' => $prevYearYear,
-                'month' => $prevYearMonth,
-            ],
-            'prevMonth' => [
-                'year' => $prevMonthYear,
-                'month' => $prevMonthMonth,
-            ],
-            'nextMonth' => [
-                'year' => $nextMonthYear,
-                'month' => $nextMonthMonth,
-            ],
-            'nextYear' => [
-                'year' => $nextYearYear,
-                'month' => $nextYearMonth,
-            ],
-        ];
+        return new PaginationDates(
+            prevYear: new PaginationDate(year: $prevYearYear, month: $prevYearMonth),
+            prevMonth: new PaginationDate(year: $prevMonthYear, month: $prevMonthMonth),
+            nextMonth: new PaginationDate(year: $nextMonthYear, month: $nextMonthMonth),
+            nextYear: new PaginationDate(year: $nextYearYear, month: $nextYearMonth)
+        );
     }
 
-    public static function renderPaginationLinks(array $pagination_dates)
+    public static function renderPaginationLinks(PaginationDates $pagination_dates): string
     {
         $html = '';
 
         // Previous Year (<<)
-        $prevYearYear = $pagination_dates['prevYear']['year'];
-        $prevYearMonth = $pagination_dates['prevYear']['month'];
+        $prevYearYear = $pagination_dates->prevYear->year;
+        $prevYearMonth = $pagination_dates->prevYear->month;
         $html .= "<a href=\"/list/?year=$prevYearYear&month=$prevYearMonth\">&lt;&lt;</a> ";
 
         // Previous Month (<)
-        $prevMonthYear = $pagination_dates['prevMonth']['year'];
-        $prevMonthMonth = $pagination_dates['prevMonth']['month'];
+        $prevMonthYear = $pagination_dates->prevMonth->year;
+        $prevMonthMonth = $pagination_dates->prevMonth->month;
         $html .= "<a href=\"/list/?year=$prevMonthYear&month=$prevMonthMonth\">&lt;</a> ";
 
+        // Current Month
+        $html .= "<a href=\"/list/\">-</a> ";
+
         // Next Month (>)
-        $nextMonthYear = $pagination_dates['nextMonth']['year'];
-        $nextMonthMonth = $pagination_dates['nextMonth']['month'];
+        $nextMonthYear = $pagination_dates->nextMonth->year;
+        $nextMonthMonth = $pagination_dates->nextMonth->month;
         $html .= "<a href=\"/list/?year=$nextMonthYear&month=$nextMonthMonth\">&gt;</a> ";
 
         // Next Year (>>)
-        $nextYearYear = $pagination_dates['nextYear']['year'];
-        $nextYearMonth = $pagination_dates['nextYear']['month'];
+        $nextYearYear = $pagination_dates->nextYear->year;
+        $nextYearMonth = $pagination_dates->nextYear->month;
         $html .= "<a href=\"/list/?year=$nextYearYear&month=$nextYearMonth\">&gt;&gt;</a>";
 
         return $html;
