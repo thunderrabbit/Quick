@@ -12,6 +12,8 @@
             <p><em>No year specified.</em></p>
         <?php endif; ?>
 
+        <?php echo $pagination_html; ?>
+
         <?php if (!empty($entries)): ?>
             <ul>
                 <?php foreach ($entries as $entry): ?>

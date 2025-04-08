@@ -13,6 +13,10 @@ if (isset($mla_request->get['year'])) {
     $month = date(format: 'm'); // Only use current month if no year given
 }
 
+$pagination_dates = \Utilities::getNavigationDates(year: $year, month: $month);
+
+$pagination_html = \Utilities::renderPaginationLinks(pagination_dates: $pagination_dates);
+
 if ($debug >= 1) {
     echo "<div style='background:#eef;padding:10px;margin-bottom:1em;'>";
     echo "<strong>Debug info:</strong><br>";
@@ -42,5 +46,6 @@ if ($debug >= 1) {
 $page->set(name: "year", value: $year);
 $page->set(name: "month", value: $month);
 $page->set(name: "entries", value: $entries);
+$page->set(name: "pagination_html", value: $pagination_html);
 $page->setTemplate(template_file: "list/index.tpl.php");
 $page->echoToScreen();
