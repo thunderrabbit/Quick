@@ -48,9 +48,6 @@
     <div class="PageWrapper">
         <div class="PageLogo"><img src="/images/QuickLogo.png" alt="" /></div>
         <div class="PagePanel">
-            <div class="head">
-                <h5 class="iUser">Quick</h5>
-            </div>
             <?php
             // current time in JST timezone 24 hour format
             date_default_timezone_set('Asia/Tokyo');
@@ -93,11 +90,6 @@
                     <fieldset>
                         <div class="PageRow noborder">
                             <input type="submit" value="Commit Changes"
-                                class="greyishBtn submitForm" />
-                            <div class="fix"></div>
-                        </div>
-                        <div class="PageRow noborder">
-                            <input type="submit" value="Deploy to master"
                                 class="greyishBtn submitForm" />
                             <div class="fix"></div>
                         </div>
