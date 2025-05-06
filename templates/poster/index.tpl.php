@@ -52,7 +52,8 @@
             echo "<br>logged in! <a href='/logout'>Log out</a>";
 
             // current time in JST timezone 24 hour format
-            date_default_timezone_set('Asia/Tokyo');
+            // date_default_timezone_set(timezoneId: 'Asia/Tokyo');
+            date_default_timezone_set(timezoneId: 'Australia/Adelaide');
             $current_time = date("H:i");
             // current date in "Friday 2 February 2024" format
             $current_date = date("l j F Y T");
