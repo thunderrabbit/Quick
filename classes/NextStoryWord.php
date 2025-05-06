@@ -10,7 +10,7 @@ class NextStoryWord
     public function __construct(
         private string $gitLogCommand,
         private string $storyFile,
-        private int $debugLevel = 0,
+        private int $debugLevel,
     ) {
         $this->gitLogEntries = $this->readGitLog(gitLogCommand: $this->gitLogCommand);
         if ($this->debugLevel > 3) {
@@ -114,6 +114,10 @@ HTML;
                     }
                     $subsetStartIndex = $i;
                     break;
+                }
+            } else {
+                if ($this->debugLevel > 6) {
+                    echo "didn't find a match at index $i   {$this->storyWords[$i]}<br>";
                 }
             }
         }

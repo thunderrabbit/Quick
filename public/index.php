@@ -6,6 +6,11 @@ include_once "/home/barefoot_rob/quick.robnugen.com/prepend.php";
 // Use the repository path from the config
 $repositoryPath = $config->post_path_journal;
 
+$debugLevel = intval(value: $_GET['debug']) ?? 0;
+if($debugLevel > 0) {
+    echo "<pre>Debug Level: $debugLevel</pre>";
+}
+
 // Change directory to the repository path
 chdir(directory: $repositoryPath);
 
@@ -20,7 +25,7 @@ if($is_logged_in->isLoggedIn()){
 
     // Allow deploy without posting
     $tempOSpooner = new TempOSpooner(
-        debugLevel: 0,
+        debugLevel: $debugLevel,
     );
 
     $gitLog = $tempOSpooner->getGitLog();
