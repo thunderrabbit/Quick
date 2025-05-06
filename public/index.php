@@ -10,6 +10,14 @@ $repositoryPath = $config->post_path_journal;
 chdir(directory: $repositoryPath);
 
 if($is_logged_in->isLoggedIn()){
+
+    // Get the next story word to give me context
+    $leNextStoryWord = new NextStoryWord(
+        gitLogCommand: "git log -5 --pretty=format:'%s'",
+        storyFile: $config->storyFile,
+        debugLevel: $debugLevel
+    );
+
     // Allow deploy without posting
     $tempOSpooner = new TempOSpooner(
         debugLevel: 0,
@@ -28,6 +36,7 @@ if($is_logged_in->isLoggedIn()){
     $page->set(name: "entry_title", value: "");  // index.tpl.php expects this
     $page->set(name: "entry_tags", value: "");  // index.tpl.php expects this
     $page->set(name: "text", value: "");  // index.tpl.php expects this
+    $page->set(name: "leNextStoryWord", value: $leNextStoryWord);
     $page->setTemplate(template_file: "poster/index.tpl.php");
     $page->echoToScreen();
 } else {
