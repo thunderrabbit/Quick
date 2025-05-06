@@ -135,7 +135,7 @@
                         <div class="fix"></div>
                     </div>
                     <div class="PageRow noborder">
-                        <label for="dp">Date:</label>
+                        <label for="dp">Date: <?php echo $entry_time ?> <?php echo $entry_date ?></label>
                         <div class="PageInput">
                             <input type="text" name="time" value="<?php echo $entry_time ?>" size="5" />
                             <input type="text" name="date" value="<?php echo $entry_date ?>" size="35" id="dp" />
