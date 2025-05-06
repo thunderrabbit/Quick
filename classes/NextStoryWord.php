@@ -74,7 +74,7 @@ class NextStoryWord
                 <li>`jour` to visit journal directory</li>
                 <li>`gitl` to see latest commits</li>
                 <li>`cd x0x0x0` to visit story directory</li>
-                <li>look for latest commit worss</li>
+                <li>look for latest commit words</li>
                 <li>Fix the story or fix the git commit hashes</li>
             </ul>
         </ol>
