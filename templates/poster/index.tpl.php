@@ -49,12 +49,13 @@
         <div class="PageLogo"><img src="/images/QuickLogo.png" alt="" /></div>
         <div class="PagePanel">
             <?php
+            echo "<br>logged in! <a href='/logout'>Log out</a>";
+
             // current time in JST timezone 24 hour format
             date_default_timezone_set('Asia/Tokyo');
             $current_time = date("H:i");
             // current date in "Friday 2 February 2024" format
             $current_date = date("l j F Y T");
-            echo "<br>logged in! <a href='/logout'>Log out</a>";
 
             $entry_date = $entry_date ?: $current_date;
             $entry_time = $entry_time ?: $current_time;
