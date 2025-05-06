@@ -66,6 +66,9 @@
                 echo $storyWordOutput;
                 echo "<br>File successfully added and pushed to git branch master";
             }
+            if(isset($leNextStoryWord)) {
+                echo "<br>Next story word: <strong>$leNextStoryWord</strong>";
+            }
             if (isset($gitLog)) {
                 echo "<br>git log:<br>";
                 echo "<pre>$gitLog</pre>";
