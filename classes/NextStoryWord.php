@@ -60,6 +60,7 @@ class NextStoryWord
         <br>Here is the git log entries:<br>
         <pre>$logSnippet</pre>
         <p>If the above looks way off, then probably it's being run in the wrong directory.</p>
+        <br>Check the paths in class/Config.php
         <ol>
             <li>From Lemur, `ssh bfr`</li>
             <li>On bfr, `cd Quick`</li>
