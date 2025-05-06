@@ -32,8 +32,10 @@ try {
     echo "Be sure to rebase Required branch onto master";
     echo "<br>ssh bfr";
     echo "<br>cd ~/quick.robnugen.com";
+    echo "<br>git stash";
     echo "<br>git checkout Required";
     echo "<br>git rebase master";
+    echo "<br>git stash pop";
     exit;
 }
 
