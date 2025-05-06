@@ -26,7 +26,16 @@ function print_rob($object, $exit = true)
     }
 }
 
-$config = new \Config();
+try {
+    $config = new \Config();
+} catch (\Exception $e) {
+    echo "Be sure to rebase Required branch onto master";
+    echo "<br>ssh bfr";
+    echo "<br>cd ~/quick.robnugen.com";
+    echo "<br>git checkout Required";
+    echo "<br>git rebase master";
+    exit;
+}
 
 $mla_database = \Base::getDB($config);
 
