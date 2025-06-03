@@ -12,7 +12,6 @@ chdir(directory: $repositoryPath);
 if ($mla_request->post) {
     $postifier = new \QuickPoster(debug: $mla_request->post['debug']);
     $okay = $postifier->createPost(config: $config, post_array: $mla_request->post);
-    $show_deploy = false;
     if($okay)
     {
         $post_path = $postifier->post_path;
@@ -31,10 +30,8 @@ if ($mla_request->post) {
         // Instead, we'll show the git status and provide a commit button
 
         $gitLog = $tempOSpooner->getGitLog();
-        $show_deploy = true;
     }
 } else {
-    // Allow deploy without posting
     $tempOSpooner = new TempOSpooner(
         debugLevel: $mla_request->get['debug'] ?? 0,
     );
@@ -43,7 +40,6 @@ if ($mla_request->post) {
     $gitStatus = $tempOSpooner->getGitStatus();
 
     $gitLog = $tempOSpooner->getGitLog();
-    $show_deploy = true;
 }
 
 // These will be set via $_SESSION via the parser
@@ -94,6 +90,5 @@ $page->set(name: "entry_time", value: $time);
 $page->set(name: "entry_date", value: $date);
 $page->set(name: "entry_tags", value: $tags);
 $page->set(name: "text", value: $text);
-$page->set(name:"show_deploy", value: $show_deploy);
 $page->echoToScreen();
 

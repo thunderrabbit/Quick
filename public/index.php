@@ -23,19 +23,16 @@ if($is_logged_in->isLoggedIn()){
         debugLevel: $debugLevel
     );
 
-    // Allow deploy without posting
     $tempOSpooner = new TempOSpooner(
         debugLevel: $debugLevel,
     );
 
     $gitLog = $tempOSpooner->getGitLog();
-    $show_deploy = true;
     $page = new \Template(config: $config);
 
     if (isset($gitLog)) {
         $page->set(name: "gitLog", value: $gitLog);
     }
-    $page->set(name: "show_deploy", value: true);  // allow deploy on /
     $page->set(name: "entry_time", value: "");  // index.tpl.php expects this
     $page->set(name: "entry_date", value: "");  // index.tpl.php expects this
     $page->set(name: "entry_title", value: "");  // index.tpl.php expects this

@@ -76,20 +76,6 @@
                 echo "<pre>$gitLog</pre>";
             }
             ?>
-            <?php if ($show_deploy): ?>
-                <form action="/deploy/" id="deploy" class="mainForm" method="POST">
-                    <fieldset>
-                        <div class="PageRow noborder">
-                            <input type="submit" value="Deploy to master"
-                                class="greyishBtn submitForm" />
-                            <div class="fix"></div>
-                        </div>
-                        <label for="debug_deploy">Debug:</label>
-                        <input id="debug_deploy" type="text" name="debug_deploy" value="0" size="5" />
-                    </fieldset>
-                </form>
-            <?php endif; // ($show_deploy): ?>
-
                 <form action="/commit/" id="commit" class="mainForm" method="POST">
                     <fieldset>
                         <div class="PageRow noborder">
@@ -108,8 +94,6 @@
                         <?php endif; ?>
                             <div class="fix"></div>
                         </div>
-                        <label for="debug_deploy">Debug:</label>
-                        <input id="debug_deploy" type="text" name="debug_deploy" value="0" size="5" />
                     </fieldset>
                 </form>
             <?php elseif (isset($gitStatus)): ?>
@@ -124,6 +108,7 @@
 
             <p><a href="https://quick.robnugen.com">https://quick.robnugen.com</a>
                 <br><a href="https://quick.robnugen.com/list/">https://quick.robnugen.com/list/</a>
+	        <br><a href="https://www.robnugen.com/journal/preformatted_journal_index_writer.pl">https://www.robnugen.com/journal/preformatted_journal_index_writer.pl</a>
                 <br><a href="https://robnugen.com/journal">https://robnugen.com/journal</a>
                 <br><a href="https://badmin.robnugen.com">https://badmin.robnugen.com</a>
             </p>
