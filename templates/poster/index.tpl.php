@@ -52,8 +52,8 @@
             echo "<br>logged in! <a href='/logout'>Log out</a>";
 
             // current time in JST timezone 24 hour format
-            // date_default_timezone_set(timezoneId: 'Asia/Tokyo');
-            date_default_timezone_set(timezoneId: 'Australia/Adelaide');
+            date_default_timezone_set(timezoneId: 'Asia/Tokyo');
+            // date_default_timezone_set(timezoneId: 'Australia/Adelaide');
             $current_time = date("H:i");
             // current date in "Friday 2 February 2024" format
             $current_date = date("l j F Y T");
@@ -136,6 +136,13 @@
                     </div>
                     <div class="PageRow noborder">
                         <label for="dp">Date: <?php echo $entry_time ?> <?php echo $entry_date ?></label>
+		      <small>
+			<small>
+			  <small>
+			    Change timezone in ~/quick.robnugen.com/templates/poster/index.tpl.php
+		          </small>
+		        </small>
+		      </small>
                         <div class="PageInput">
                             <input type="text" name="time" value="<?php echo $entry_time ?>" size="5" />
                             <input type="text" name="date" value="<?php echo $entry_date ?>" size="35" id="dp" />
