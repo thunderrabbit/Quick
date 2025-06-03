@@ -26,7 +26,6 @@ if ($mla_request->post) {
 
         // Get git status to check for uncommitted changes
         $gitStatus = $tempOSpooner->getGitStatus();
-        $hasUncommittedChanges = ($gitStatus !== "All changes committed.");
 
         // We no longer automatically commit changes here
         // Instead, we'll show the git status and provide a commit button
@@ -42,7 +41,6 @@ if ($mla_request->post) {
 
     // Get git status to check for uncommitted changes
     $gitStatus = $tempOSpooner->getGitStatus();
-    $hasUncommittedChanges = ($gitStatus !== "All changes committed.");
 
     $gitLog = $tempOSpooner->getGitLog();
     $show_deploy = true;
@@ -89,10 +87,6 @@ if(isset($gitLog))
 if(isset($gitStatus))
 {
     $page->set(name: "gitStatus", value: $gitStatus);
-}
-if(isset($hasUncommittedChanges))
-{
-    $page->set(name: "hasUncommittedChanges", value: $hasUncommittedChanges);
 }
 $page->setTemplate(template_file: "poster/index.tpl.php");
 $page->set(name: "entry_title", value: $title);

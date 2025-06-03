@@ -90,7 +90,6 @@
                 </form>
             <?php endif; // ($show_deploy): ?>
 
-            <?php if (isset($hasUncommittedChanges) && $hasUncommittedChanges): ?>
                 <form action="/commit/" id="commit" class="mainForm" method="POST">
                     <fieldset>
                         <div class="PageRow noborder">
