@@ -21,7 +21,8 @@ class TempOSpooner
                     if($this->debugLevel > 5) {
                         echo "<p>Adding $filePath to git repository\n</p>";
                     }
-                    $returnVar = exec(command: "git add " . escapeshellarg(arg: $filePath), output: $output);
+                    // apparently, exec should not have named parameters (`command`, `output`)
+                    $returnVar = exec("git add " . escapeshellarg(arg: $filePath), $output);
                     if (!empty($returnVar)) {
                         $errorOutput = implode(separator: "\n", array: $output);  // Merge all lines of output into a single string
                         throw new Exception(message: "Failed to add file to git: " . ($errorOutput ?: "No output returned") . ($returnVar ? " (Return code: $returnVar)" : ""));
@@ -53,7 +54,8 @@ class TempOSpooner
                 if($this->debugLevel > 4) {
                     echo "<p>Committing changes\n</p>";
                 }
-                $returnVar = exec(command: "git commit -m '$commitMessage'", output: $output);
+                // apparently, exec should not have named parameters (`command`, `output`)
+                $returnVar = exec("git commit -m '$commitMessage'", $output);
                 if ($this->debugLevel > 4) {
                     print_rob(object: $returnVar, exit: false);
                 }
@@ -94,7 +96,8 @@ class TempOSpooner
                 if($this->debugLevel > 5) {
                     echo "<pre>command: $command</pre>";
                 }
-                exec(command: $command, output: $output, result_code: $resultCode);
+                // apparently, exec should not have named parameters (`command`, `output`)
+                exec($command, $output, $resultCode);
 
                 if ($resultCode !== 0) {
                     throw new Exception("Failed to push changes to remote: " . implode("\n", $output));
@@ -123,7 +126,7 @@ class TempOSpooner
                 echo "<br>Commit message is $commitMessage\n";
             }
             $success =
-                $this->addFileToGit(filePath: $filePath) &&
+	    	$this->addFileToGit(filePath: $filePath) &&
                 $this->commitChanges(commitMessage: $commitMessage) &&
                 $this->pushChangesToCurrentBranch();
 
@@ -144,14 +147,16 @@ class TempOSpooner
     public function getGitLog(): string
     {
         $output = [];
-        exec(command: "git log -25 --pretty=format:'%h %s %d'", output: $output);
+        // apparently, exec should not have named parameters (`command`, `output`)
+        exec("git log -25 --pretty=format:'%h %s %d'", $output);
         return implode(separator: "\n", array: $output);
     }
 
     public function getGitStatus(): string
     {
         $output = [];
-        exec(command: "git status --porcelain", output: $output);
+        // apparently, exec should not have named parameters (`command`, `output`)
+        exec("git status --porcelain", $output);
         return implode(separator: "\n", array: $output);
     }
 }
