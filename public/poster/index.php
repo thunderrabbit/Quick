@@ -36,7 +36,7 @@ if ($mla_request->post) {
 } else {
     // Allow deploy without posting
     $tempOSpooner = new TempOSpooner(
-        debugLevel: 0,
+        debugLevel: $mla_request->get['debug'] ?? 0,
     );
 
     // Get git status to check for uncommitted changes
