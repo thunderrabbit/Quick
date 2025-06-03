@@ -156,7 +156,9 @@ class TempOSpooner
     {
         $output = [];
         // apparently, exec should not have named parameters (`command`, `output`)
-        exec("git status --porcelain", $output);
+        // also, this errors if emacs is running in tmux
+        $cmd = "/usr/bin/git status 2>&1";
+        exec($cmd, $output);
         return implode(separator: "\n", array: $output);
     }
 }
