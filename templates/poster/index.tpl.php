@@ -85,7 +85,7 @@
                         </div>
                         <?php if (isset($gitStatus)): ?>
                             <div class="PageRow noborder">
-                                <label>Git Status:</label>
+                                <label>Git Status is:</label>
                                 <div class="PageInput">
                                     <pre><?php echo $gitStatus; ?></pre>
                                 </div>
@@ -96,15 +96,6 @@
                         </div>
                     </fieldset>
                 </form>
-            <?php elseif (isset($gitStatus)): ?>
-                <div class="PageRow noborder">
-                    <label>Git Status:</label>
-                    <div class="PageInput">
-                        <pre><?php echo $gitStatus; ?></pre>
-                    </div>
-                    <div class="fix"></div>
-                </div>
-            <?php endif; ?>
 
             <p><a href="https://quick.robnugen.com">https://quick.robnugen.com</a>
                 <br><a href="https://quick.robnugen.com/list/">https://quick.robnugen.com/list/</a>
