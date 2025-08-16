@@ -214,5 +214,105 @@ class TempOSpooner
             return "Uncommitted changes present.";
         }
     }
+
+    public function pullLatestChanges(): array
+    {
+        $maxRetries = 3;
+        $retryDelay = 2; // seconds
+
+        for ($attempt = 1; $attempt <= $maxRetries; $attempt++) {
+            try {
+                if ($this->debugLevel > 3) {
+                    echo "<p>Attempting git pull (attempt $attempt)</p>";
+                }
+
+                $output = [];
+                $returnCode = 0;
+
+                // Use timeout to prevent hanging on shared hosting
+                $command = "timeout 30s /usr/bin/git pull origin 2>&1";
+                exec($command, $output, $returnCode);
+
+                if ($returnCode === 124) {
+                    throw new Exception("Git pull timed out (server busy)");
+                }
+
+                if ($returnCode !== 0) {
+                    $errorOutput = implode("\n", $output);
+                    throw new Exception("Git pull failed: " . $errorOutput);
+                }
+
+                $result = implode("\n", $output);
+
+                if ($this->debugLevel > 2) {
+                    echo "<p>Git pull successful</p>";
+                }
+
+                // Clear git status cache since repository state may have changed
+                self::$gitStatusCache = null;
+                self::$gitStatusCacheTime = 0;
+
+                return [
+                    'success' => true,
+                    'message' => 'Successfully pulled latest changes',
+                    'output' => $result
+                ];
+
+            } catch (Exception $e) {
+                if ($this->debugLevel > 0) {
+                    echo "<p>Pull attempt $attempt failed: " . $e->getMessage() . "</p>";
+                }
+
+                if ($attempt == $maxRetries) {
+                    return [
+                        'success' => false,
+                        'message' => 'Failed to pull after ' . $maxRetries . ' attempts: ' . $e->getMessage(),
+                        'output' => ''
+                    ];
+                }
+
+                sleep($retryDelay);
+            }
+        }
+
+        return [
+            'success' => false,
+            'message' => 'Unexpected error in pullLatestChanges',
+            'output' => ''
+        ];
+    }
+
+    public function checkIfPullNeeded(): bool
+    {
+        try {
+            $output = [];
+            $returnCode = 0;
+
+            // Fetch latest refs without merging
+            exec("timeout 10s /usr/bin/git fetch origin 2>/dev/null", $output, $returnCode);
+
+            if ($returnCode !== 0) {
+                if ($this->debugLevel > 1) {
+                    echo "<p>Could not fetch to check for updates</p>";
+                }
+                return false; // Can't determine, assume no pull needed
+            }
+
+            // Check if local branch is behind remote
+            exec("timeout 5s /usr/bin/git rev-list HEAD..origin/master --count 2>/dev/null", $output, $returnCode);
+
+            if ($returnCode === 0 && !empty($output) && intval($output[0]) > 0) {
+                return true; // There are commits to pull
+            }
+
+            return false;
+
+        } catch (Exception $e) {
+            if ($this->debugLevel > 1) {
+                echo "<p>Error checking if pull needed: " . $e->getMessage() . "</p>";
+            }
+            return false;
+        }
+    }
 }
 
