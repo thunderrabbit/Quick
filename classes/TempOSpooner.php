@@ -2,6 +2,9 @@
 
 class TempOSpooner
 {
+    private static $gitStatusCache = null;
+    private static $gitStatusCacheTime = 0;
+
     /**
      * @param int $debugLevel
      */
@@ -154,12 +157,62 @@ class TempOSpooner
 
     public function getGitStatus(): string
     {
+        $cacheLifetime = 10; // seconds - cache for 10 seconds to reduce resource usage
+
+        // Return cached result if still valid
+        if (self::$gitStatusCache !== null &&
+            (time() - self::$gitStatusCacheTime) < $cacheLifetime) {
+            if ($this->debugLevel > 2) {
+                echo "<p>Using cached git status</p>";
+            }
+            return self::$gitStatusCache;
+        }
+
+        // Try lightweight check first
+        $result = $this->getGitStatusLight();
+
+        // Cache the result
+        self::$gitStatusCache = $result;
+        self::$gitStatusCacheTime = time();
+
+        if ($this->debugLevel > 2) {
+            echo "<p>Fresh git status cached</p>";
+        }
+
+        return $result;
+    }
+
+    private function getGitStatusLight(): string
+    {
+        // First, try a very lightweight check using git diff
         $output = [];
-        // apparently, exec should not have named parameters (`command`, `output`)
-        // also, this errors if emacs is running in tmux
-        $cmd = "/usr/bin/git status 2>&1";
-        exec($cmd, $output);
-        return implode(separator: "\n", array: $output);
+        $returnCode = 0;
+
+        // Check if working tree is clean (no unstaged changes)
+        exec("timeout 5s /usr/bin/git diff --quiet 2>/dev/null", $output, $returnCode);
+
+        if ($returnCode === 124) {
+            return "Git status check timed out (server busy)";
+        }
+
+        // If git diff --quiet returns 0, working tree is clean
+        // If it returns 1, there are unstaged changes
+        if ($returnCode === 0) {
+            // Check if index is clean (no staged changes)
+            exec("timeout 5s /usr/bin/git diff --cached --quiet 2>/dev/null", $output, $stagedReturnCode);
+
+            if ($stagedReturnCode === 124) {
+                return "Git status check timed out (server busy)";
+            }
+
+            if ($stagedReturnCode === 0) {
+                return "All changes committed.";
+            } else {
+                return "Changes staged for commit.";
+            }
+        } else {
+            return "Uncommitted changes present.";
+        }
     }
 }
 
