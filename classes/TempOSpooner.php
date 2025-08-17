@@ -184,9 +184,17 @@ class TempOSpooner
 
     private function getGitStatusLight(): string
     {
-        // First, try a very lightweight check using git diff
         $output = [];
         $returnCode = 0;
+
+        // Check for untracked files first
+        exec("timeout 5s /usr/bin/git ls-files --others --exclude-standard 2>/dev/null", $output, $returnCode);
+
+        if ($returnCode === 124) {
+            return "Git status check timed out (server busy)";
+        }
+
+        $hasUntrackedFiles = ($returnCode === 0 && !empty($output));
 
         // Check if working tree is clean (no unstaged changes)
         exec("timeout 5s /usr/bin/git diff --quiet 2>/dev/null", $output, $returnCode);
@@ -195,23 +203,28 @@ class TempOSpooner
             return "Git status check timed out (server busy)";
         }
 
-        // If git diff --quiet returns 0, working tree is clean
-        // If it returns 1, there are unstaged changes
-        if ($returnCode === 0) {
-            // Check if index is clean (no staged changes)
-            exec("timeout 5s /usr/bin/git diff --cached --quiet 2>/dev/null", $output, $stagedReturnCode);
+        $hasUnstagedChanges = ($returnCode === 1);
 
-            if ($stagedReturnCode === 124) {
-                return "Git status check timed out (server busy)";
-            }
+        // Check if index is clean (no staged changes)
+        exec("timeout 5s /usr/bin/git diff --cached --quiet 2>/dev/null", $output, $stagedReturnCode);
 
-            if ($stagedReturnCode === 0) {
-                return "All changes committed.";
-            } else {
-                return "Changes staged for commit.";
-            }
-        } else {
+        if ($stagedReturnCode === 124) {
+            return "Git status check timed out (server busy)";
+        }
+
+        $hasStagedChanges = ($stagedReturnCode === 1);
+
+        // Return appropriate status message
+        if ($hasUntrackedFiles && ($hasUnstagedChanges || $hasStagedChanges)) {
+            return "New files and other changes present.";
+        } elseif ($hasUntrackedFiles) {
+            return "New untracked files present.";
+        } elseif ($hasStagedChanges) {
+            return "Changes staged for commit.";
+        } elseif ($hasUnstagedChanges) {
             return "Uncommitted changes present.";
+        } else {
+            return "All changes committed.";
         }
     }
 
