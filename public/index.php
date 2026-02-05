@@ -16,6 +16,17 @@ chdir(directory: $repositoryPath);
 
 if($is_logged_in->isLoggedIn()){
 
+    // Handle AJAX pull request
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'pull') {
+        header('Content-Type: application/json');
+
+        $tempOSpooner = new TempOSpooner(debugLevel: $debugLevel);
+        $result = $tempOSpooner->pullLatestChanges();
+
+        echo json_encode($result);
+        exit;
+    }
+
     // Get the next story word to give me context
     $leNextStoryWord = new NextStoryWord(
         gitLogCommand: "git log -5 --pretty=format:'%s'",
@@ -28,6 +39,7 @@ if($is_logged_in->isLoggedIn()){
     );
 
     $gitLog = $tempOSpooner->getGitLog();
+    $pullNeeded = $tempOSpooner->checkIfPullNeeded();
     $page = new \Template(config: $config);
 
     if (isset($gitLog)) {
@@ -39,6 +51,7 @@ if($is_logged_in->isLoggedIn()){
     $page->set(name: "entry_tags", value: "");  // index.tpl.php expects this
     $page->set(name: "text", value: "");  // index.tpl.php expects this
     $page->set(name: "leNextStoryWord", value: $leNextStoryWord);
+    $page->set(name: "pullNeeded", value: $pullNeeded);
     $page->setTemplate(template_file: "poster/index.tpl.php");
     $page->echoToScreen();
 } else {

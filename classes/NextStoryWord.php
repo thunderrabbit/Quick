@@ -6,6 +6,9 @@ class NextStoryWord
     private $storyWords;
     private string $wordBeforeSubset;
     private array $correctlyMatchedWords = [];
+    private array $longestPartialMatch = [];
+    private int $longestMatchIndex = -1;
+    private int $longestMatchLength = 0;
 
     public function __construct(
         private string $gitLogCommand,
@@ -53,8 +56,32 @@ class NextStoryWord
     {
         $storySnippet = print_r(array_slice(array: $this->storyWords, offset: 0, length: 10),true);
         $logSnippet = print_r(value: $this->gitLogEntries, return: true);
+
+        // Show longest partial match information
+        $partialMatchInfo = "";
+        if ($this->longestMatchLength > 0) {
+            $partialMatchWords = implode(" ", $this->longestPartialMatch);
+            $partialMatchInfo = <<<HTML
+            <div style="background-color: #ffffcc; padding: 10px; border: 1px solid #cccc00; margin: 10px 0;">
+                <h3>🔍 Longest Partial Match Found:</h3>
+                <p><strong>Match Length:</strong> {$this->longestMatchLength} word(s)</p>
+                <p><strong>Story Position:</strong> Index {$this->longestMatchIndex}</p>
+                <p><strong>Matched Words:</strong> "<em>$partialMatchWords</em>"</p>
+                <p><strong>Context in Story:</strong> ...{$this->getContextAroundMatch()}...</p>
+            </div>
+HTML;
+        } else {
+            $partialMatchInfo = <<<HTML
+            <div style="background-color: #ffcccc; padding: 10px; border: 1px solid #cc0000; margin: 10px 0;">
+                <h3>❌ No Partial Matches Found</h3>
+                <p>Not even the first word matched anywhere in the story file. This suggests a fundamental synchronization issue.</p>
+            </div>
+HTML;
+        }
+
         echo <<<HTML
-        <h2>Something really surprising happened; we didn't find a single match.</h2>
+        <h2>Story Synchronization Failed</h2>
+        $partialMatchInfo
         <br>Here is part of the story:<br>
         <pre>$storySnippet</pre>
         <br>Here is the git log entries:<br>
@@ -80,6 +107,29 @@ class NextStoryWord
         </ol>
 HTML;
     }
+
+    private function getContextAroundMatch(): string
+    {
+        if ($this->longestMatchIndex < 0 || empty($this->storyWords)) {
+            return "No context available";
+        }
+
+        $contextSize = 5;
+        $startIndex = max(0, $this->longestMatchIndex - $contextSize);
+        $endIndex = min(count($this->storyWords) - 1, $this->longestMatchIndex + $this->longestMatchLength + $contextSize);
+
+        $contextWords = array_slice($this->storyWords, $startIndex, $endIndex - $startIndex + 1);
+
+        // Highlight the matched portion
+        $beforeMatch = array_slice($contextWords, 0, $this->longestMatchIndex - $startIndex);
+        $matchedPortion = array_slice($contextWords, $this->longestMatchIndex - $startIndex, $this->longestMatchLength);
+        $afterMatch = array_slice($contextWords, $this->longestMatchIndex - $startIndex + $this->longestMatchLength);
+
+        return implode(" ", $beforeMatch) .
+               " <strong>[" . implode(" ", $matchedPortion) . "]</strong> " .
+               implode(" ", $afterMatch);
+    }
+
     private function findWordBeforeSubset(): ?string
     {
         $subsetStartIndex = null;
@@ -91,6 +141,7 @@ HTML;
                     echo "Found a match at index $i   {$this->storyWords[$i]}<br>";
                 }
                 $matchFound = true;
+                $currentMatchLength = 1; // We already matched the first word
                 for ($j = 1; $j < count(value: $this->gitLogEntries); $j++) {
                     if (trim(string: $this->storyWords[$i + $j]) != trim(string: $this->gitLogEntries[$j])) {
                         $matchFound = false;
@@ -98,10 +149,19 @@ HTML;
                             echo "❌ " . $this->thisArrayOrThisWord($this->correctlyMatchedWords, $this->storyWords[$i + $j - 1]);
                             echo " {$this->storyWords[$i + $j]}<br>";  // specifically this word did not match
                         }
+
+                        // Track longest partial match
+                        if ($currentMatchLength > $this->longestMatchLength) {
+                            $this->longestMatchLength = $currentMatchLength;
+                            $this->longestMatchIndex = $i;
+                            $this->longestPartialMatch = array_slice($this->storyWords, $i, $currentMatchLength);
+                        }
+
                         $this->correctlyMatchedWords = [];
                         break;
                     }
                     $this->correctlyMatchedWords[] = $this->storyWords[$i + $j - 1];
+                    $currentMatchLength++;
                 }
                 if ($matchFound) {
                     if ($this->debugLevel > 0) {

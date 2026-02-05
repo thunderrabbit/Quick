@@ -41,6 +41,50 @@
         // textarea.setSelectionRange(before.length, before.length + paragraphs.join("\n\n").length);
         // textarea.focus();
     }
+
+    function pullLatestChanges() {
+        const pullBtn = document.getElementById('pullBtn');
+        const pullStatus = document.getElementById('pullStatus');
+
+        // Disable button and show loading
+        pullBtn.disabled = true;
+        pullBtn.innerHTML = '⏳ Pulling...';
+        pullStatus.innerHTML = '<em style="color: #666;">Checking for updates...</em>';
+
+        // Make AJAX request
+        fetch('/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: 'action=pull'
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                pullStatus.innerHTML = '<span style="color: #28a745;">✅ ' + data.message + '</span>';
+                pullBtn.style.background = '#6c757d';
+                pullBtn.innerHTML = '🔄 Check Updates';
+
+                // Optionally reload page after successful pull to refresh story word
+                setTimeout(() => {
+                    window.location.reload();
+                }, 2000);
+            } else {
+                pullStatus.innerHTML = '<span style="color: #dc3545;">❌ ' + data.message + '</span>';
+                pullBtn.style.background = '#dc3545';
+                pullBtn.innerHTML = '🔄 Retry';
+            }
+        })
+        .catch(error => {
+            pullStatus.innerHTML = '<span style="color: #dc3545;">❌ Network error: ' + error.message + '</span>';
+            pullBtn.style.background = '#dc3545';
+            pullBtn.innerHTML = '🔄 Retry';
+        })
+        .finally(() => {
+            pullBtn.disabled = false;
+        });
+    }
     </script>
 </head>
 
@@ -70,6 +114,14 @@
             }
             if(isset($leNextStoryWord)) {
                 echo "<br>Next story word: <strong>$leNextStoryWord</strong>";
+
+                // Show pull button if updates are available
+                if(isset($pullNeeded) && $pullNeeded) {
+                    echo " <button id='pullBtn' onclick='pullLatestChanges()' style='background: #28a745; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer; font-size: 12px;'>📥 Pull Updates</button>";
+                } else {
+                    echo " <button id='pullBtn' onclick='pullLatestChanges()' style='background: #6c757d; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer; font-size: 12px;'>🔄 Check Updates</button>";
+                }
+                echo " <span id='pullStatus'></span>";
             }
             if (isset($gitLog)) {
                 echo "<br>git log:<br>";
