@@ -4,6 +4,8 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
+const SEMVER = "1.0.0";
+
 session_start();
 require_once __DIR__ . '/classes/Mlaphp/Autoloader.php';
 // create autoloader instance and register the method with SPL
