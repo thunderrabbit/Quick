@@ -19,6 +19,12 @@ class QuickPoster{
             print_rob(object: $post_array, exit: false);
         }
 
+        $title = trim($post_array['title'] ?? '');
+        $content = trim($post_array['post_content'] ?? '');
+        if ($title === '' && $content === '') {
+            return false;
+        }
+
         /* $post_array = Array
 (
     [time] => 20:00
