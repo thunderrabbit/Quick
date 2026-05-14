@@ -6,10 +6,11 @@ if (!isset($mla_request->get['file'])) {
 }
 
 $file = $mla_request->get['file'];
+$journalRoot = realpath($config->post_path_journal);
 $fullPath = realpath($config->post_path_journal . '/' . $file);
 
 // Security check
-if (!$fullPath || !str_starts_with($fullPath, $config->post_path_journal)) {
+if (!$fullPath || !$journalRoot || !str_starts_with($fullPath, $journalRoot)) {
     die("Invalid file path.");
 }
 
