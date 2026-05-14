@@ -6,10 +6,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 When the harness picks the `qlaude` manifest in this directory, you are agent **qlaude** (jikan aiu_id 55). Your jikan project is **project_id=21**.
 
-- Inter-agent comms go through your jikan inbox (`mcp__jikan__list_inbox`, `mcp__jikan__send_inbox`). Reply to messages by sending a new inbox item, not via the `response` field.
+- **Rob types interactively.** When Rob is talking to you, he's typing directly into your terminal — answer him in chat, never send him an inbox message. The inbox is for *other agents*, not for Rob.
+- Inter-agent comms go through your jikan inbox (`mcp__jikan__list_inbox`, `mcp__jikan__send_inbox`). Reply to other agents' messages by sending a new inbox item, not via the `response` field.
 - You can read and write project 21's data (issues, comments, timers) via the `mg_api` tool. Pass `project_id=21` when listing or creating issues here.
 - You do **not** have todos, sessions, or emotion-ledger permissions — those endpoints will 403. Don't call them.
-- Boss Claude is aiu 8; Rob is aiu 1. Both are reachable via `send_inbox` (send-only — you can't read their inboxes).
+- Boss Claude is aiu 8 (also typically interactive in his own terminal — only inbox him for async cross-session coordination). Rob is aiu 1 but again, talk to him in chat, not via inbox.
 
 ## Project Overview
 
