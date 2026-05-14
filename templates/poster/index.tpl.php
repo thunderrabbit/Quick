@@ -156,6 +156,24 @@
                 <br><a href="https://badmin.robnugen.com">https://badmin.robnugen.com</a>
             </p>
 
+            <?php if (isset($recentEntries)): ?>
+                <p>Recent entries for <strong><?php echo $recentYear; ?></strong>/<strong><?php echo $recentMonth; ?></strong></p>
+                <?php if (!empty($recentEntries)): ?>
+                    <ul>
+                        <?php foreach ($recentEntries as $entry): ?>
+                            <li>
+                                <?php echo $entry['day'] . " " . $entry['monthWord'] . " - "; ?>
+                                <a href="/parser.php?file=<?php echo urlencode($entry['path']); ?>">
+                                    <?php echo htmlspecialchars($entry['title']); ?>
+                                </a>
+                            </li>
+                        <?php endforeach; ?>
+                    </ul>
+                <?php else: ?>
+                    <p><em>No entries this month yet.</em></p>
+                <?php endif; ?>
+            <?php endif; ?>
+
             <form action="/poster/" id="valid" class="mainForm" method="POST">
                 <fieldset>
                     <div class="PageRow noborder">

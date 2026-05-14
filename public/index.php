@@ -40,6 +40,19 @@ if($is_logged_in->isLoggedIn()){
 
     $gitLog = $tempOSpooner->getGitLog();
     $pullNeeded = $tempOSpooner->checkIfPullNeeded();
+
+    $recentLister = new \QuickLister(
+        journalRoot: $config->post_path_journal,
+        debugLevel: $debugLevel,
+    );
+    $recentYear = date(format: 'Y');
+    $recentMonth = date(format: 'm');
+    $recentEntries = array_slice(
+        $recentLister->listEntries(year: $recentYear, month: $recentMonth),
+        0,
+        10
+    );
+
     $page = new \Template(config: $config);
 
     if (isset($gitLog)) {
@@ -52,6 +65,9 @@ if($is_logged_in->isLoggedIn()){
     $page->set(name: "text", value: "");  // index.tpl.php expects this
     $page->set(name: "leNextStoryWord", value: $leNextStoryWord);
     $page->set(name: "pullNeeded", value: $pullNeeded);
+    $page->set(name: "recentEntries", value: $recentEntries);
+    $page->set(name: "recentYear", value: $recentYear);
+    $page->set(name: "recentMonth", value: $recentMonth);
     $page->setTemplate(template_file: "poster/index.tpl.php");
     $page->echoToScreen();
 } else {
