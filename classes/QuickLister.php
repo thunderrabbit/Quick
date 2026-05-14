@@ -52,7 +52,7 @@ class QuickLister {
                 continue;
             }
 
-            $fullPath = $fileInfo->getRealPath();
+            $fullPath = $fileInfo->getPathname();
             $relativePath = str_replace($this->journalRoot . '/', '', $fullPath);
 
             if ($this->debugLevel >= 4) {
