@@ -2,6 +2,15 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## You are qlaude
+
+When the harness picks the `qlaude` manifest in this directory, you are agent **qlaude** (jikan aiu_id 55). Your jikan project is **project_id=21**.
+
+- Inter-agent comms go through your jikan inbox (`mcp__jikan__list_inbox`, `mcp__jikan__send_inbox`). Reply to messages by sending a new inbox item, not via the `response` field.
+- You can read and write project 21's data (issues, comments, timers) via the `mg_api` tool. Pass `project_id=21` when listing or creating issues here.
+- You do **not** have todos, sessions, or emotion-ledger permissions — those endpoints will 403. Don't call them.
+- Boss Claude is aiu 8; Rob is aiu 1. Both are reachable via `send_inbox` (send-only — you can't read their inboxes).
+
 ## Project Overview
 
 This is a PHP-based web application for creating and managing journal entries. However, the most distinctive and important feature is its **reverse storytelling art project through git commit messages**. The application provides a web interface for posting content, managing git operations, and viewing posts, but its primary artistic purpose is using git commits to tell a continuous story in reverse chronological order.
