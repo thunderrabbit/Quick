@@ -1,5 +1,7 @@
 <div class="PageWrapper">
     <div class="PagePanel">
+        <p><a href="/">&larr; Home</a></p>
+
         <div class="head"><h5 class="iUser">Journal Entries</h5></div>
 
         <?php if ($year): ?>
