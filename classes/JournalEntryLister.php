@@ -1,12 +1,12 @@
 <?php
 /**
- * Class QuickLister
+ * Class JournalEntryLister
  *
  * This class is responsible for finding and listing journal entries
  * in a specified directory structure.
  */
 declare(strict_types=1);
-class QuickLister {
+class JournalEntryLister {
     public function __construct(
         private readonly string $journalRoot,
         private readonly int $debugLevel = 0,

@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-class QuickParser
+class JournalEntryParser
 {
     private string $filePath;
 

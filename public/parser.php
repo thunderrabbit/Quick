@@ -14,9 +14,7 @@ if (!$fullPath || !$journalRoot || !str_starts_with($fullPath, $journalRoot)) {
     die("Invalid file path.");
 }
 
-// require_once "{$config->app_path}/classes/QuickParser.php";
-
-$parser = new \QuickParser($fullPath);
+$parser = new \JournalEntryParser($fullPath);
 $data = $parser->parse();
 
 // Store parsed data in session and redirect to editor

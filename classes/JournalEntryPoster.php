@@ -1,5 +1,5 @@
 <?php
-class QuickPoster{
+class JournalEntryPoster{
     public readonly string $post_path;
 
     public function __construct(

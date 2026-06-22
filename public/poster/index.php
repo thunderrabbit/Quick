@@ -10,7 +10,7 @@ $repositoryPath = $config->post_path_journal;
 chdir(directory: $repositoryPath);
 
 if ($mla_request->post) {
-    $postifier = new \QuickPoster(debug: (int)($mla_request->post['debug'] ?? 0));
+    $postifier = new \JournalEntryPoster(debug: (int)($mla_request->post['debug'] ?? 0));
     $okay = $postifier->createPost(config: $config, post_array: $mla_request->post);
     if($okay)
     {

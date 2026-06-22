@@ -41,7 +41,7 @@ if($is_logged_in->isLoggedIn()){
     $gitLog = $tempOSpooner->getGitLog();
     $pullNeeded = $tempOSpooner->checkIfPullNeeded();
 
-    $recentLister = new \QuickLister(
+    $recentLister = new \JournalEntryLister(
         journalRoot: $config->post_path_journal,
         debugLevel: $debugLevel,
     );

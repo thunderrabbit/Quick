@@ -24,7 +24,7 @@ if ($debug >= 1) {
     echo "Month: $month<br>";
 }
 
-$lister = new \QuickLister(
+$lister = new \JournalEntryLister(
     journalRoot: $config->post_path_journal,
     debugLevel: $debug,
 );
