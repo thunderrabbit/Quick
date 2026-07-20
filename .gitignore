@@ -1,2 +1,5 @@
 .plandex/
 .aider*
+
+# composer dev tooling for the phpcs style gate
+/vendor/
