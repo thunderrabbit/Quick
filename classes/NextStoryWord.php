@@ -29,7 +29,7 @@ class NextStoryWord
         $this->wordBeforeSubset = $this->findWordBeforeSubset() ?? 'WORD NOT FOUND';
     }
 
-    public function __tostring() : string
+    public function __tostring(): string
     {
         return $this->wordBeforeSubset;
     }
@@ -40,9 +40,9 @@ class NextStoryWord
      * @param string $word print this
      * @return string
      */
-    private function thisArrayOrThisWord(array $array, string $word) : string
+    private function thisArrayOrThisWord(array $array, string $word): string
     {
-        if(count($array) > 1) {
+        if (count($array) > 1) {
             return implode(
                 separator: " ",
                 array: $array
@@ -52,9 +52,9 @@ class NextStoryWord
         }
     }
 
-    private function explainHowToRecoverFromDisaster():void
+    private function explainHowToRecoverFromDisaster(): void
     {
-        $storySnippet = print_r(array_slice(array: $this->storyWords, offset: 0, length: 10),true);
+        $storySnippet = print_r(array_slice(array: $this->storyWords, offset: 0, length: 10), true);
         $logSnippet = print_r(value: $this->gitLogEntries, return: true);
 
         // Show longest partial match information
@@ -170,7 +170,7 @@ HTML;
                         echo " ...<br>";
                     }
                     // $this->foundWords = [$this->storyWords[$i - 1], ...$this->correctlyMatchedWords];  // so we can let caller show debug infos
-                    if($i < 500) {
+                    if ($i < 500) {
                         echo "<br>WE ONLY HAVE $i WORDS BEFORE WE REACH THE BEGINNING OF THE STORY!!!";
                     }
                     $subsetStartIndex = $i;
@@ -186,14 +186,14 @@ HTML;
             $this->explainHowToRecoverFromDisaster();
             return null;
         }
-        if($subsetStartIndex > 0) {
+        if ($subsetStartIndex > 0) {
             return $this->storyWords[$subsetStartIndex - 1];
         } else {
             return null;
         }
     }
 
-    public function getCorrectlyMatchedWords() : array
+    public function getCorrectlyMatchedWords(): array
     {
         return $this->correctlyMatchedWords;
     }
@@ -237,9 +237,9 @@ HTML;
             } elseif (strpos(haystack: $trimmedLine, needle: ' ') !== false) {
                 // Split the line into words
                 $wordArray = explode(
-                                separator: ' ',
-                                string: $trimmedLine
-                            );
+                    separator: ' ',
+                    string: $trimmedLine
+                );
 
                 foreach ($wordArray as $word) {
                     if (!empty($word)) {
@@ -257,6 +257,3 @@ HTML;
         return $words;
     }
 }
-
-
-

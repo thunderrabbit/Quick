@@ -1,4 +1,5 @@
 <?php
+
 // X0x0x0StoryStepper — decides the SINGLE next action, statelessly, from git state.
 //
 // It mirrors NextStoryWord's "match recent commit subjects against the story,

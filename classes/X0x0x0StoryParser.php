@@ -1,4 +1,5 @@
 <?php
+
 // X0x0x0StoryParser — reads a story file and produces:
 //   ->tokens[]        committable tokens (words + 　), markers EXCLUDED
 //   ->markerBefore[i] for some token index i: the branch/merge marker sitting

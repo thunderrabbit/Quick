@@ -1,17 +1,22 @@
 <?php
+
 /**
  * Class JournalEntryLister
  *
  * This class is responsible for finding and listing journal entries
  * in a specified directory structure.
  */
+
 declare(strict_types=1);
-class JournalEntryLister {
+
+class JournalEntryLister
+{
     public function __construct(
         private readonly string $journalRoot,
         private readonly int $debugLevel = 0,
         private readonly array $allowedExtensions = ['md', 'html']
-    ) {}
+    ) {
+    }
 
     /**
      * List journal entries for a given year, and optionally a month.
@@ -62,12 +67,16 @@ class JournalEntryLister {
 
             $day = substr(basename($fullPath), 0, 2);
             $monthDigits = explode('/', $relativePath)[1];
-            $monthWord = date(format: 'F',
-                              timestamp: mktime(hour: 0,
-                                                minute: 0,
-                                                second: 0,
-                                                month: intval(value: $monthDigits),
-                                                day: 1));
+            $monthWord = date(
+                format: 'F',
+                timestamp: mktime(
+                    hour: 0,
+                    minute: 0,
+                    second: 0,
+                    month: intval(value: $monthDigits),
+                    day: 1
+                )
+            );
 
             $entries[] = [
                 'path' => $relativePath,
@@ -96,7 +105,8 @@ class JournalEntryLister {
      * @param string $filename
      * @return string
      */
-    private function extractTitle(string $filename): string {
+    private function extractTitle(string $filename): string
+    {
         $name = preg_replace('/^\d{2}/', '', pathinfo($filename, PATHINFO_FILENAME));
         $name = str_replace('-', ' ', $name);
         return ucfirst($name);

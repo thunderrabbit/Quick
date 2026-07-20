@@ -32,8 +32,12 @@ $dryRun = in_array("--dry-run", $argv, true);
 $storyOverride = null;
 $repoOverride  = null;
 foreach ($argv as $a) {
-    if (str_starts_with($a, "--story=")) $storyOverride = substr($a, 8);
-    if (str_starts_with($a, "--repo="))  $repoOverride  = substr($a, 7);
+    if (str_starts_with($a, "--story=")) {
+        $storyOverride = substr($a, 8);
+    }
+    if (str_starts_with($a, "--repo=")) {
+        $repoOverride  = substr($a, 7);
+    }
 }
 
 if ($storyOverride !== null && $repoOverride !== null) {
@@ -50,13 +54,15 @@ chdir($repositoryPath);
 
 // --- sync (skipped in dry-run so nothing touches the remote) ---
 if (!$dryRun) {
-    $output = []; $returnCode = 0;
+    $output = [];
+    $returnCode = 0;
     exec("/usr/bin/git pull origin 2>&1", $output, $returnCode);
     if ($returnCode !== 0) {
         fwrite(STDERR, "Git pull failed:\n" . implode("\n", $output) . "\n");
         exit(1);
     }
-    $output = []; $returnCode = 0;
+    $output = [];
+    $returnCode = 0;
     exec("/usr/bin/git push origin 2>&1", $output, $returnCode);
     if ($returnCode !== 0) {
         fwrite(STDERR, "Git push failed:\n" . implode("\n", $output) . "\n");
@@ -65,7 +71,8 @@ if (!$dryRun) {
 }
 
 // --- HASH (for the caller's sync check) ---
-$output = []; $returnCode = 0;
+$output = [];
+$returnCode = 0;
 exec("/usr/bin/git rev-parse HEAD", $output, $returnCode);
 if ($returnCode === 0 && isset($output[0])) {
     echo "HASH:" . $output[0] . "\n";

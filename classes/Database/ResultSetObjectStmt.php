@@ -1,7 +1,9 @@
 <?php
+
 namespace Database;
 
-class ResultSetObjectStmt extends ResultSetObject {
+class ResultSetObjectStmt extends ResultSetObject
+{
     /* PHP result resource */
 
     private $stmt;
@@ -10,20 +12,23 @@ class ResultSetObjectStmt extends ResultSetObject {
 
     /* Create a resultset */
 
-    public function __construct($stmt) {
+    public function __construct($stmt)
+    {
         $this->stmt = $stmt;
         $this->fields = $this->loadFieldInfo($this->stmt);
     }
 
     /* returns the number of rows in this ResultSet */
 
-    public function numRows() {
+    public function numRows()
+    {
         if (is_object($this->stmt)) {
             return $this->stmt->num_rows();
         }
     }
 
-    public function setRow($rowNum) {
+    public function setRow($rowNum)
+    {
         if (is_object($this->stmt) && $this->numRows() > $rowNum) {
             $this->stmt->data_seek($rowNum);
             $this->currentRowNum = $rowNum;
@@ -46,26 +51,29 @@ class ResultSetObjectStmt extends ResultSetObject {
         }
     }
 
-    public function fieldList($var) {
+    public function fieldList($var)
+    {
         return $this->fields;
     }
 
-    public function close() {
+    public function close()
+    {
         if (is_object($this->stmt)) {
             $this->stmt->free_result();
             $this->stmt->close();
         }
     }
 
-    private function loadFieldInfo($resultSet) {
+    private function loadFieldInfo($resultSet)
+    {
         $metadata = $resultSet->result_metadata();
         $fields = $metadata->fetch_fields();
         $metadata->close();
         return $fields;
     }
 
-    function __destruct() {
+    function __destruct()
+    {
         $this->close();
     }
-
 }

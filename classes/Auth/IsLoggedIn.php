@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file tries to simplify knowing if user is logged in.
  *
@@ -6,8 +7,8 @@
  * CREATE TABLE `plasticaddy`.`cookies` (`cookie_id` INT NOT NULL AUTO_INCREMENT , `cookie` TINYTEXT NOT NULL , `user_id` INT NOT NULL , PRIMARY KEY (`cookie_id`), UNIQUE `unique_cookie` (`cookie`(32))) ENGINE = InnoDB;
  *
  */
-namespace Auth;
 
+namespace Auth;
 
 class IsLoggedIn
 {
@@ -25,21 +26,18 @@ class IsLoggedIn
     public function checkLogin(\Mlaphp\Request $mla_request): bool
     {
         $found_user_id = 0;
-        if(!empty($mla_request->cookie[$this->cookie_name]))
-        {
+        if (!empty($mla_request->cookie[$this->cookie_name])) {
             $found_user_id = $this->getUserIdForCookieInDatabase($mla_request->cookie[$this->cookie_name]);
-            if(empty($found_user_id))
-            {
+            if (empty($found_user_id)) {
                 $this->killCookie();
                 return false;
             } else {
                 $this->is_logged_in = true;
                 return true;
             }
-        } elseif(!empty($mla_request->post['email']) && !empty($mla_request->post['pass'])) {
+        } elseif (!empty($mla_request->post['email']) && !empty($mla_request->post['pass'])) {
             $found_user_id = $this->checkPHPHashedPassword($mla_request->post['email'], $mla_request->post['pass']);
-            if(empty($found_user_id))
-            {
+            if (empty($found_user_id)) {
                 $this->killCookie();        // bad login, so kill any cookie
                 return false;
             } else {
@@ -51,7 +49,7 @@ class IsLoggedIn
         return false;
     }
 
-    private function setAutoLoginCookie(int $user_id):void
+    private function setAutoLoginCookie(int $user_id): void
     {
         $cookie = \Utilities::randomString(32);
 
@@ -113,13 +111,10 @@ class IsLoggedIn
     {
         $cookie_result = $this->di_dbase->fetchResults("SELECT `user_id` FROM `cookies`
             WHERE `cookie` = ? LIMIT 1", "s", $cookie);
-        if($cookie_result->numRows() > 0)
-        {
+        if ($cookie_result->numRows() > 0) {
             $result_as_array = $cookie_result->toArray();
             return $result_as_array[0]['user_id'];
-        }
-        else
-        {
+        } else {
             return 0;
         }
     }
@@ -140,7 +135,7 @@ class IsLoggedIn
     private function killCookie(): void
     {
         $cookie_options = array (
-          'expires' => time()-3600,
+          'expires' => time() - 3600,
           'path' => '/',
           'domain' => "quick.robnugen.com",
           'samesite' => 'Strict' // None || Lax  || Strict
@@ -148,5 +143,4 @@ class IsLoggedIn
         setcookie($this->cookie_name, '', $cookie_options);
         $this->is_logged_in = false;
     }
-
 }
