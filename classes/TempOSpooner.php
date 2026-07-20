@@ -21,20 +21,20 @@ class TempOSpooner
         for ($attempt = 1; $attempt <= $maxRetries; $attempt++) {
             try {
                     // Add the file to the git index
-                    if($this->debugLevel > 5) {
-                        echo "<p>Adding $filePath to git repository\n</p>";
-                    }
+                if ($this->debugLevel > 5) {
+                    echo "<p>Adding $filePath to git repository\n</p>";
+                }
                     // apparently, exec should not have named parameters (`command`, `output`)
                     $returnVar = exec("git add " . escapeshellarg(arg: $filePath), $output);
-                    if (!empty($returnVar)) {
-                        $errorOutput = implode(separator: "\n", array: $output);  // Merge all lines of output into a single string
-                        throw new Exception(message: "Failed to add file to git: " . ($errorOutput ?: "No output returned") . ($returnVar ? " (Return code: $returnVar)" : ""));
-                    } else {
-                        if($this->debugLevel > 3) {
-                            echo "<p>Successfully added $filePath to git repository\n</p>";
-                        }
-                        return true;
+                if (!empty($returnVar)) {
+                    $errorOutput = implode(separator: "\n", array: $output);  // Merge all lines of output into a single string
+                    throw new Exception(message: "Failed to add file to git: " . ($errorOutput ?: "No output returned") . ($returnVar ? " (Return code: $returnVar)" : ""));
+                } else {
+                    if ($this->debugLevel > 3) {
+                        echo "<p>Successfully added $filePath to git repository\n</p>";
                     }
+                    return true;
+                }
             } catch (Exception $e) {
                 echo "<p>Attempt $attempt failed. Retrying in $retryDelay seconds...</p>";
                 if ($attempt == $maxRetries) {
@@ -54,7 +54,7 @@ class TempOSpooner
         for ($attempt = 1; $attempt <= $maxRetries; $attempt++) {
             try {
                 // Commit the changes
-                if($this->debugLevel > 4) {
+                if ($this->debugLevel > 4) {
                     echo "<p>Committing changes\n</p>";
                 }
                 // apparently, exec should not have named parameters (`command`, `output`)
@@ -62,8 +62,10 @@ class TempOSpooner
                 if ($this->debugLevel > 4) {
                     print_rob(object: $returnVar, exit: false);
                 }
-                if (!str_starts_with(haystack: $returnVar, needle: " create mode 100644") /* new file */ &&
-                    !str_contains(haystack: $returnVar, needle: "changed,")) /* edited file */ {
+                if (
+                    !str_starts_with(haystack: $returnVar, needle: " create mode 100644") /* new file */ &&
+                    !str_contains(haystack: $returnVar, needle: "changed,")
+                ) { /* edited file */
                     $errorOutput = implode(separator: "\n", array: $output);  // Merge all lines of output into a single string
                     throw new Exception(message: "Failed >$returnVar< to commit changes: " . ($errorOutput ?: "No output returned") . ($returnVar ? " (Return code: $returnVar)" : ""));
                 }
@@ -72,7 +74,7 @@ class TempOSpooner
                 }
                 return true;
             } catch (Exception $e) {
-                if($this->debugLevel > 0) {
+                if ($this->debugLevel > 0) {
                     echo "<p>Attempt $attempt failed to commit file. Retrying in $retryDelay seconds...</p>";
                 }
                 if ($attempt == $maxRetries) {
@@ -92,11 +94,11 @@ class TempOSpooner
         for ($attempt = 1; $attempt <= $maxRetries; $attempt++) {
             try {
                 // Push the changes
-                if($this->debugLevel > 4) {
+                if ($this->debugLevel > 4) {
                     echo "<p>Pushing changes to remote\n</p>";
                 }
                 $command = "git push";
-                if($this->debugLevel > 5) {
+                if ($this->debugLevel > 5) {
                     echo "<pre>command: $command</pre>";
                 }
                 // apparently, exec should not have named parameters (`command`, `output`)
@@ -125,16 +127,16 @@ class TempOSpooner
     public function addAndPushToGit(string $filePath, string $commitMessage): bool
     {
         try {
-            if($this->debugLevel > 1) {
+            if ($this->debugLevel > 1) {
                 echo "<br>Commit message is $commitMessage\n";
             }
             $success =
-	    	$this->addFileToGit(filePath: $filePath) &&
+            $this->addFileToGit(filePath: $filePath) &&
                 $this->commitChanges(commitMessage: $commitMessage) &&
                 $this->pushChangesToCurrentBranch();
 
             if ($success) {
-                if($this->debugLevel > 0) {
+                if ($this->debugLevel > 0) {
                     echo "<p>Successfully commited `$commitMessage` to branch master (harddcoddeddd)\n</p>";
                 }
                 return true;   // getting rid of all branches because commit messages are working well enough
@@ -160,8 +162,10 @@ class TempOSpooner
         $cacheLifetime = 10; // seconds - cache for 10 seconds to reduce resource usage
 
         // Return cached result if still valid
-        if (self::$gitStatusCache !== null &&
-            (time() - self::$gitStatusCacheTime) < $cacheLifetime) {
+        if (
+            self::$gitStatusCache !== null &&
+            (time() - self::$gitStatusCacheTime) < $cacheLifetime
+        ) {
             if ($this->debugLevel > 2) {
                 echo "<p>Using cached git status</p>";
             }
@@ -270,7 +274,6 @@ class TempOSpooner
                     'message' => 'Successfully pulled latest changes',
                     'output' => $result
                 ];
-
             } catch (Exception $e) {
                 if ($this->debugLevel > 0) {
                     echo "<p>Pull attempt $attempt failed: " . $e->getMessage() . "</p>";
@@ -319,7 +322,6 @@ class TempOSpooner
             }
 
             return false;
-
         } catch (Exception $e) {
             if ($this->debugLevel > 1) {
                 echo "<p>Error checking if pull needed: " . $e->getMessage() . "</p>";
@@ -328,4 +330,3 @@ class TempOSpooner
         }
     }
 }
-

@@ -71,4 +71,3 @@ if ($success) {
 // Redirect to the poster page
 header("Location: $redirectUrl");
 exit;
-

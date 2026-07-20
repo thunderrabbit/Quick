@@ -1,8 +1,9 @@
 <?php
+
 namespace Database;
 
-class Database implements DbInterface {
-
+class Database implements DbInterface
+{
     private $charEncoding = "UTF8";
     private $dbObj;
     private $host;
@@ -13,7 +14,8 @@ class Database implements DbInterface {
     private $persistant;
     private $affected_rows;
 
-    public function __construct($host, $username, $passwd, $dbname = '', $charEncoding = 'UTF8') {
+    public function __construct($host, $username, $passwd, $dbname = '', $charEncoding = 'UTF8')
+    {
         $this->host = $host;
         $this->username = $username;
         $this->passwd = $passwd;
@@ -28,10 +30,10 @@ class Database implements DbInterface {
 
 // end __construct
 
-    public function connect() {
+    public function connect()
+    {
 //If we're already connected return true;
         if (!is_object($this->dbObj) || !$this->dbObj->ping()) {
-
             $this->dbObj = new \mysqli($this->host, $this->username, $this->passwd, $this->dbname);
 
             if (!is_object($this->dbObj) || $this->dbObj->connect_error) {
@@ -50,7 +52,8 @@ class Database implements DbInterface {
         return true;
     }
 
-    public function setTimezone(){
+    public function setTimezone()
+    {
         $now = new \DateTime();
         $mins = $now->getOffset() / 60;
 
@@ -58,24 +61,27 @@ class Database implements DbInterface {
         $mins = abs($mins);
         $hrs = floor($mins / 60);
         $mins -= $hrs * 60;
-        $offset = sprintf('%+d:%02d', $hrs*$sgn, $mins);
+        $offset = sprintf('%+d:%02d', $hrs * $sgn, $mins);
 
-        if($this->tz_offset === false || $this->tz_offset != $offset){
+        if ($this->tz_offset === false || $this->tz_offset != $offset) {
             $this->tz_offset = $offset;
             $this->executeSql("SET time_zone='$offset';");
         }
     }
 
-    public function setEncoding($charEncoding) {
+    public function setEncoding($charEncoding)
+    {
         $this->charEncoding = $charEncoding;
         $this->dbObj->set_charset($this->charEncoding);
     }
 
-    public function prepare($sql) {
+    public function prepare($sql)
+    {
         $this->connect(); //Connect if we aren't already
 
-        if (!$stmt = $this->dbObj->prepare($sql))
+        if (!$stmt = $this->dbObj->prepare($sql)) {
             throw new \Database\EDatabaseException($this->dbObj->error);
+        }
         return $stmt;
     }
 
@@ -84,12 +90,13 @@ class Database implements DbInterface {
      * Returns the insert_id or affected_rows, where relevant, or null.
      */
 
-    private function executeSimpleSQL($sql) {
+    private function executeSimpleSQL($sql)
+    {
         $this->connect(); //Connect if we aren't already
 
         $this->dbObj->query($sql);
 
-        $result = ($this->dbObj->insert_id > 0) ? $this->dbObj->insert_id : NULL;
+        $result = ($this->dbObj->insert_id > 0) ? $this->dbObj->insert_id : null;
         $this->affected_rows = $this->dbObj->affected_rows;
 
         return $result;
@@ -100,7 +107,8 @@ class Database implements DbInterface {
      * Returns the insert_id or affected_rows, where relevant, or null.
      */
 
-    private function executePreparedSQL($sql, $paramtypes, $parameters) {
+    private function executePreparedSQL($sql, $paramtypes, $parameters)
+    {
         $bindParam = [];
         //Connect attempt is made in the prepare function.
         $stmt = $this->prepare($sql);
@@ -122,7 +130,7 @@ class Database implements DbInterface {
         }
         $stmt->store_result();
 
-        $result = ($stmt->insert_id > 0) ? $stmt->insert_id : NULL;
+        $result = ($stmt->insert_id > 0) ? $stmt->insert_id : null;
         $this->affected_rows = $stmt->affected_rows;
 
         $stmt->free_result();
@@ -131,8 +139,9 @@ class Database implements DbInterface {
         return $result;
     }
 
-    public function executeSQL($sql, $paramtypes = null, $var1 = null) {
-        $this->affected_rows = NULL;
+    public function executeSQL($sql, $paramtypes = null, $var1 = null)
+    {
+        $this->affected_rows = null;
         if (isset($paramtypes)) {
             $parameters = array();
             $paramcount = func_num_args();
@@ -153,7 +162,8 @@ class Database implements DbInterface {
         }
     }
 
-    private function fetchSimpleResults($sql) {
+    private function fetchSimpleResults($sql)
+    {
         $this->connect(); //Connect if we aren't already
 
         $result = $this->dbObj->query($sql);
@@ -161,7 +171,8 @@ class Database implements DbInterface {
         return new ResultSetObjectResult($result);
     }
 
-    private function fetchPreparedResults($sql, $paramtypes, $params) {
+    private function fetchPreparedResults($sql, $paramtypes, $params)
+    {
         $bindParam = [];
         //Connect attempt is made in the prepare function.
         $stmt = $this->prepare($sql);
@@ -183,18 +194,21 @@ class Database implements DbInterface {
         return new ResultSetObjectStmt($stmt);
     }
 
-    private function refValues($arr) {
+    private function refValues($arr)
+    {
         if (strnatcmp(phpversion(), '5.3') >= 0) { //Reference is required for PHP 5.3+
             $refs = array();
-            foreach ($arr as $key => $value)
+            foreach ($arr as $key => $value) {
                 $refs[$key] = &$arr[$key];
+            }
             return $refs;
         }
         return $arr;
     }
 
-    public function fetchResults($sql, $paramtypes = null, $var1 = null) {
-        $this->affected_rows = NULL; // Reset this here because we shouldn't have this set for a result.
+    public function fetchResults($sql, $paramtypes = null, $var1 = null)
+    {
+        $this->affected_rows = null; // Reset this here because we shouldn't have this set for a result.
         if (isset($paramtypes) && $paramtypes) {
             $params = array();
             $paramcount = func_num_args();
@@ -214,13 +228,15 @@ class Database implements DbInterface {
         }
     }
 
-    public function insertFromRecord($tablename, $paramtypes, $record) {
+    public function insertFromRecord($tablename, $paramtypes, $record)
+    {
         return $this->insertRecord($tablename, false, $paramtypes, $record);
     }
 
-    public function insertRecord($tablename, $ignore_duplicate_keys, $paramtypes, $record) {
-        $vars = NULL;
-        $values = NULL;
+    public function insertRecord($tablename, $ignore_duplicate_keys, $paramtypes, $record)
+    {
+        $vars = null;
+        $values = null;
 
         if (strlen($paramtypes) != (is_countable($record) ? count($record) : 0)) {
             throw new \Database\EDatabaseException(__FUNCTION__ . ": Num elements in paramtype string != num of bind variables in record array. " . strlen($paramtypes) . " != " . (is_countable($record) ? count($record) : 0));
@@ -228,7 +244,7 @@ class Database implements DbInterface {
 
         foreach ($record as $key => $val) {
             $vars .= "`" . $key . "`, ";
-            $values .=" ? , ";
+            $values .= " ? , ";
         }
         $vars = rtrim($vars, ", ");
         $values = rtrim($values, ", ");

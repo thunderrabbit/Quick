@@ -3,9 +3,9 @@
 use Pagination\PaginationDate;
 use Pagination\PaginationDates;
 
-class Utilities {
-
-    public static function randomString(int $length, $possible = NULL): string
+class Utilities
+{
+    public static function randomString(int $length, $possible = null): string
     {
         $randString = "";
         // define possible characters

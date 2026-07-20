@@ -7,15 +7,14 @@ include_once "/home/barefoot_rob/quick.robnugen.com/prepend.php";
 $repositoryPath = $config->post_path_journal;
 
 $debugLevel = intval(value: $_GET['debug']) ?? 0;
-if($debugLevel > 0) {
+if ($debugLevel > 0) {
     echo "<pre>Debug Level: $debugLevel</pre>";
 }
 
 // Change directory to the repository path
 chdir(directory: $repositoryPath);
 
-if($is_logged_in->isLoggedIn()){
-
+if ($is_logged_in->isLoggedIn()) {
     // Handle AJAX pull request
     if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'pull') {
         header('Content-Type: application/json');

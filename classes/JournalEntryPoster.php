@@ -1,5 +1,7 @@
 <?php
-class JournalEntryPoster{
+
+class JournalEntryPoster
+{
     public readonly string $post_path;
 
     public function __construct(
@@ -14,7 +16,7 @@ class JournalEntryPoster{
      */
     public function createPost(\Config $config, array $post_array): bool
     {
-        if($this->debug > 2){
+        if ($this->debug > 2) {
             print_rob(object: "inside createPost", exit: false);
             print_rob(object: $post_array, exit: false);
         }

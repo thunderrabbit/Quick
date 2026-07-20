@@ -12,8 +12,7 @@ chdir(directory: $repositoryPath);
 if ($mla_request->post) {
     $postifier = new \JournalEntryPoster(debug: (int)($mla_request->post['debug'] ?? 0));
     $okay = $postifier->createPost(config: $config, post_array: $mla_request->post);
-    if($okay)
-    {
+    if ($okay) {
         $post_path = $postifier->post_path;
         // remove leading / from post_path
         $post_path = ltrim(string: $post_path, characters: "/");
@@ -49,14 +48,12 @@ $date = ""; // keep set() from crying
 $tags = ""; // keep set() from crying
 $text = "";
 
-if($mla_request->get)
-{
-    if($mla_request->get['text'])
-    {
+if ($mla_request->get) {
+    if ($mla_request->get['text']) {
         // used by badmin.robnugen.com
         $text = $mla_request->get['text'];
     }
-} else if (isset($_SESSION['edit_post_data'])) {
+} elseif (isset($_SESSION['edit_post_data'])) {
     $editData = $_SESSION['edit_post_data'];      // Grab parsed data
     unset($_SESSION['edit_post_data']);           // Prevent reloading on refresh
 
@@ -68,20 +65,16 @@ if($mla_request->get)
 }
 
 $page = new \Template(config: $config);
-if(isset($post_path))
-{
+if (isset($post_path)) {
     $page->set(name: "post_path", value: $post_path);
 }
-if (isset($storyWordOutput))
-{
+if (isset($storyWordOutput)) {
     $page->set(name: "storyWordOutput", value: $storyWordOutput);
 }
-if(isset($gitLog))
-{
+if (isset($gitLog)) {
     $page->set(name: "gitLog", value: $gitLog);
 }
-if(isset($gitStatus))
-{
+if (isset($gitStatus)) {
     $page->set(name: "gitStatus", value: $gitStatus);
 }
 $page->setTemplate(template_file: "poster/index.tpl.php");
@@ -91,4 +84,3 @@ $page->set(name: "entry_date", value: $date);
 $page->set(name: "entry_tags", value: $tags);
 $page->set(name: "text", value: $text);
 $page->echoToScreen();
-

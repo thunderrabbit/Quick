@@ -12,6 +12,29 @@ When the harness picks the `qlaude` manifest in this directory, you are agent **
 - You do **not** have todos, sessions, or emotion-ledger permissions — those endpoints will 403. Don't call them.
 - Boss Claude is aiu 8 (also typically interactive in his own terminal — only inbox him for async cross-session coordination). Rob is aiu 1 but again, talk to him in chat, not via inbox.
 
+## Standards gate (phpcs) — get style-clean BEFORE you commit
+
+quick has a phpcs style gate (PSR-12). Because every commit message is a story
+word (see the art project below), the message can't describe *what* changed — so
+the change must already be clean when you commit. Run the gate first:
+
+    check_style(repo="quick")                                   # `standards` MCP tool, if wired
+    ~/work/rob/standards-mcp/run-phpcs.sh ~/work/rob/quick.robnugen.com   # or directly
+
+- **pass** → style-clean; safe to commit with the next story word.
+- **fail** → fix first. Auto-fix formatting with phpcbf in a container, then
+  re-check:
+
+      docker run --rm --network none -v ~/work/rob/quick.robnugen.com:/app \
+        standards-codeception-runner:php8.3 php -d memory_limit=1G vendor/bin/phpcbf
+
+  Never let a story-word commit carry style violations.
+
+Notes: phpcs is quick's only composer dependency (dev-only; `vendor/` is
+gitignored). The ruleset is `phpcs.xml` — PSR-12 with a few sniffs excluded and
+documented (pending manual cleanup). templates/*.tpl.php are out of scope. quick
+has no test suite, so `php -l` is the only correctness check beyond phpcs.
+
 ## Project Overview
 
 This is a PHP-based web application for creating and managing journal entries. However, the most distinctive and important feature is its **reverse storytelling art project through git commit messages**. The application provides a web interface for posting content, managing git operations, and viewing posts, but its primary artistic purpose is using git commits to tell a continuous story in reverse chronological order.
