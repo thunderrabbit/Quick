@@ -3,8 +3,8 @@
 /**
  * This file tries to simplify knowing if user is logged in.
  *
- * First check against cookie table to see if cookie is valid.
- * CREATE TABLE `plasticaddy`.`cookies` (`cookie_id` INT NOT NULL AUTO_INCREMENT , `cookie` TINYTEXT NOT NULL , `user_id` INT NOT NULL , PRIMARY KEY (`cookie_id`), UNIQUE `unique_cookie` (`cookie`(32))) ENGINE = InnoDB;
+ * Remember-me cookies live in the `cookies` table through
+ * \Database\CookieRepository; db_schemas/705_auth_hardening/ has the schema.
  *
  */
 
@@ -13,6 +13,7 @@ namespace Auth;
 class IsLoggedIn
 {
     private const COOKIE_DOMAIN = 'quick.robnugen.com';
+    private const COOKIE_LIFETIME = 30 * 24 * 60 * 60;
 
     private int $who_is_logged_in = 0;
 
@@ -23,6 +24,7 @@ class IsLoggedIn
     public function __construct(
         \Database\Database $dbase,
         private LoginThrottle $di_throttle,
+        private \Database\CookieRepository $di_cookies,
     ) {
         $this->di_dbase = $dbase;
     }
@@ -98,15 +100,14 @@ class IsLoggedIn
     {
         $cookie = \Utilities::randomString(32);
 
-        $record['user_id'] = $user_id;
         // Store only the SHA-256 of the token: a leaked DB dump/backup must
         // not contain ready-to-use session tokens. The browser holds the
-        // plaintext; lookups hash the presented value.
-        $record['cookie'] = hash('sha256', $cookie);
+        // plaintext; lookups hash the presented value. The row carries its
+        // own expires_at, so the lifetime is enforced here and not only by
+        // the browser.
+        $this->di_cookies->issue($user_id, hash('sha256', $cookie), self::COOKIE_LIFETIME);
 
-        $this->di_dbase->insertFromRecord("`cookies`", "is", $record);
-
-        $cookie_options = CookieOptions::build(self::COOKIE_DOMAIN, time() + (30 * 24 * 60 * 60));
+        $cookie_options = CookieOptions::build(self::COOKIE_DOMAIN, time() + self::COOKIE_LIFETIME);
         setcookie($this->cookie_name, $cookie, $cookie_options);
     }
 
@@ -152,14 +153,7 @@ class IsLoggedIn
 
     private function getUserIdForCookieInDatabase(string $cookie): int
     {
-        $cookie_result = $this->di_dbase->fetchResults("SELECT `user_id` FROM `cookies`
-            WHERE `cookie` = ? LIMIT 1", "s", hash('sha256', $cookie));
-        if ($cookie_result->numRows() > 0) {
-            $result_as_array = $cookie_result->toArray();
-            return $result_as_array[0]['user_id'];
-        } else {
-            return 0;
-        }
+        return $this->di_cookies->findUserId(hash('sha256', $cookie));
     }
     public function isLoggedIn(): bool
     {
@@ -178,11 +172,7 @@ class IsLoggedIn
         // logout. Someone logging out because they think they were compromised
         // gets what they asked for, and a token captured from any of their
         // devices stops working now instead of at its expiry.
-        $this->di_dbase->executeSQL(
-            "DELETE FROM `cookies` WHERE `user_id` = ?",
-            "i",
-            $this->who_is_logged_in
-        );
+        $this->di_cookies->revokeAllForUser($this->who_is_logged_in);
 
         $this->who_is_logged_in = 0;
         $this->killCookie();

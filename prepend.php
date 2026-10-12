@@ -94,6 +94,7 @@ $mla_database = \Base::getDB($config);
 $is_logged_in = new \Auth\IsLoggedIn(
     $mla_database,
     new \Auth\LoginThrottle(\Base::getPDO($config)),
+    new \Database\CookieRepository(\Base::getPDO($config)),
 );
 // Read-only: who does the remember-me cookie say this is? Credentials are
 // checked by /login/index.php alone, never here.
