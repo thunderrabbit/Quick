@@ -25,29 +25,59 @@ class IsLoggedIn
         $this->di_dbase = $dbase;
     }
 
+    /**
+     * Transitional: the old single entry point, now the two halves in a row.
+     */
     public function checkLogin(\Mlaphp\Request $mla_request): bool
     {
-        $found_user_id = 0;
-        if (!empty($mla_request->cookie[$this->cookie_name])) {
-            $found_user_id = $this->getUserIdForCookieInDatabase($mla_request->cookie[$this->cookie_name]);
-            if (empty($found_user_id)) {
-                $this->killCookie();
-                return false;
-            } else {
-                $this->is_logged_in = true;
-                return true;
-            }
-        } elseif (!empty($mla_request->post['email']) && !empty($mla_request->post['pass'])) {
-            $found_user_id = $this->checkPHPHashedPassword($mla_request->post['email'], $mla_request->post['pass']);
-            if (empty($found_user_id)) {
-                $this->killCookie();        // bad login, so kill any cookie
-                return false;
-            } else {
-                $this->establishSession($found_user_id);
-                return true;
-            }
+        $this->resumeFromCookie($mla_request);
+        if ($this->is_logged_in) {
+            return true;
+        }
+        $email = $mla_request->post['email'] ?? '';
+        $password = $mla_request->post['pass'] ?? '';
+        if (is_string($email) && $email !== '' && is_string($password) && $password !== '') {
+            return $this->attemptPasswordLogin($email, $password);
         }
         return false;
+    }
+
+    /**
+     * Who is this request from? Runs on EVERY request (prepend.php). Its only
+     * write is expiring a cookie the database no longer knows.
+     * It never looks at credentials: that is attemptPasswordLogin()'s job,
+     * and only the login page calls that.
+     */
+    public function resumeFromCookie(\Mlaphp\Request $mla_request): void
+    {
+        $cookie = $mla_request->cookie[$this->cookie_name] ?? '';
+        if (!is_string($cookie) || $cookie === '') {
+            return;
+        }
+
+        $found_user_id = $this->getUserIdForCookieInDatabase($cookie);
+        if ($found_user_id <= 0) {
+            $this->killCookie();
+            return;
+        }
+
+        $this->is_logged_in = true;
+    }
+
+    /**
+     * Password login. Called by /login/ on POST and nowhere else, so a stray
+     * email/pass pair in some other form is just data, and a wrong password
+     * can no longer log a user out of an unrelated page.
+     */
+    public function attemptPasswordLogin(string $email, string $password): bool
+    {
+        $user_id = $this->checkPHPHashedPassword($email, $password);
+        if ($user_id <= 0) {
+            return false;
+        }
+
+        $this->establishSession($user_id);
+        return true;
     }
 
     /**
