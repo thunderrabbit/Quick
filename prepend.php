@@ -20,6 +20,12 @@ session_set_cookie_params([
     'samesite' => 'Lax',
 ]);
 session_start();
+
+// No site may put Quick in a frame, so nobody can overlay a fake page on the
+// Commit or Save button (clickjacking). This restricts framing only, not
+// scripts, and a popup window (mg #706) is not a frame.
+header("Content-Security-Policy: frame-ancestors 'none'");
+
 require_once __DIR__ . '/classes/Mlaphp/Autoloader.php';
 // create autoloader instance and register the method with SPL
 $autoloader = new \Mlaphp\Autoloader();
