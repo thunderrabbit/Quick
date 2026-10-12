@@ -43,12 +43,28 @@ class IsLoggedIn
                 $this->killCookie();        // bad login, so kill any cookie
                 return false;
             } else {
-                $this->setAutoLoginCookie($found_user_id);
-                $this->is_logged_in = true;
+                $this->establishSession($found_user_id);
                 return true;
             }
         }
         return false;
+    }
+
+    /**
+     * The one way to become logged in. Every authentication path must end by
+     * calling this and nothing else, so no path can skip the fixation guard.
+     */
+    private function establishSession(int $user_id): void
+    {
+        // Fresh privilege level → fresh session id (fixation guard): a
+        // pre-set session id must not survive the authentication boundary.
+        session_regenerate_id(true);
+        // regenerate_id keeps the session data, so a CSRF token minted (or
+        // fixated) before login would survive it. Drop it; the next page
+        // render mints a fresh one.
+        unset($_SESSION[\Security\CSRFProtectaroo::FIELD]);
+        $this->setAutoLoginCookie($user_id);
+        $this->is_logged_in = true;
     }
 
     private function setAutoLoginCookie(int $user_id): void
