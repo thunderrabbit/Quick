@@ -5,9 +5,9 @@
         <div class="head"><h5 class="iUser">Journal Entries</h5></div>
 
         <?php if ($year): ?>
-            <p>Showing entries for <strong><?php echo $year; ?></strong>
+            <p>Showing entries for <strong><?php echo htmlspecialchars($year); ?></strong>
                 <?php if ($month): ?>
-                    /<strong><?php echo $month; ?></strong>
+                    /<strong><?php echo htmlspecialchars($month); ?></strong>
                 <?php endif; ?>
             </p>
         <?php else: ?>
@@ -20,7 +20,7 @@
             <ul>
                 <?php foreach ($entries as $entry): ?>
                     <li>
-                        <?php echo $entry['day'] . " " . $entry['monthWord'] . " - "; ?>
+                        <?php echo htmlspecialchars($entry['day'] . " " . $entry['monthWord'] . " - "); ?>
                         <a href="/parser.php?file=<?php echo urlencode($entry['path']); ?>">
                             <?php echo htmlspecialchars($entry['title']); ?>
                         </a>

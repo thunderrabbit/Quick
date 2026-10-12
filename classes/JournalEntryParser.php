@@ -54,17 +54,21 @@ class JournalEntryParser
                 $key = $matches[1];
                 $value = trim($matches[2]);
 
-                // Handle quoted strings
+                // Handle quoted strings (JournalEntryPoster writes them with
+                // YamlString::quote(), so \" and \\ need undoing)
                 if (preg_match('/^"(.*)"$/', $value, $m)) {
-                    $data[$key] = $m[1];
+                    $data[$key] = \YamlString::unquote($m[1]);
                 }
                 // Handle tag arrays
                 elseif (str_starts_with($value, '[') && str_ends_with($value, ']')) {
                     $value = trim($value, '[] ');
-                    $tags = array_map(
-                        fn($t) => trim($t, '" '),
-                        explode(',', $value)
-                    );
+                    // Each "..." in turn, so a tag holding \" stays whole.
+                    // Hand-written entries may have bare tags; split those on commas.
+                    if (preg_match_all('/"((?:[^"\\\\]|\\\\.)*)"/', $value, $quoted)) {
+                        $tags = array_map(\YamlString::unquote(...), $quoted[1]);
+                    } else {
+                        $tags = array_map(fn($t) => trim($t, '" '), explode(',', $value));
+                    }
                     $data[$key] = $tags;
                 }
                 // Handle other values as-is

@@ -28,4 +28,27 @@ class Base
         self::initDB($config);
         return self::$db;
     }
+
+    private static ?\PDO $pdo = null;
+
+    /**
+     * A PDO connection to the same database, for the classes copied from
+     * new-DH-user-site (Auth\LoginThrottle, Database\CookieRepository). Their
+     * SQL is portable, so the unit suite runs it on an in-memory SQLite.
+     */
+    public static function getPDO(Config $config): \PDO
+    {
+        if (self::$pdo === null) {
+            self::$pdo = new \PDO(
+                "mysql:host={$config->dbHost};dbname={$config->dbName};charset=utf8mb4",
+                $config->dbUser,
+                $config->dbPass,
+                [
+                    \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
+                    \PDO::ATTR_DEFAULT_FETCH_MODE => \PDO::FETCH_ASSOC,
+                ]
+            );
+        }
+        return self::$pdo;
+    }
 }

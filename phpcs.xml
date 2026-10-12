@@ -10,7 +10,10 @@
     <file>classes</file>
     <file>public</file>
     <file>bin</file>
+    <file>Tests</file>
     <exclude-pattern>*/vendor/*</exclude-pattern>
+    <exclude-pattern>*/Tests/_output/*</exclude-pattern>
+    <exclude-pattern>*/Tests/Support/_generated/*</exclude-pattern>
 
     <rule ref="PSR12">
         <!-- Pending manual cleanup (phpcbf can't auto-fix; counts 2026-07-20): -->
@@ -21,5 +24,10 @@
         <exclude name="PSR1.Files.SideEffects"/>                <!-- 2: declaration + side effects -->
         <exclude name="PSR12.Files.FileHeader"/>                <!-- 2 -->
         <exclude name="PSR12.Classes.ClosingBrace"/>            <!-- 2 -->
+    </rule>
+
+    <!-- Codeception calls _before() and _after() by those exact names. -->
+    <rule ref="PSR2.Methods.MethodDeclaration.Underscore">
+        <exclude-pattern>*/Tests/*</exclude-pattern>
     </rule>
 </ruleset>
