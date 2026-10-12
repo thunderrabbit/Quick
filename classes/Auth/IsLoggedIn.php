@@ -12,6 +12,8 @@ namespace Auth;
 
 class IsLoggedIn
 {
+    private const COOKIE_DOMAIN = 'quick.robnugen.com';
+
     private bool $is_logged_in = false;
 
     private string $session_variable = 'login';   // must match the one in \UserAuthentication
@@ -58,12 +60,7 @@ class IsLoggedIn
 
         $this->di_dbase->insertFromRecord("`cookies`", "is", $record);
 
-        $cookie_options = array(
-            'expires' => time() + (30 * 24 * 60 * 60),
-            'path' => '/',
-            'domain' => "quick.robnugen.com",
-            'samesite' => 'Strict' // None || Lax  || Strict
-        );
+        $cookie_options = CookieOptions::build(self::COOKIE_DOMAIN, time() + (30 * 24 * 60 * 60));
         setcookie($this->cookie_name, $cookie, $cookie_options);
     }
 
@@ -134,12 +131,7 @@ class IsLoggedIn
 
     private function killCookie(): void
     {
-        $cookie_options = array (
-          'expires' => time() - 3600,
-          'path' => '/',
-          'domain' => "quick.robnugen.com",
-          'samesite' => 'Strict' // None || Lax  || Strict
-        );
+        $cookie_options = CookieOptions::build(self::COOKIE_DOMAIN, time() - 3600);
         setcookie($this->cookie_name, '', $cookie_options);
         $this->is_logged_in = false;
     }
