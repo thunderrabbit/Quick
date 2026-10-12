@@ -20,8 +20,10 @@ class IsLoggedIn
     private string $cookie_name = 'quill';
     private \Database\Database $di_dbase;
 
-    public function __construct(\Database\Database $dbase)
-    {
+    public function __construct(
+        \Database\Database $dbase,
+        private LoginThrottle $di_throttle,
+    ) {
         $this->di_dbase = $dbase;
     }
 
@@ -57,11 +59,20 @@ class IsLoggedIn
      */
     public function attemptPasswordLogin(string $email, string $password): LoginResult
     {
+        $ip_address = is_string($_SERVER['REMOTE_ADDR'] ?? null) ? $_SERVER['REMOTE_ADDR'] : '';
+        if ($this->di_throttle->isThrottled($email, $ip_address)) {
+            // Do not even look at the password: a throttled guess must cost
+            // the attacker nothing in information and us nothing in bcrypt.
+            return LoginResult::Throttled;
+        }
+
         $user_id = $this->checkPHPHashedPassword($email, $password);
         if ($user_id <= 0) {
+            $this->di_throttle->recordFailure($email, $ip_address);
             return LoginResult::BadCredentials;
         }
 
+        $this->di_throttle->clearFailures($email);
         $this->establishSession($user_id);
         return LoginResult::Success;
     }
