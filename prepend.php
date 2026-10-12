@@ -8,6 +8,17 @@ error_reporting(E_ALL);
 
 const SEMVER = "1.0.0";
 
+// The session cookie carries the CSRF token and the editor's draft, so it
+// gets the same flags as the remember-me cookie. These only take effect if
+// set before session_start(). Strict mode refuses a session id the server
+// never issued, so an attacker cannot plant one (session fixation).
+ini_set('session.use_strict_mode', '1');
+session_set_cookie_params([
+    'path' => '/',
+    'secure' => true,
+    'httponly' => true,
+    'samesite' => 'Lax',
+]);
 session_start();
 require_once __DIR__ . '/classes/Mlaphp/Autoloader.php';
 // create autoloader instance and register the method with SPL
