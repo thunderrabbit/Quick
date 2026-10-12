@@ -62,6 +62,29 @@ class TempOSpoonerTest extends Unit
         $this->assertSame('edited', $this->repo->subjects()[0]);
     }
 
+    public function testCommitMessageWithAnApostrophe(): void
+    {
+        file_put_contents('entry.md', 'hello');
+        $spooner = new \TempOSpooner();
+        $spooner->addFileToGit('entry.md');
+
+        $this->assertTrue($spooner->commitChanges("it's"));
+
+        $this->assertSame("it's", $this->repo->subjects()[0]);
+    }
+
+    public function testCommitMessageIsNotRunByTheShell(): void
+    {
+        file_put_contents('entry.md', 'hello');
+        $spooner = new \TempOSpooner();
+        $spooner->addFileToGit('entry.md');
+
+        $this->assertTrue($spooner->commitChanges('$(touch pwned)'));
+
+        $this->assertSame('$(touch pwned)', $this->repo->subjects()[0]);
+        $this->assertFileDoesNotExist('pwned');
+    }
+
     public function testAddAndPushToGitUsesTheStoryWordAsMessage(): void
     {
         file_put_contents('entry.md', 'hello');
