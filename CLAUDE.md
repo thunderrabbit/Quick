@@ -48,7 +48,7 @@ is a bare repo, plus a fixture story file; TempOSpooner/NextStoryWord tests
 chdir() into it. Those git tests **skip when `git` is missing** — and the
 runner image has no git today, so in the gate they report as skipped, not run.
 A test whose docblock says "Current behavior" pins a known bug on purpose; when
-you fix that bug (#705 auth, #707 escaping/shell), flip the test.
+you fix that bug (#707 escaping/shell), flip the test.
 
 ## Project Overview
 
@@ -132,7 +132,35 @@ Uses a simple PHP template system where variables are extracted into local scope
 Set `?debug=N` parameter in URLs to enable debug output (where N is debug level 1-6). Higher levels show more verbose output.
 
 ### Authentication
-All pages require authentication except login. Authentication state is managed through `Auth\IsLoggedIn` class and PHP sessions.
+
+Ported from new-DH-user-site in mg #705 (rounds 1 + 2 of the
+propagate-auth-hardening skill). Every page requires login; `prepend.php`
+shows the login form to anyone not logged in and exits, except on `/login/`,
+which defines `LOGIN_PAGE` before including it.
+
+- **Two halves.** `prepend.php` only calls `resumeFromCookie()`: is the
+  `quill` cookie a live row? Credentials are checked by `/login/index.php`
+  alone, via `attemptPasswordLogin()`, which returns an `Auth\LoginResult`.
+  Every login path must end in `establishSession()` (regenerates the session
+  id, drops the pre-login CSRF token, issues the cookie).
+- **Cookies.** The `cookies` table holds the SHA-256 of the token, never the
+  token, plus `expires_at` (30 days, enforced by `Database\CookieRepository`).
+  Logout deletes every row for the user. Flags come from
+  `Auth\CookieOptions`: Secure, HttpOnly, SameSite=Lax.
+- **CSRF.** One token per session (`Security\CSRFProtectaroo`), checked in
+  `prepend.php` on every non-GET before page code runs. Forms emit
+  `<?= csrf_field() ?>`; fetch() sends `X-CSRF-Token: <?= json_encode(csrf_token()) ?>`.
+  A new POST form without it gets a 403. Do not switch to per-form or
+  single-use tokens; see the class docblock. SameSite is only the backstop:
+  badmin and quick share robnugen.com, so the browser counts them as one site.
+- **Throttle.** `Auth\LoginThrottle`: 5 failures per login or 20 per IP in
+  15 minutes. A missing `login_attempts` table means no throttle, not an error.
+- **DB access.** The auth classes use PDO (`Base::getPDO()`) so their tests
+  run on in-memory SQLite; the rest of Quick uses mysqli (`Base::getDB()`).
+- **Schema** is applied by hand on DreamHost (no migration runner):
+  `db_schemas/705_auth_hardening/`. `alter_cookies_hash_expiry.sql` must go
+  live together with the code that writes `expires_at`; either one alone
+  locks everyone out.
 
 ### File Structure for Posts
 Posts are saved as Markdown files with YAML frontmatter in a date-based directory structure: `YYYY/MM/DD{url-title}.md`
