@@ -26,23 +26,6 @@ class IsLoggedIn
     }
 
     /**
-     * Transitional: the old single entry point, now the two halves in a row.
-     */
-    public function checkLogin(\Mlaphp\Request $mla_request): bool
-    {
-        $this->resumeFromCookie($mla_request);
-        if ($this->is_logged_in) {
-            return true;
-        }
-        $email = $mla_request->post['email'] ?? '';
-        $password = $mla_request->post['pass'] ?? '';
-        if (is_string($email) && $email !== '' && is_string($password) && $password !== '') {
-            return $this->attemptPasswordLogin($email, $password);
-        }
-        return false;
-    }
-
-    /**
      * Who is this request from? Runs on EVERY request (prepend.php). Its only
      * write is expiring a cookie the database no longer knows.
      * It never looks at credentials: that is attemptPasswordLogin()'s job,
