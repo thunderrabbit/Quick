@@ -56,6 +56,7 @@
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
+                'X-CSRF-Token': <?= json_encode(csrf_token()) ?>,
             },
             body: 'action=pull'
         })
@@ -129,6 +130,7 @@
             }
             ?>
                 <form action="/commit/" id="commit" class="mainForm" method="POST">
+                    <?= csrf_field() ?>
                     <fieldset>
                         <div class="PageRow noborder">
                             <input type="submit" value="Commit Changes"
@@ -175,6 +177,7 @@
             <?php endif; ?>
 
             <form action="/poster/" id="valid" class="mainForm" method="POST">
+                <?= csrf_field() ?>
                 <fieldset>
                     <div class="PageRow noborder">
                         <input type="submit" value="Save" class="greyishBtn submitForm" />
