@@ -12,28 +12,43 @@ When the harness picks the `qlaude` manifest in this directory, you are agent **
 - You do **not** have todos, sessions, or emotion-ledger permissions — those endpoints will 403. Don't call them.
 - Boss Claude is aiu 8 (also typically interactive in his own terminal — only inbox him for async cross-session coordination). Rob is aiu 1 but again, talk to him in chat, not via inbox.
 
-## Standards gate (phpcs) — get style-clean BEFORE you commit
+## Commit messages in THIS repo are descriptive
 
-quick has a phpcs style gate (PSR-12). Because every commit message is a story
-word (see the art project below), the message can't describe *what* changed — so
-the change must already be clean when you commit. Run the gate first:
+The story-word convention (art project below) applies only to the *journal
+entries* repo that Quick commits into — never to this Quick code repo. Here,
+write normal descriptive subjects, inside BEGIN/DONE merge bubbles.
+
+## Standards gate (phpcs + tests) — get clean BEFORE you commit
+
+quick has a phpcs style gate (PSR-12) and a codeception unit suite. Run both
+before every commit:
 
     check_style(repo="quick")                                   # `standards` MCP tool
+    check_tests(repo="quick")
     ~/work/rob/standards-mcp/run-phpcs.sh ~/work/rob/quick.robnugen.com   # or directly
+    ~/work/rob/standards-mcp/run-unit.sh  ~/work/rob/quick.robnugen.com
 
-- **pass** → style-clean; safe to commit with the next story word.
+- **pass** → safe to commit.
 - **fail** → fix first. Auto-fix formatting with phpcbf in a container, then
   re-check:
 
       docker run --rm --network none -v ~/work/rob/quick.robnugen.com:/app \
         standards-codeception-runner:php8.3 php -d memory_limit=1G vendor/bin/phpcbf
 
-  Never let a story-word commit carry style violations.
+Notes: composer deps are dev-only (phpcs, codeception; `vendor/` is gitignored;
+install with the `composer:2` docker image — Lemur 13's host PHP is 8.1). The
+ruleset is `phpcs.xml` — PSR-12 with a few sniffs excluded and documented
+(pending manual cleanup). templates/*.tpl.php are out of scope.
 
-Notes: phpcs is quick's only composer dependency (dev-only; `vendor/` is
-gitignored). The ruleset is `phpcs.xml` — PSR-12 with a few sniffs excluded and
-documented (pending manual cleanup). templates/*.tpl.php are out of scope. quick
-has no test suite, so `php -l` is the only correctness check beyond phpcs.
+### Tests
+
+`Tests/Unit/` runs without prepend.php (no session, DB or login) and without
+DreamHost. `Tests/Support/TempGitRepo` makes a throwaway work repo whose origin
+is a bare repo, plus a fixture story file; TempOSpooner/NextStoryWord tests
+chdir() into it. Those git tests **skip when `git` is missing** — and the
+runner image has no git today, so in the gate they report as skipped, not run.
+A test whose docblock says "Current behavior" pins a known bug on purpose; when
+you fix that bug (#705 auth, #707 escaping/shell), flip the test.
 
 ## Project Overview
 
