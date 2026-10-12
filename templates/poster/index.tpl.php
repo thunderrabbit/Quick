@@ -56,13 +56,15 @@
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
+                'X-CSRF-Token': <?= json_encode(csrf_token()) ?>,
             },
             body: 'action=pull'
         })
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                pullStatus.innerHTML = '<span style="color: #28a745;">✅ ' + data.message + '</span>';
+                pullStatus.innerHTML = '<span style="color: #28a745;"></span>';
+                pullStatus.firstChild.textContent = '✅ ' + data.message;
                 pullBtn.style.background = '#6c757d';
                 pullBtn.innerHTML = '🔄 Check Updates';
 
@@ -71,13 +73,15 @@
                     window.location.reload();
                 }, 2000);
             } else {
-                pullStatus.innerHTML = '<span style="color: #dc3545;">❌ ' + data.message + '</span>';
+                pullStatus.innerHTML = '<span style="color: #dc3545;"></span>';
+                pullStatus.firstChild.textContent = '❌ ' + data.message;
                 pullBtn.style.background = '#dc3545';
                 pullBtn.innerHTML = '🔄 Retry';
             }
         })
         .catch(error => {
-            pullStatus.innerHTML = '<span style="color: #dc3545;">❌ Network error: ' + error.message + '</span>';
+            pullStatus.innerHTML = '<span style="color: #dc3545;"></span>';
+            pullStatus.firstChild.textContent = '❌ Network error: ' + error.message;
             pullBtn.style.background = '#dc3545';
             pullBtn.innerHTML = '🔄 Retry';
         })
@@ -85,6 +89,54 @@
             pullBtn.disabled = false;
         });
     }
+    </script>
+    <script>
+    // Upload images from inside an entry (mg #706). The 📷 button opens badmint's
+    // upload page as a popup; after uploading it posts the images back and closes,
+    // and they go in at the cursor. badmint sends data, not markdown, so the line
+    // inserted is always one Quick built from checked URLs.
+    const BADMINT_ORIGIN = 'https://badmint.robnugen.com';
+    const IMAGE_URL = /^\/\/b\.robnugen\.com\/[A-Za-z0-9_\/.-]+\.(jpeg|png|gif|webp)$/;
+    const IMAGE_ALT = /^[a-z0-9 _-]*$/;
+    let uploadPopup = null;
+    let uploadSelection = null;
+
+    function openUpload() {
+        const textarea = document.getElementById('content');
+        // The click takes focus from the textarea, so remember where the cursor was.
+        uploadSelection = [textarea.selectionStart, textarea.selectionEnd];
+        // Synchronously inside the click, or phones block the popup. No noopener:
+        // badmint needs window.opener to send the images back.
+        uploadPopup = window.open(BADMINT_ORIGIN + '/upload/?return=quick', 'badmint-upload');
+    }
+
+    window.addEventListener('message', function (event) {
+        if (event.origin !== BADMINT_ORIGIN || uploadPopup === null || event.source !== uploadPopup) {
+            return;
+        }
+        const data = event.data;
+        if (!data || data.type !== 'quick-images' || data.v !== 1 || !Array.isArray(data.images)) {
+            return;
+        }
+        const lines = [];
+        for (const image of data.images) {
+            if (!image || !IMAGE_URL.test(image.thumb) || !IMAGE_URL.test(image.full)
+                || typeof image.alt !== 'string' || !IMAGE_ALT.test(image.alt)) {
+                return;   // one bad entry and none go in
+            }
+            lines.push('[![' + image.alt + '](' + image.thumb + ')](' + image.full + ')');
+        }
+        if (lines.length === 0) {
+            return;
+        }
+        const textarea = document.getElementById('content');
+        const [start, end] = uploadSelection || [textarea.value.length, textarea.value.length];
+        textarea.setRangeText(lines.join("\n"), start, end, 'end');   // as text, never HTML
+        textarea.focus();
+        textarea.dispatchEvent(new Event('input', { bubbles: true }));
+        uploadPopup = null;
+        uploadSelection = null;
+    });
     </script>
 </head>
 
@@ -106,14 +158,15 @@
             $entry_time = $entry_time ?: $current_time;
 
             if (isset($post_path)) {
-                echo "<br>Post saved to <a target='journal' href='https://quick.robnugen.com/$post_path'>$post_path</a>";
+                $post_path_html = htmlspecialchars($post_path);
+                echo "<br>Post saved to <a target='journal' href='https://quick.robnugen.com/$post_path_html'>$post_path_html</a>";
             }
             if (isset($storyWordOutput)) {
-                echo $storyWordOutput;
+                echo htmlspecialchars($storyWordOutput);
                 echo "<br>File successfully added and pushed to git branch master";
             }
             if(isset($leNextStoryWord)) {
-                echo "<br>Next story word: <strong>$leNextStoryWord</strong>";
+                echo "<br>Next story word: <strong>" . htmlspecialchars((string) $leNextStoryWord) . "</strong>";
 
                 // Show pull button if updates are available
                 if(isset($pullNeeded) && $pullNeeded) {
@@ -125,10 +178,11 @@
             }
             if (isset($gitLog)) {
                 echo "<br>git log:<br>";
-                echo "<pre>$gitLog</pre>";
+                echo "<pre>" . htmlspecialchars($gitLog) . "</pre>";
             }
             ?>
                 <form action="/commit/" id="commit" class="mainForm" method="POST">
+                    <?= csrf_field() ?>
                     <fieldset>
                         <div class="PageRow noborder">
                             <input type="submit" value="Commit Changes"
@@ -139,7 +193,7 @@
                             <div class="PageRow noborder">
                                 <label>Git Status is:</label>
                                 <div class="PageInput">
-                                    <pre><?php echo $gitStatus; ?></pre>
+                                    <pre><?php echo htmlspecialchars($gitStatus); ?></pre>
                                 </div>
                                 <div class="fix"></div>
                             </div>
@@ -157,12 +211,12 @@
             </p>
 
             <?php if (isset($recentEntries)): ?>
-                <p>Recent entries for <strong><?php echo $recentYear; ?></strong>/<strong><?php echo $recentMonth; ?></strong></p>
+                <p>Recent entries for <strong><?php echo htmlspecialchars($recentYear); ?></strong>/<strong><?php echo htmlspecialchars($recentMonth); ?></strong></p>
                 <?php if (!empty($recentEntries)): ?>
                     <ul>
                         <?php foreach ($recentEntries as $entry): ?>
                             <li>
-                                <?php echo $entry['day'] . " " . $entry['monthWord'] . " - "; ?>
+                                <?php echo htmlspecialchars($entry['day'] . " " . $entry['monthWord'] . " - "); ?>
                                 <a href="/parser.php?file=<?php echo urlencode($entry['path']); ?>">
                                     <?php echo htmlspecialchars($entry['title']); ?>
                                 </a>
@@ -175,13 +229,14 @@
             <?php endif; ?>
 
             <form action="/poster/" id="valid" class="mainForm" method="POST">
+                <?= csrf_field() ?>
                 <fieldset>
                     <div class="PageRow noborder">
                         <input type="submit" value="Save" class="greyishBtn submitForm" />
                         <div class="fix"></div>
                     </div>
                     <div class="PageRow noborder">
-                        <label for="dp">Date: <?php echo $entry_time ?> <?php echo $entry_date ?></label>
+                        <label for="dp">Date: <?php echo htmlspecialchars($entry_time) ?> <?php echo htmlspecialchars($entry_date) ?></label>
 		      <small>
 			<small>
 			  <small>
@@ -190,8 +245,8 @@
 		        </small>
 		      </small>
                         <div class="PageInput">
-                            <input type="text" name="time" value="<?php echo $entry_time ?>" size="5" />
-                            <input type="text" name="date" value="<?php echo $entry_date ?>" size="35" id="dp" />
+                            <input type="text" name="time" value="<?php echo htmlspecialchars($entry_time) ?>" size="5" />
+                            <input type="text" name="date" value="<?php echo htmlspecialchars($entry_date) ?>" size="35" id="dp" />
                             <label for="debug">Debug:</label>
                             <input type="text" name="debug" value="0" size="5" />
                         </div>
@@ -201,7 +256,7 @@
                     <div class="PageRow noborder">
                         <label for="title">Title:</label>
                         <div class="PageInput">
-                            <input id="title" type="text" name="title" size="75" value="<?php echo $entry_title ?>" />
+                            <input id="title" type="text" name="title" size="75" value="<?php echo htmlspecialchars($entry_title) ?>" />
                         </div>
                         <div class="fix"></div>
                     </div>
@@ -209,7 +264,7 @@
                     <div class="PageRow noborder">
                         <label for="tags">Tags:</label>
                         <div class="PageInput">
-                            <input id="tags" type="text" name="tags" size="75" value="<?php echo $entry_tags ?>" />
+                            <input id="tags" type="text" name="tags" size="75" value="<?php echo htmlspecialchars($entry_tags) ?>" />
                         </div>
                         <div class="fix"></div>
                     </div>
@@ -248,8 +303,13 @@
                                     class="ui-button ui-corner-all quickTagBtn"
                                     onclick="wrapSelectedParagraphs('anger')"
                                     title="Tag as anger">😠</button>
+                                <button
+                                    type="button"
+                                    class="ui-button ui-corner-all quickTagBtn"
+                                    onclick="openUpload()"
+                                    title="Upload images to badmint and insert them here">📷</button>
                             </div>
-                            <textarea id="content" name="post_content" cols="75" rows="35"><?php echo $text; ?></textarea>
+                            <textarea id="content" name="post_content" cols="75" rows="35"><?php echo htmlspecialchars($text); ?></textarea>
                         </div>
                         <div class="fix"></div>
                     </div>
@@ -263,6 +323,61 @@
         </div>
     </div>
     <div class="fix"></div>
+    <script>
+    // Keep the entry in localStorage while typing (mg #706). A phone may unload
+    // this tab while badmint's photo picker is open; the draft brings the text
+    // back. Restored only into an empty editor, and dropped once the entry saves.
+    (function () {
+        const KEY = 'quick-draft';
+        const justSaved = <?= isset($post_path) ? 'true' : 'false' ?>;
+        const fields = { title: document.getElementById('title'),
+                         tags: document.getElementById('tags'),
+                         content: document.getElementById('content') };
+        let store = null;
+        try { store = window.localStorage; } catch (e) { return; }
+        if (!store || !fields.content) { return; }
+
+        const forget = function () { try { store.removeItem(KEY); } catch (e) {} };
+        if (justSaved) {
+            forget();
+        } else {
+            let draft = null;
+            try { draft = JSON.parse(store.getItem(KEY) || 'null'); } catch (e) {}
+            if (draft && typeof draft.content === 'string' && draft.content.trim() !== ''
+                && fields.content.value.trim() === '') {
+                for (const name in fields) {
+                    if (typeof draft[name] === 'string' && fields[name].value === '') {
+                        fields[name].value = draft[name];
+                    }
+                }
+                const note = document.createElement('p');
+                note.textContent = 'Restored your unsaved draft. ';
+                const discard = document.createElement('button');
+                discard.type = 'button';
+                discard.textContent = 'Discard it';
+                discard.addEventListener('click', function () {
+                    forget();
+                    for (const name in fields) { fields[name].value = ''; }
+                    note.remove();
+                });
+                note.append(discard);
+                fields.content.form.before(note);
+            }
+        }
+
+        let timer = null;
+        const save = function () {
+            clearTimeout(timer);
+            timer = setTimeout(function () {
+                try {
+                    store.setItem(KEY, JSON.stringify({ title: fields.title.value,
+                        tags: fields.tags.value, content: fields.content.value }));
+                } catch (e) {}
+            }, 500);
+        };
+        for (const name in fields) { fields[name].addEventListener('input', save); }
+    })();
+    </script>
 </body>
 
 </html>

@@ -1,5 +1,12 @@
 .plandex/
 .aider*
 
-# composer dev tooling for the phpcs style gate
+# composer dev tooling for the phpcs style gate and the codeception suite
 /vendor/
+
+# codeception scratch
+Tests/_output/*
+!Tests/_output/.gitkeep
+Tests/_envs/
+Tests/Support/_generated/*
+!Tests/Support/_generated/.gitkeep

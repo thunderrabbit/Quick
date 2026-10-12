@@ -11,11 +11,11 @@ class NextStoryWord
     private int $longestMatchLength = 0;
 
     public function __construct(
-        private string $gitLogCommand,
+        private int $gitLogCount,
         private string $storyFile,
         private int $debugLevel,
     ) {
-        $this->gitLogEntries = $this->readGitLog(gitLogCommand: $this->gitLogCommand);
+        $this->gitLogEntries = $this->readGitLog(count: $this->gitLogCount);
         if ($this->debugLevel > 3) {
             echo "<pre>" . print_r($this->gitLogEntries, true) . "</pre>";
         }
@@ -200,14 +200,16 @@ HTML;
 
     /**
      * Designed to retrieve words used so far as commit messages in the story.
+     * Runs in the current directory. Takes a count, not a command, so no
+     * caller can hand a shell string to exec().
      *
-     * @param string $gitLogCommand (preferably "git log -31 --pretty=format:'%s'")
+     * @param int $count how many recent commit subjects to read
      * @return array of single word commit messages
      */
-    private function readGitLog(string $gitLogCommand): array
+    private function readGitLog(int $count): array
     {
         exec(
-            command: $gitLogCommand,
+            command: "git log -" . max(1, $count) . " --pretty=format:%s",
             output: $output,
             result_code: $result_code
         );

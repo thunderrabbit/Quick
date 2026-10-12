@@ -12,28 +12,43 @@ When the harness picks the `qlaude` manifest in this directory, you are agent **
 - You do **not** have todos, sessions, or emotion-ledger permissions — those endpoints will 403. Don't call them.
 - Boss Claude is aiu 8 (also typically interactive in his own terminal — only inbox him for async cross-session coordination). Rob is aiu 1 but again, talk to him in chat, not via inbox.
 
-## Standards gate (phpcs) — get style-clean BEFORE you commit
+## Commit messages in THIS repo are descriptive
 
-quick has a phpcs style gate (PSR-12). Because every commit message is a story
-word (see the art project below), the message can't describe *what* changed — so
-the change must already be clean when you commit. Run the gate first:
+The story-word convention (art project below) applies only to the *journal
+entries* repo that Quick commits into — never to this Quick code repo. Here,
+write normal descriptive subjects, inside BEGIN/DONE merge bubbles.
+
+## Standards gate (phpcs + tests) — get clean BEFORE you commit
+
+quick has a phpcs style gate (PSR-12) and a codeception unit suite. Run both
+before every commit:
 
     check_style(repo="quick")                                   # `standards` MCP tool
+    check_tests(repo="quick")
     ~/work/rob/standards-mcp/run-phpcs.sh ~/work/rob/quick.robnugen.com   # or directly
+    ~/work/rob/standards-mcp/run-unit.sh  ~/work/rob/quick.robnugen.com
 
-- **pass** → style-clean; safe to commit with the next story word.
+- **pass** → safe to commit.
 - **fail** → fix first. Auto-fix formatting with phpcbf in a container, then
   re-check:
 
       docker run --rm --network none -v ~/work/rob/quick.robnugen.com:/app \
         standards-codeception-runner:php8.3 php -d memory_limit=1G vendor/bin/phpcbf
 
-  Never let a story-word commit carry style violations.
+Notes: composer deps are dev-only (phpcs, codeception; `vendor/` is gitignored;
+install with the `composer:2` docker image — Lemur 13's host PHP is 8.1). The
+ruleset is `phpcs.xml` — PSR-12 with a few sniffs excluded and documented
+(pending manual cleanup). templates/*.tpl.php are out of scope.
 
-Notes: phpcs is quick's only composer dependency (dev-only; `vendor/` is
-gitignored). The ruleset is `phpcs.xml` — PSR-12 with a few sniffs excluded and
-documented (pending manual cleanup). templates/*.tpl.php are out of scope. quick
-has no test suite, so `php -l` is the only correctness check beyond phpcs.
+### Tests
+
+`Tests/Unit/` runs without prepend.php (no session, DB or login) and without
+DreamHost. `Tests/Support/TempGitRepo` makes a throwaway work repo whose origin
+is a bare repo, plus a fixture story file; TempOSpooner/NextStoryWord tests
+chdir() into it. Those git tests **skip when `git` is missing** — and the
+runner image has no git today, so in the gate they report as skipped, not run.
+A test whose docblock says "Current behavior" pins a known bug on purpose; when
+you fix that bug, flip the test.
 
 ## Project Overview
 
@@ -113,11 +128,57 @@ The application automatically commits and pushes changes to a git repository. Th
 ### Template System
 Uses a simple PHP template system where variables are extracted into local scope. Templates are in `templates/` directory with `.tpl.php` extensions.
 
+Every value a template prints goes through `htmlspecialchars()` (or
+`urlencode()` inside a URL). Text from git or the server that JS shows goes in
+`textContent`, never `innerHTML`. Shell arguments go through `escapeshellarg()`.
+Frontmatter values go through `YamlString::quote()`, and the parser undoes
+that with `YamlString::unquote()` (mg #707).
+
+### Uploading images (mg #706)
+The 📷 button in the editor opens `https://badmint.robnugen.com/upload/?return=quick` as a
+popup. After uploading, badmint posts `{type: 'quick-images', v: 1, images: [{thumb, full,
+alt}]}` back. The listener in `templates/poster/index.tpl.php` accepts it only from that
+popup at badmint's exact origin, checks every URL is a `//b.robnugen.com/...` image path
+and every alt is plain words, then builds `[![alt](thumb)](full)` itself and inserts it at
+the saved cursor as text. Keep those checks if you change the format, and never open the
+popup with `noopener` or send a `Cross-Origin-Opener-Policy` header: both cut the reply.
+The draft (title, tags, text) autosaves to `localStorage` key `quick-draft` and is cleared
+when an entry saves; phones can unload the tab while the photo picker is open.
+Don't use Quick as an iOS home-screen app: `window.open()` then leaves the app.
+
 ### Debugging
 Set `?debug=N` parameter in URLs to enable debug output (where N is debug level 1-6). Higher levels show more verbose output.
 
 ### Authentication
-All pages require authentication except login. Authentication state is managed through `Auth\IsLoggedIn` class and PHP sessions.
+
+Ported from new-DH-user-site in mg #705 (rounds 1 + 2 of the
+propagate-auth-hardening skill). Every page requires login; `prepend.php`
+shows the login form to anyone not logged in and exits, except on `/login/`,
+which defines `LOGIN_PAGE` before including it.
+
+- **Two halves.** `prepend.php` only calls `resumeFromCookie()`: is the
+  `quill` cookie a live row? Credentials are checked by `/login/index.php`
+  alone, via `attemptPasswordLogin()`, which returns an `Auth\LoginResult`.
+  Every login path must end in `establishSession()` (regenerates the session
+  id, drops the pre-login CSRF token, issues the cookie).
+- **Cookies.** The `cookies` table holds the SHA-256 of the token, never the
+  token, plus `expires_at` (30 days, enforced by `Database\CookieRepository`).
+  Logout deletes every row for the user. Flags come from
+  `Auth\CookieOptions`: Secure, HttpOnly, SameSite=Lax.
+- **CSRF.** One token per session (`Security\CSRFProtectaroo`), checked in
+  `prepend.php` on every non-GET before page code runs. Forms emit
+  `<?= csrf_field() ?>`; fetch() sends `X-CSRF-Token: <?= json_encode(csrf_token()) ?>`.
+  A new POST form without it gets a 403. Do not switch to per-form or
+  single-use tokens; see the class docblock. SameSite is only the backstop:
+  badmin and quick share robnugen.com, so the browser counts them as one site.
+- **Throttle.** `Auth\LoginThrottle`: 5 failures per login or 20 per IP in
+  15 minutes. A missing `login_attempts` table means no throttle, not an error.
+- **DB access.** The auth classes use PDO (`Base::getPDO()`) so their tests
+  run on in-memory SQLite; the rest of Quick uses mysqli (`Base::getDB()`).
+- **Schema** is applied by hand on DreamHost (no migration runner):
+  `db_schemas/705_auth_hardening/`. `recreate_cookies.sql` must go
+  live together with the code that writes `expires_at`; either one alone
+  locks everyone out.
 
 ### File Structure for Posts
 Posts are saved as Markdown files with YAML frontmatter in a date-based directory structure: `YYYY/MM/DD{url-title}.md`
