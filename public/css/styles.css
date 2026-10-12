@@ -86,3 +86,8 @@ body {
         padding: 0 15px;
     }
 }
+
+.login-error {
+    color: #dc3545;
+    font-weight: bold;
+}
