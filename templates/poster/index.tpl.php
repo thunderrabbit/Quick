@@ -323,6 +323,61 @@
         </div>
     </div>
     <div class="fix"></div>
+    <script>
+    // Keep the entry in localStorage while typing (mg #706). A phone may unload
+    // this tab while badmint's photo picker is open; the draft brings the text
+    // back. Restored only into an empty editor, and dropped once the entry saves.
+    (function () {
+        const KEY = 'quick-draft';
+        const justSaved = <?= isset($post_path) ? 'true' : 'false' ?>;
+        const fields = { title: document.getElementById('title'),
+                         tags: document.getElementById('tags'),
+                         content: document.getElementById('content') };
+        let store = null;
+        try { store = window.localStorage; } catch (e) { return; }
+        if (!store || !fields.content) { return; }
+
+        const forget = function () { try { store.removeItem(KEY); } catch (e) {} };
+        if (justSaved) {
+            forget();
+        } else {
+            let draft = null;
+            try { draft = JSON.parse(store.getItem(KEY) || 'null'); } catch (e) {}
+            if (draft && typeof draft.content === 'string' && draft.content.trim() !== ''
+                && fields.content.value.trim() === '') {
+                for (const name in fields) {
+                    if (typeof draft[name] === 'string' && fields[name].value === '') {
+                        fields[name].value = draft[name];
+                    }
+                }
+                const note = document.createElement('p');
+                note.textContent = 'Restored your unsaved draft. ';
+                const discard = document.createElement('button');
+                discard.type = 'button';
+                discard.textContent = 'Discard it';
+                discard.addEventListener('click', function () {
+                    forget();
+                    for (const name in fields) { fields[name].value = ''; }
+                    note.remove();
+                });
+                note.append(discard);
+                fields.content.form.before(note);
+            }
+        }
+
+        let timer = null;
+        const save = function () {
+            clearTimeout(timer);
+            timer = setTimeout(function () {
+                try {
+                    store.setItem(KEY, JSON.stringify({ title: fields.title.value,
+                        tags: fields.tags.value, content: fields.content.value }));
+                } catch (e) {}
+            }, 500);
+        };
+        for (const name in fields) { fields[name].addEventListener('input', save); }
+    })();
+    </script>
 </body>
 
 </html>
