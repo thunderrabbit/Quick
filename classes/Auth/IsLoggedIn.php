@@ -85,7 +85,10 @@ class IsLoggedIn
         $cookie = \Utilities::randomString(32);
 
         $record['user_id'] = $user_id;
-        $record['cookie'] = $cookie;
+        // Store only the SHA-256 of the token: a leaked DB dump/backup must
+        // not contain ready-to-use session tokens. The browser holds the
+        // plaintext; lookups hash the presented value.
+        $record['cookie'] = hash('sha256', $cookie);
 
         $this->di_dbase->insertFromRecord("`cookies`", "is", $record);
 
@@ -136,7 +139,7 @@ class IsLoggedIn
     private function getUserIdForCookieInDatabase(string $cookie): int
     {
         $cookie_result = $this->di_dbase->fetchResults("SELECT `user_id` FROM `cookies`
-            WHERE `cookie` = ? LIMIT 1", "s", $cookie);
+            WHERE `cookie` = ? LIMIT 1", "s", hash('sha256', $cookie));
         if ($cookie_result->numRows() > 0) {
             $result_as_array = $cookie_result->toArray();
             return $result_as_array[0]['user_id'];
