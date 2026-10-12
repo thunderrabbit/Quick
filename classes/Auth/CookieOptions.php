@@ -14,7 +14,13 @@ class CookieOptions
      * read and that travels in the clear over plain HTTP. Building the array
      * here keeps both call sites (set and kill) on the same flags.
      *
-     * @return array{expires: int, path: string, domain: string, secure: bool, httponly: bool, samesite: 'Strict'}
+     * SameSite is Lax, not Strict. Strict withholds the cookie on a top-level
+     * link from another site, so following a link to Quick arrives logged out.
+     * Lax still withholds it on cross-site POSTs, and the CSRF token check in
+     * prepend.php is the real defence; SameSite is the backstop. Do not loosen
+     * to None without a reason written here.
+     *
+     * @return array{expires: int, path: string, domain: string, secure: bool, httponly: bool, samesite: 'Lax'}
      */
     public static function build(string $domain_name, int $expires): array
     {
@@ -24,7 +30,7 @@ class CookieOptions
             'domain' => $domain_name,
             'secure' => true,
             'httponly' => true,
-            'samesite' => 'Strict'
+            'samesite' => 'Lax'
         ];
     }
 }
