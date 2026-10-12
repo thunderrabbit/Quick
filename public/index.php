@@ -28,7 +28,7 @@ if ($is_logged_in->isLoggedIn()) {
 
     // Get the next story word to give me context
     $leNextStoryWord = new NextStoryWord(
-        gitLogCommand: "git log -5 --pretty=format:'%s'",
+        gitLogCount: 5,
         storyFile: $config->storyFile,
         debugLevel: $debugLevel
     );

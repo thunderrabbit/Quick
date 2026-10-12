@@ -79,13 +79,22 @@ class JournalEntryPosterTest extends Unit
         );
     }
 
-    /** Current behavior: a double quote in the title is not escaped in the YAML. */
-    public function testDoubleQuoteInTitleIsWrittenRaw(): void
+    public function testDoubleQuoteInTitleIsEscapedForYaml(): void
     {
         $poster = $this->post('Say "hi"');
 
         $this->assertStringContainsString(
-            "title: \"Say \"hi\"\"\n",
+            "title: \"Say \\\"hi\\\"\"\n",
+            file_get_contents($this->journal . $poster->post_path)
+        );
+    }
+
+    public function testDoubleQuoteInATagIsEscapedForYaml(): void
+    {
+        $poster = $this->post('Hello', 'text', 'life, "quoted"');
+
+        $this->assertStringContainsString(
+            "tags: [ \"2024\", \"life\", \"\\\"quoted\\\"\" ]\n",
             file_get_contents($this->journal . $poster->post_path)
         );
     }

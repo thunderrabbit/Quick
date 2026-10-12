@@ -29,7 +29,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             // Get the next story word for the commit message
             $storyWord = new NextStoryWord(
-                gitLogCommand: "git log -15 --pretty=format:'%s'",
+                gitLogCount: 15,
                 storyFile: $config->storyFile,
                 debugLevel: 0
             );

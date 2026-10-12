@@ -63,7 +63,8 @@
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                pullStatus.innerHTML = '<span style="color: #28a745;">✅ ' + data.message + '</span>';
+                pullStatus.innerHTML = '<span style="color: #28a745;"></span>';
+                pullStatus.firstChild.textContent = '✅ ' + data.message;
                 pullBtn.style.background = '#6c757d';
                 pullBtn.innerHTML = '🔄 Check Updates';
 
@@ -72,13 +73,15 @@
                     window.location.reload();
                 }, 2000);
             } else {
-                pullStatus.innerHTML = '<span style="color: #dc3545;">❌ ' + data.message + '</span>';
+                pullStatus.innerHTML = '<span style="color: #dc3545;"></span>';
+                pullStatus.firstChild.textContent = '❌ ' + data.message;
                 pullBtn.style.background = '#dc3545';
                 pullBtn.innerHTML = '🔄 Retry';
             }
         })
         .catch(error => {
-            pullStatus.innerHTML = '<span style="color: #dc3545;">❌ Network error: ' + error.message + '</span>';
+            pullStatus.innerHTML = '<span style="color: #dc3545;"></span>';
+            pullStatus.firstChild.textContent = '❌ Network error: ' + error.message;
             pullBtn.style.background = '#dc3545';
             pullBtn.innerHTML = '🔄 Retry';
         })
@@ -107,14 +110,15 @@
             $entry_time = $entry_time ?: $current_time;
 
             if (isset($post_path)) {
-                echo "<br>Post saved to <a target='journal' href='https://quick.robnugen.com/$post_path'>$post_path</a>";
+                $post_path_html = htmlspecialchars($post_path);
+                echo "<br>Post saved to <a target='journal' href='https://quick.robnugen.com/$post_path_html'>$post_path_html</a>";
             }
             if (isset($storyWordOutput)) {
-                echo $storyWordOutput;
+                echo htmlspecialchars($storyWordOutput);
                 echo "<br>File successfully added and pushed to git branch master";
             }
             if(isset($leNextStoryWord)) {
-                echo "<br>Next story word: <strong>$leNextStoryWord</strong>";
+                echo "<br>Next story word: <strong>" . htmlspecialchars((string) $leNextStoryWord) . "</strong>";
 
                 // Show pull button if updates are available
                 if(isset($pullNeeded) && $pullNeeded) {
@@ -126,7 +130,7 @@
             }
             if (isset($gitLog)) {
                 echo "<br>git log:<br>";
-                echo "<pre>$gitLog</pre>";
+                echo "<pre>" . htmlspecialchars($gitLog) . "</pre>";
             }
             ?>
                 <form action="/commit/" id="commit" class="mainForm" method="POST">
@@ -141,7 +145,7 @@
                             <div class="PageRow noborder">
                                 <label>Git Status is:</label>
                                 <div class="PageInput">
-                                    <pre><?php echo $gitStatus; ?></pre>
+                                    <pre><?php echo htmlspecialchars($gitStatus); ?></pre>
                                 </div>
                                 <div class="fix"></div>
                             </div>
@@ -159,12 +163,12 @@
             </p>
 
             <?php if (isset($recentEntries)): ?>
-                <p>Recent entries for <strong><?php echo $recentYear; ?></strong>/<strong><?php echo $recentMonth; ?></strong></p>
+                <p>Recent entries for <strong><?php echo htmlspecialchars($recentYear); ?></strong>/<strong><?php echo htmlspecialchars($recentMonth); ?></strong></p>
                 <?php if (!empty($recentEntries)): ?>
                     <ul>
                         <?php foreach ($recentEntries as $entry): ?>
                             <li>
-                                <?php echo $entry['day'] . " " . $entry['monthWord'] . " - "; ?>
+                                <?php echo htmlspecialchars($entry['day'] . " " . $entry['monthWord'] . " - "); ?>
                                 <a href="/parser.php?file=<?php echo urlencode($entry['path']); ?>">
                                     <?php echo htmlspecialchars($entry['title']); ?>
                                 </a>
@@ -184,7 +188,7 @@
                         <div class="fix"></div>
                     </div>
                     <div class="PageRow noborder">
-                        <label for="dp">Date: <?php echo $entry_time ?> <?php echo $entry_date ?></label>
+                        <label for="dp">Date: <?php echo htmlspecialchars($entry_time) ?> <?php echo htmlspecialchars($entry_date) ?></label>
 		      <small>
 			<small>
 			  <small>
@@ -193,8 +197,8 @@
 		        </small>
 		      </small>
                         <div class="PageInput">
-                            <input type="text" name="time" value="<?php echo $entry_time ?>" size="5" />
-                            <input type="text" name="date" value="<?php echo $entry_date ?>" size="35" id="dp" />
+                            <input type="text" name="time" value="<?php echo htmlspecialchars($entry_time) ?>" size="5" />
+                            <input type="text" name="date" value="<?php echo htmlspecialchars($entry_date) ?>" size="35" id="dp" />
                             <label for="debug">Debug:</label>
                             <input type="text" name="debug" value="0" size="5" />
                         </div>
@@ -204,7 +208,7 @@
                     <div class="PageRow noborder">
                         <label for="title">Title:</label>
                         <div class="PageInput">
-                            <input id="title" type="text" name="title" size="75" value="<?php echo $entry_title ?>" />
+                            <input id="title" type="text" name="title" size="75" value="<?php echo htmlspecialchars($entry_title) ?>" />
                         </div>
                         <div class="fix"></div>
                     </div>
@@ -212,7 +216,7 @@
                     <div class="PageRow noborder">
                         <label for="tags">Tags:</label>
                         <div class="PageInput">
-                            <input id="tags" type="text" name="tags" size="75" value="<?php echo $entry_tags ?>" />
+                            <input id="tags" type="text" name="tags" size="75" value="<?php echo htmlspecialchars($entry_tags) ?>" />
                         </div>
                         <div class="fix"></div>
                     </div>
@@ -252,7 +256,7 @@
                                     onclick="wrapSelectedParagraphs('anger')"
                                     title="Tag as anger">😠</button>
                             </div>
-                            <textarea id="content" name="post_content" cols="75" rows="35"><?php echo $text; ?></textarea>
+                            <textarea id="content" name="post_content" cols="75" rows="35"><?php echo htmlspecialchars($text); ?></textarea>
                         </div>
                         <div class="fix"></div>
                     </div>

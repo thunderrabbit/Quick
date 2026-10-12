@@ -54,15 +54,16 @@ class JournalPathTest extends Unit
         );
     }
 
-    /** Current behavior: the prefix check has no trailing slash, so a sibling dir passes. */
-    public function testSiblingDirSharingTheJournalPrefixIsAccepted(): void
+    public function testSiblingDirSharingTheJournalPrefixIsRejected(): void
     {
         mkdir($this->root . '/journal-old');
         file_put_contents($this->root . '/journal-old/x.md', 'outside');
 
-        $this->assertSame(
-            $this->root . '/journal-old/x.md',
-            \JournalPath::resolve($this->root . '/journal', '../journal-old/x.md')
-        );
+        $this->assertNull(\JournalPath::resolve($this->root . '/journal', '../journal-old/x.md'));
+    }
+
+    public function testTheJournalDirItselfIsNotAFile(): void
+    {
+        $this->assertNull(\JournalPath::resolve($this->root . '/journal', '.'));
     }
 }

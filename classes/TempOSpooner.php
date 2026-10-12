@@ -58,7 +58,9 @@ class TempOSpooner
                     echo "<p>Committing changes\n</p>";
                 }
                 // apparently, exec should not have named parameters (`command`, `output`)
-                $returnVar = exec("git commit -m '$commitMessage'", $output);
+                // escapeshellarg: story words come from a text file and can hold
+                // an apostrophe, which used to end the quoted string early.
+                $returnVar = exec("git commit -m " . escapeshellarg(arg: $commitMessage), $output);
                 if ($this->debugLevel > 4) {
                     print_rob(object: $returnVar, exit: false);
                 }

@@ -48,12 +48,7 @@ $date = ""; // keep set() from crying
 $tags = ""; // keep set() from crying
 $text = "";
 
-if ($mla_request->get) {
-    if ($mla_request->get['text']) {
-        // used by badmin.robnugen.com
-        $text = $mla_request->get['text'];
-    }
-} elseif (isset($_SESSION['edit_post_data'])) {
+if (isset($_SESSION['edit_post_data'])) {
     $editData = $_SESSION['edit_post_data'];      // Grab parsed data
     unset($_SESSION['edit_post_data']);           // Prevent reloading on refresh
 

@@ -77,9 +77,9 @@ class JournalEntryPoster
         $day = $dateObject->format(format: 'd');
 
         $frontmatter = "---\n";
-        $frontmatter .= "title: \"$title\"\n";
+        $frontmatter .= "title: " . YamlString::quote($title) . "\n";
         // "life, journal, fun" => ["life", "journal", "fun"]
-        $quoted_tags = '"' . preg_replace(pattern: "/, /", replacement: "\", \"", subject: $tags) . '"';
+        $quoted_tags = implode(", ", array_map(YamlString::quote(...), explode(", ", $tags)));
         $frontmatter .= "tags: [ \"$year\", $quoted_tags ]\n";
         $frontmatter .= "author: Rob Nugen\n";
         $frontmatter .= "date: $year-$month-{$day}T$time:00+09:00\n";      // :00 so Hugo will parse datetime properly

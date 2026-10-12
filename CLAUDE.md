@@ -48,7 +48,7 @@ is a bare repo, plus a fixture story file; TempOSpooner/NextStoryWord tests
 chdir() into it. Those git tests **skip when `git` is missing** — and the
 runner image has no git today, so in the gate they report as skipped, not run.
 A test whose docblock says "Current behavior" pins a known bug on purpose; when
-you fix that bug (#707 escaping/shell), flip the test.
+you fix that bug, flip the test.
 
 ## Project Overview
 
@@ -127,6 +127,12 @@ The application automatically commits and pushes changes to a git repository. Th
 
 ### Template System
 Uses a simple PHP template system where variables are extracted into local scope. Templates are in `templates/` directory with `.tpl.php` extensions.
+
+Every value a template prints goes through `htmlspecialchars()` (or
+`urlencode()` inside a URL). Text from git or the server that JS shows goes in
+`textContent`, never `innerHTML`. Shell arguments go through `escapeshellarg()`.
+Frontmatter values go through `YamlString::quote()`, and the parser undoes
+that with `YamlString::unquote()` (mg #707).
 
 ### Debugging
 Set `?debug=N` parameter in URLs to enable debug output (where N is debug level 1-6). Higher levels show more verbose output.
