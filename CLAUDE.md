@@ -158,7 +158,7 @@ which defines `LOGIN_PAGE` before including it.
 - **DB access.** The auth classes use PDO (`Base::getPDO()`) so their tests
   run on in-memory SQLite; the rest of Quick uses mysqli (`Base::getDB()`).
 - **Schema** is applied by hand on DreamHost (no migration runner):
-  `db_schemas/705_auth_hardening/`. `alter_cookies_hash_expiry.sql` must go
+  `db_schemas/705_auth_hardening/`. `recreate_cookies.sql` must go
   live together with the code that writes `expires_at`; either one alone
   locks everyone out.
 

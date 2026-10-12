@@ -9,7 +9,7 @@ use Codeception\Test\Unit;
 /**
  * Runs against an in-memory SQLite, not the site's MySQL: no server, no
  * credentials, no network, gone when the process exits. The table mirrors
- * db_schemas/705_auth_hardening/alter_cookies_hash_expiry.sql.
+ * db_schemas/705_auth_hardening/recreate_cookies.sql.
  */
 class CookieRepositoryTest extends Unit
 {
