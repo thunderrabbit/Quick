@@ -14,17 +14,24 @@ use Tests\Support\TempGitRepo;
 class NextStoryWordTest extends Unit
 {
     private ?TempGitRepo $repo = null;
+    private string $startDir;
 
+    /** NextStoryWord runs git log in the current directory, like TempOSpooner. */
     protected function _before(): void
     {
         if (!TempGitRepo::gitAvailable()) {
             $this->markTestSkipped('git is not installed');
         }
+        $this->startDir = getcwd();
         $this->repo = TempGitRepo::create();
+        chdir($this->repo->path());
     }
 
     protected function _after(): void
     {
+        if ($this->repo !== null) {
+            chdir($this->startDir);
+        }
         $this->repo?->remove();
     }
 
@@ -33,7 +40,7 @@ class NextStoryWordTest extends Unit
     {
         ob_start();
         $word = (string) new \NextStoryWord(
-            gitLogCommand: $this->repo->gitLogCommand($logCount),
+            gitLogCount: $logCount,
             storyFile: $storyFile,
             debugLevel: 0,
         );
@@ -113,6 +120,6 @@ class NextStoryWordTest extends Unit
     {
         $this->expectExceptionMessage('Story file not found.');
 
-        new \NextStoryWord(gitLogCommand: 'true', storyFile: '/nonexistent/story.txt', debugLevel: 0);
+        new \NextStoryWord(gitLogCount: 1, storyFile: '/nonexistent/story.txt', debugLevel: 0);
     }
 }

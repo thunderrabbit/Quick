@@ -81,12 +81,6 @@ class TempGitRepo
         return $file;
     }
 
-    /** The "git log" command NextStoryWord would run, aimed at this repo. */
-    public function gitLogCommand(int $count): string
-    {
-        return 'git -C ' . escapeshellarg($this->path()) . " log -$count --pretty=format:'%s'";
-    }
-
     public function remove(): void
     {
         exec('rm -rf ' . escapeshellarg($this->root));
