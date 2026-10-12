@@ -18,7 +18,7 @@ quick has a phpcs style gate (PSR-12). Because every commit message is a story
 word (see the art project below), the message can't describe *what* changed — so
 the change must already be clean when you commit. Run the gate first:
 
-    check_style(repo="quick")                                   # `standards` MCP tool, if wired
+    check_style(repo="quick")                                   # `standards` MCP tool
     ~/work/rob/standards-mcp/run-phpcs.sh ~/work/rob/quick.robnugen.com   # or directly
 
 - **pass** → style-clean; safe to commit with the next story word.
