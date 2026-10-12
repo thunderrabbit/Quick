@@ -51,16 +51,19 @@ class IsLoggedIn
      * Password login. Called by /login/ on POST and nowhere else, so a stray
      * email/pass pair in some other form is just data, and a wrong password
      * can no longer log a user out of an unrelated page.
+     *
+     * BadCredentials has no side effects; the caller shows one generic
+     * message for it so a guesser cannot learn which logins exist.
      */
-    public function attemptPasswordLogin(string $email, string $password): bool
+    public function attemptPasswordLogin(string $email, string $password): LoginResult
     {
         $user_id = $this->checkPHPHashedPassword($email, $password);
         if ($user_id <= 0) {
-            return false;
+            return LoginResult::BadCredentials;
         }
 
         $this->establishSession($user_id);
-        return true;
+        return LoginResult::Success;
     }
 
     /**
