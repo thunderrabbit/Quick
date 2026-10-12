@@ -14,7 +14,7 @@ class IsLoggedIn
 {
     private const COOKIE_DOMAIN = 'quick.robnugen.com';
 
-    private bool $is_logged_in = false;
+    private int $who_is_logged_in = 0;
 
     private string $session_variable = 'login';   // must match the one in \UserAuthentication
     private string $cookie_name = 'quill';
@@ -44,7 +44,7 @@ class IsLoggedIn
             return;
         }
 
-        $this->is_logged_in = true;
+        $this->who_is_logged_in = $found_user_id;
     }
 
     /**
@@ -77,7 +77,7 @@ class IsLoggedIn
         // render mints a fresh one.
         unset($_SESSION[\Security\CSRFProtectaroo::FIELD]);
         $this->setAutoLoginCookie($user_id);
-        $this->is_logged_in = true;
+        $this->who_is_logged_in = $user_id;
     }
 
     private function setAutoLoginCookie(int $user_id): void
@@ -149,12 +149,28 @@ class IsLoggedIn
     }
     public function isLoggedIn(): bool
     {
-        return $this->is_logged_in;
+        return $this->who_is_logged_in > 0;
     }
 
     public function logout(): void
     {
-        $this->is_logged_in = false;
+        // Nobody is logged in, so there is nothing to revoke and no session of
+        // ours to tear down.
+        if ($this->who_is_logged_in <= 0) {
+            return;
+        }
+
+        // Revoke every session this user has, not only the browser that clicked
+        // logout. Someone logging out because they think they were compromised
+        // gets what they asked for, and a token captured from any of their
+        // devices stops working now instead of at its expiry.
+        $this->di_dbase->executeSQL(
+            "DELETE FROM `cookies` WHERE `user_id` = ?",
+            "i",
+            $this->who_is_logged_in
+        );
+
+        $this->who_is_logged_in = 0;
         $this->killCookie();
         session_destroy();
         session_start();
@@ -165,6 +181,6 @@ class IsLoggedIn
     {
         $cookie_options = CookieOptions::build(self::COOKIE_DOMAIN, time() - 3600);
         setcookie($this->cookie_name, '', $cookie_options);
-        $this->is_logged_in = false;
+        $this->who_is_logged_in = 0;
     }
 }
