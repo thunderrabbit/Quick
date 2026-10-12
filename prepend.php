@@ -1,7 +1,9 @@
 <?php
-# write errors to screen
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
+// Report everything, but to DreamHost's PHP error log, not the page: errors
+// shown on screen leak paths, SQL and config to whoever triggers them.
+ini_set('display_errors', '0');
+ini_set('display_startup_errors', '0');
+ini_set('log_errors', '1');
 error_reporting(E_ALL);
 
 const SEMVER = "1.0.0";
