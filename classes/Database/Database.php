@@ -33,7 +33,9 @@ class Database implements DbInterface
     public function connect()
     {
 //If we're already connected return true;
-        if (!is_object($this->dbObj) || !$this->dbObj->ping()) {
+        // mysqli::ping() is deprecated since PHP 8.4. Quick's requests are
+        // short-lived, so holding a connected mysqli is enough of a check.
+        if (!$this->dbObj instanceof \mysqli || $this->dbObj->connect_errno) {
             $this->dbObj = new \mysqli($this->host, $this->username, $this->passwd, $this->dbname);
 
             if (!is_object($this->dbObj) || $this->dbObj->connect_error) {
