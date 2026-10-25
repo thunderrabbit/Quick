@@ -135,10 +135,10 @@ Frontmatter values go through `YamlString::quote()`, and the parser undoes
 that with `YamlString::unquote()` (mg #707).
 
 ### Uploading images (mg #706)
-The 📷 button in the editor opens `https://badmint.robnugen.com/upload/?return=quick` as a
-popup. After uploading, badmint posts `{type: 'quick-images', v: 1, images: [{thumb, full,
+The 📷 button in the editor opens `https://badmin.robnugen.com/upload/?return=quick` as a
+popup. After uploading, badmin posts `{type: 'quick-images', v: 1, images: [{thumb, full,
 alt}]}` back. The listener in `templates/poster/index.tpl.php` accepts it only from that
-popup at badmint's exact origin, checks every URL is a `//b.robnugen.com/...` image path
+popup at badmin's exact origin, checks every URL is a `//b.robnugen.com/...` image path
 and every alt is plain words, then builds `[![alt](thumb)](full)` itself and inserts it at
 the saved cursor as text. Keep those checks if you change the format, and never open the
 popup with `noopener` or send a `Cross-Origin-Opener-Policy` header: both cut the reply.
