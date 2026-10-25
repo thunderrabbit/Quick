@@ -91,11 +91,11 @@
     }
     </script>
     <script>
-    // Upload images from inside an entry (mg #706). The 📷 button opens badmint's
+    // Upload images from inside an entry (mg #706). The 📷 button opens badmin's
     // upload page as a popup; after uploading it posts the images back and closes,
-    // and they go in at the cursor. badmint sends data, not markdown, so the line
+    // and they go in at the cursor. badmin sends data, not markdown, so the line
     // inserted is always one Quick built from checked URLs.
-    const BADMINT_ORIGIN = 'https://badmint.robnugen.com';
+    const BADMIN_ORIGIN = 'https://badmin.robnugen.com';
     const IMAGE_URL = /^\/\/b\.robnugen\.com\/[A-Za-z0-9_\/.-]+\.(jpeg|png|gif|webp)$/;
     const IMAGE_ALT = /^[a-z0-9 _-]*$/;
     let uploadPopup = null;
@@ -106,12 +106,12 @@
         // The click takes focus from the textarea, so remember where the cursor was.
         uploadSelection = [textarea.selectionStart, textarea.selectionEnd];
         // Synchronously inside the click, or phones block the popup. No noopener:
-        // badmint needs window.opener to send the images back.
-        uploadPopup = window.open(BADMINT_ORIGIN + '/upload/?return=quick', 'badmint-upload');
+        // badmin needs window.opener to send the images back.
+        uploadPopup = window.open(BADMIN_ORIGIN + '/upload/?return=quick', 'badmin-upload');
     }
 
     window.addEventListener('message', function (event) {
-        if (event.origin !== BADMINT_ORIGIN || uploadPopup === null || event.source !== uploadPopup) {
+        if (event.origin !== BADMIN_ORIGIN || uploadPopup === null || event.source !== uploadPopup) {
             return;
         }
         const data = event.data;
@@ -307,7 +307,7 @@
                                     type="button"
                                     class="ui-button ui-corner-all quickTagBtn"
                                     onclick="openUpload()"
-                                    title="Upload images to badmint and insert them here">📷</button>
+                                    title="Upload images to badmin and insert them here">📷</button>
                             </div>
                             <textarea id="content" name="post_content" cols="75" rows="35"><?php echo htmlspecialchars($text); ?></textarea>
                         </div>
@@ -325,7 +325,7 @@
     <div class="fix"></div>
     <script>
     // Keep the entry in localStorage while typing (mg #706). A phone may unload
-    // this tab while badmint's photo picker is open; the draft brings the text
+    // this tab while badmin's photo picker is open; the draft brings the text
     // back. Restored only into an empty editor, and dropped once the entry saves.
     (function () {
         const KEY = 'quick-draft';
