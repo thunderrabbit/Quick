@@ -392,13 +392,25 @@
         const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July',
             'August', 'September', 'October', 'November', 'December'];
         const time = pad(now.getHours()) + ':' + pad(now.getMinutes());
-        const date = days[now.getDay()] + ' ' + now.getDate() + ' ' + months[now.getMonth()] + ' ' + now.getFullYear();
+        // The short zone name (AEDT, JST, PDT...) depends on the locale: each one only knows
+        // its own region's names and gives "GMT+9" for the rest. Take the first real name.
+        let zone = '';
+        for (const locale of [navigator.language, 'en-AU', 'en-US', 'en-GB', 'en-NZ', 'en-CA', 'en-IN', 'ja-JP']) {
+            try {
+                const parts = new Intl.DateTimeFormat(locale, { timeZoneName: 'short' }).formatToParts(now);
+                const name = parts.find(function (part) { return part.type === 'timeZoneName'; }).value;
+                zone = zone || name;
+                if (!/^(GMT|UTC)/.test(name)) { zone = name; break; }
+            } catch (e) {}
+        }
+        const date = days[now.getDay()] + ' ' + now.getDate() + ' ' + months[now.getMonth()] + ' ' + now.getFullYear()
+            + (zone ? ' ' + zone : '');
         const minutes = -now.getTimezoneOffset();
         const offset = (minutes < 0 ? '-' : '+') + pad(Math.floor(Math.abs(minutes) / 60)) + ':' + pad(Math.abs(minutes) % 60);
         document.querySelector('#valid input[name="time"]').value = time;
         document.getElementById('dp').value = date;
         document.getElementById('tz_offset').value = offset;
-        document.getElementById('dateLabel').textContent = time + ' ' + date + ' (UTC' + offset + ')';
+        document.getElementById('dateLabel').textContent = time + ' ' + date;
     })();
     </script>
     <?php endif; ?>
