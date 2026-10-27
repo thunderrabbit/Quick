@@ -99,6 +99,42 @@ class JournalEntryPosterTest extends Unit
         );
     }
 
+    public function testBrowserOffsetIsUsedInFrontmatterDate(): void
+    {
+        $poster = new \JournalEntryPoster(debug: 0);
+        $poster->createPost($this->config, [
+            'date' => 'Wednesday 28 October 2026',
+            'time' => '10:38',
+            'tz_offset' => '+11:00',
+            'title' => 'Sydney',
+            'tags' => 'life',
+            'post_content' => 'Body.',
+        ]);
+
+        $this->assertStringContainsString(
+            "date: 2026-10-28T10:38:00+11:00\n",
+            file_get_contents($this->journal . $poster->post_path)
+        );
+    }
+
+    public function testBadOffsetFallsBackToJst(): void
+    {
+        $poster = new \JournalEntryPoster(debug: 0);
+        $poster->createPost($this->config, [
+            'date' => 'Saturday 3 February 2024',
+            'time' => '20:00',
+            'tz_offset' => "+99:00\ndraft: true",
+            'title' => 'Odd',
+            'tags' => 'life',
+            'post_content' => 'Body.',
+        ]);
+
+        $this->assertStringContainsString(
+            "date: 2024-02-03T20:00:00+09:00\n",
+            file_get_contents($this->journal . $poster->post_path)
+        );
+    }
+
     public function testEmptyTitleAndContentCreatesNothing(): void
     {
         $poster = new \JournalEntryPoster(debug: 0);

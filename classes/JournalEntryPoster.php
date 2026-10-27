@@ -48,7 +48,13 @@ class JournalEntryPoster
 
         $file_path = $this->createFilePath(title: $title, date: $date, config: $config);
 
-        $frontmatter = $this->createFrontMatter(title: $title, date: $date, time: $time, tags: $tags);
+        $frontmatter = $this->createFrontMatter(
+            title: $title,
+            date: $date,
+            time: $time,
+            tags: $tags,
+            offset: (string) ($post_array['tz_offset'] ?? ''),
+        );
 
         // Create file path if it doesn't exist
         $dir = dirname(path: $file_path);
@@ -68,8 +74,12 @@ class JournalEntryPoster
         return true;
     }
 
-    private function createFrontMatter(string $title, string $date, string $time, string $tags): string
+    private function createFrontMatter(string $title, string $date, string $time, string $tags, string $offset = ''): string
     {
+        // The browser sends its own UTC offset; anything odd falls back to JST
+        if (!preg_match('/^[+-](0\d|1[0-4]):[0-5]\d$/', $offset)) {
+            $offset = '+09:00';
+        }
         $dateObject = new DateTime(datetime: $date);
 
         $year = $dateObject->format(format: 'Y');
@@ -82,7 +92,7 @@ class JournalEntryPoster
         $quoted_tags = implode(", ", array_map(YamlString::quote(...), explode(", ", $tags)));
         $frontmatter .= "tags: [ \"$year\", $quoted_tags ]\n";
         $frontmatter .= "author: Rob Nugen\n";
-        $frontmatter .= "date: $year-$month-{$day}T$time:00+09:00\n";      // :00 so Hugo will parse datetime properly
+        $frontmatter .= "date: $year-$month-{$day}T$time:00$offset\n";      // :00 so Hugo will parse datetime properly
         $frontmatter .= "draft: false\n";
         $frontmatter .= "---\n";
 
