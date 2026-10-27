@@ -80,7 +80,7 @@ class JournalEntryPoster
         if (!preg_match('/^[+-](0\d|1[0-4]):[0-5]\d$/', $offset)) {
             $offset = '+09:00';
         }
-        $dateObject = new DateTime(datetime: $date);
+        $dateObject = $this->parseDate(date: $date);
 
         $year = $dateObject->format(format: 'Y');
         $month = $dateObject->format(format: 'm');
@@ -99,11 +99,22 @@ class JournalEntryPoster
         return $frontmatter;
     }
 
+    /**
+     * Only the day matters here, so the trailing zone name the form adds
+     * ("JST", "AEDT", "GMT+5:30") is dropped rather than risk PHP not knowing it.
+     */
+    private function parseDate(string $date): DateTime
+    {
+        $dayOnly = preg_replace(pattern: '/\s+(?:[A-Za-z]{2,5}|(?:GMT|UTC)[+-][\d:]+)$/', replacement: '', subject: $date);
+
+        return new DateTime(datetime: $dayOnly);
+    }
+
     private function createFilePath(string $title, string $date, \Config $config): string
     {
         $url_title = $this->createUrlTitle(title: $title);
         // Parse $date = 'Saturday 3 February 2024 JST' to date so we can get numeric year month and day
-        $dateObject = new DateTime(datetime: $date);
+        $dateObject = $this->parseDate(date: $date);
 
         $year = $dateObject->format(format: 'Y');
         $month = $dateObject->format(format: 'm');

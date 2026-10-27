@@ -117,6 +117,26 @@ class JournalEntryPosterTest extends Unit
         );
     }
 
+    /** @dataProvider zoneNames */
+    public function testTrailingZoneNameInDateIsIgnored(string $zone): void
+    {
+        $poster = new \JournalEntryPoster(debug: 0);
+        $poster->createPost($this->config, [
+            'date' => "Wednesday 28 October 2026 $zone",
+            'time' => '10:38',
+            'title' => 'Zoned',
+            'tags' => 'life',
+            'post_content' => 'Body.',
+        ]);
+
+        $this->assertSame('/2026/10/28zoned.md', $poster->post_path);
+    }
+
+    public static function zoneNames(): array
+    {
+        return [['AEDT'], ['JST'], ['NZDT'], ['GMT+5:30'], ['UTC-7'], ['ZZZZ']];
+    }
+
     public function testBadOffsetFallsBackToJst(): void
     {
         $poster = new \JournalEntryPoster(debug: 0);
