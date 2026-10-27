@@ -154,6 +154,9 @@
             // current date in "Friday 2 February 2024" format
             $current_date = date("l j F Y T");
 
+            // New entries get the browser's local time (see the script by the Date field);
+            // JST is only the fallback, and what entries opened for editing are assumed to be in.
+            $is_new_entry = !$entry_date && !$entry_time;
             $entry_date = $entry_date ?: $current_date;
             $entry_time = $entry_time ?: $current_time;
 
@@ -236,17 +239,18 @@
                         <div class="fix"></div>
                     </div>
                     <div class="PageRow noborder">
-                        <label for="dp">Date: <?php echo htmlspecialchars($entry_time) ?> <?php echo htmlspecialchars($entry_date) ?></label>
+                        <label for="dp">Date: <span id="dateLabel"><?php echo htmlspecialchars($entry_time) ?> <?php echo htmlspecialchars($entry_date) ?></span></label>
 		      <small>
 			<small>
 			  <small>
-			    Change timezone in ~/quick.robnugen.com/templates/poster/index.tpl.php
+			    New entries use this browser's timezone
 		          </small>
 		        </small>
 		      </small>
                         <div class="PageInput">
                             <input type="text" name="time" value="<?php echo htmlspecialchars($entry_time) ?>" size="5" />
                             <input type="text" name="date" value="<?php echo htmlspecialchars($entry_date) ?>" size="35" id="dp" />
+                            <input type="hidden" name="tz_offset" id="tz_offset" value="+09:00" />
                             <label for="debug">Debug:</label>
                             <input type="text" name="debug" value="0" size="5" />
                         </div>
@@ -378,6 +382,26 @@
         for (const name in fields) { fields[name].addEventListener('input', save); }
     })();
     </script>
+    <?php if ($is_new_entry): ?>
+    <script>
+    // New entry: use the browser's local date, time and UTC offset instead of the server's JST.
+    (function () {
+        const now = new Date();
+        const pad = function (n) { return String(n).padStart(2, '0'); };
+        const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+        const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July',
+            'August', 'September', 'October', 'November', 'December'];
+        const time = pad(now.getHours()) + ':' + pad(now.getMinutes());
+        const date = days[now.getDay()] + ' ' + now.getDate() + ' ' + months[now.getMonth()] + ' ' + now.getFullYear();
+        const minutes = -now.getTimezoneOffset();
+        const offset = (minutes < 0 ? '-' : '+') + pad(Math.floor(Math.abs(minutes) / 60)) + ':' + pad(Math.abs(minutes) % 60);
+        document.querySelector('#valid input[name="time"]').value = time;
+        document.getElementById('dp').value = date;
+        document.getElementById('tz_offset').value = offset;
+        document.getElementById('dateLabel').textContent = time + ' ' + date + ' (UTC' + offset + ')';
+    })();
+    </script>
+    <?php endif; ?>
 </body>
 
 </html>
