@@ -1,6 +1,6 @@
 <?php
 
-include_once "/home/barefoot_rob/quick.robnugen.com/prepend.php";
+include_once "/home/barefoot_rob/quick.robnugen.com/prepend.php"; // @phpstan-ignore includeOnce.fileNotFound (absolute DreamHost path)
 
 if (!isset($mla_request->get['file'])) {
     die("Missing file parameter.");

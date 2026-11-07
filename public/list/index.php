@@ -1,6 +1,6 @@
 <?php
 
-include_once "/home/barefoot_rob/quick.robnugen.com/prepend.php";
+include_once "/home/barefoot_rob/quick.robnugen.com/prepend.php"; // @phpstan-ignore includeOnce.fileNotFound (absolute DreamHost path)
 
 $page = new \Template(config: $config);
 

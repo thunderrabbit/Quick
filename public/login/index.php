@@ -5,7 +5,7 @@
 const LOGIN_PAGE = true;
 
 # Must include here because DH runs FastCGI https://www.phind.com/search?cache=zfj8o8igbqvaj8cm91wp1b7k
-include_once "/home/barefoot_rob/quick.robnugen.com/prepend.php";
+include_once "/home/barefoot_rob/quick.robnugen.com/prepend.php"; // @phpstan-ignore includeOnce.fileNotFound (absolute DreamHost path)
 
 if ($is_logged_in->isLoggedIn()) {
     // Already in (remember-me cookie, or the POST below on a previous request).
