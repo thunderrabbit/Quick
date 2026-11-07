@@ -15,7 +15,7 @@ parameters:
             # Codeception output, and the actor built from generated traits
             # that a fresh clone doesn't have.
             - Tests/_output/*
-            - Tests/Support/_generated/*
+            - Tests/Support/*
     bootstrapFiles:
         - vendor/autoload.php
         - Tests/Unit/_bootstrap.php
