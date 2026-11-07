@@ -40,6 +40,16 @@ install with the `composer:2` docker image — Lemur 13's host PHP is 8.1). The
 ruleset is `phpcs.xml` — PSR-12 with a few sniffs excluded and documented
 (pending manual cleanup). templates/*.tpl.php are out of scope.
 
+### PHPStan and the pre-commit hook
+
+`phpstan.neon` (level 0, no baseline) runs with `run-phpstan.sh`. The hook in
+`.githooks/pre-commit` runs phpcs and PHPStan on exactly what is staged, in the
+php8.3 runner image. Turn it on once per clone:
+
+    git config core.hooksPath .githooks
+
+Bypass in an emergency with `git commit --no-verify`.
+
 ### Tests
 
 `Tests/Unit/` runs without prepend.php (no session, DB or login) and without
