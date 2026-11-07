@@ -5,7 +5,9 @@
 const LOGIN_PAGE = true;
 
 # Must include here because DH runs FastCGI https://www.phind.com/search?cache=zfj8o8igbqvaj8cm91wp1b7k
-include_once "/home/barefoot_rob/quick.robnugen.com/prepend.php";
+// Extract DreamHost project root: /home/username/domain.com
+preg_match('#^(/home/[^/]+/[^/]+)#', __DIR__, $matches);
+include_once $matches[1] . '/prepend.php';
 
 if ($is_logged_in->isLoggedIn()) {
     // Already in (remember-me cookie, or the POST below on a previous request).

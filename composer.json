@@ -2,7 +2,8 @@
     "require-dev": {
         "squizlabs/php_codesniffer": "^4.0",
         "codeception/codeception": "^5.0",
-        "codeception/module-asserts": "^3.0"
+        "codeception/module-asserts": "^3.0",
+        "phpstan/phpstan": "^2.0"
     },
     "config": {
         "platform": {

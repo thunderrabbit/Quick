@@ -2,7 +2,7 @@
 
 class JournalEntryPoster
 {
-    public readonly string $post_path;
+    public readonly string $post_path; // @phpstan-ignore property.uninitializedReadonly (assigned in createPost, not the constructor)
 
     public function __construct(
         private int $debug,

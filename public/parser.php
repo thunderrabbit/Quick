@@ -1,6 +1,8 @@
 <?php
 
-include_once "/home/barefoot_rob/quick.robnugen.com/prepend.php";
+// Extract DreamHost project root: /home/username/domain.com
+preg_match('#^(/home/[^/]+/[^/]+)#', __DIR__, $matches);
+include_once $matches[1] . '/prepend.php';
 
 if (!isset($mla_request->get['file'])) {
     die("Missing file parameter.");
