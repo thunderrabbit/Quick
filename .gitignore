@@ -10,3 +10,6 @@ Tests/_output/*
 Tests/_envs/
 Tests/Support/_generated/*
 !Tests/Support/_generated/.gitkeep
+
+# live credentials; copy ConfigSample.php to this by hand on each server
+/classes/Config.php
